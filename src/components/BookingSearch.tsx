@@ -27,10 +27,12 @@ export function BookingSearch({ initialDestination, initialDate }: { initialDest
   return <section className="booking-search" aria-labelledby="booking-search-title">
     <div className="booking-search-copy"><p className="section-label">PLAN YOUR DAY IN BALI</p><h2 id="booking-search-title">Where would you like to go?</h2><p>Choose a destination and the date you want your tour to happen. We&apos;ll keep the date with your inquiry.</p></div>
     <form className="booking-search-form" onSubmit={submit}>
-      <label>Destination<select value={destination} onChange={event => setDestination(event.target.value)} required><option value="">Choose a destination</option>{destinations.map(item => <option key={item.path} value={item.path}>{item.label}</option>)}<option value="/#customizedtour">Customized Tour</option></select></label>
-      <label>Travel date<input type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={event => setDate(event.target.value)} required /><span className="field-help">The day you want to take the tour.</span></label>
-      <button className="button" type="submit">Order Now <span aria-hidden="true">→</span></button>
+      <div className="booking-search-fields">
+        <label className="booking-search-field">Destination<select value={destination} onChange={event => setDestination(event.target.value)} required><option value="">Choose a destination</option>{destinations.map(item => <option key={item.path} value={item.path}>{item.label}</option>)}<option value="/#customizedtour">Customized Tour</option></select></label>
+        <label className="booking-search-field">Travel date<input type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={event => setDate(event.target.value)} required /><span className="field-help">The day you want to take the tour.</span></label>
+      </div>
+      <button className="button booking-search-submit" type="submit">Order Now <span aria-hidden="true">→</span></button>
+      {error && <p className="customer-error booking-search-error" role="alert">{error}</p>}
     </form>
-    {error && <p className="customer-error booking-search-error" role="alert">{error}</p>}
   </section>;
 }
