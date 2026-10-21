@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.vercel/
+.impeccable/
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts
+coverage/
+test-results/
+*.log
+*.sqlite*
+
+# Local-only QA fixtures contain disposable credentials and data.
+scripts/check-customer-local.ts
+tests/customer-browser-setup.php

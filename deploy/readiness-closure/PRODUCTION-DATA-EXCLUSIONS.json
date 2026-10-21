@@ -1,0 +1,23 @@
+{
+  "source": "slategray-goshawk-210407.hostingersite.com",
+  "purpose": "Mandatory review/exclusion manifest for a future migration; no migration or deletion approved",
+  "production_import_authorized": false,
+  "synthetic_customer_ids": [8],
+  "synthetic_inquiry_ids": [1999, 2000, 2043, 2045],
+  "synthetic_review_ids": [6, 7],
+  "synthetic_completed_tour_relationships": [{"customer_id": 8, "tour_id": 523}],
+  "preserve_existing_customer_ids": [7],
+  "preserve_existing_inquiry_ids": [1993, 1997],
+  "preserve_existing_completed_tour_relationships": [{"customer_id": 7, "tour_id": 523}],
+  "deny_markers": ["STAGING HTTPS QA ONLY", "STAGING VALIDATION ONLY", "Synthetic", "Disposable", "HTTPS Preview QA 20261020"],
+  "other_qa_only_artifacts": [
+    "staging MU mail capture and its metadata sink",
+    "shalom_preview_test_user_id option",
+    "shalom_preview_mail_probe_result option",
+    "QA rate-limit/nonce/ticket transients (never blanket-delete active rate records)",
+    "local tests/runtime SQLite databases and local test identities closure_local_owner / closure_local_other",
+    "local private DPAPI recovery fixtures, config backup and test evidence",
+    "plugin ZIP upload packages and empty isolated Vercel bootstrap"
+  ],
+  "migration_gate": "No full staging DB copy. Customer/inquiry/review imports require entity-aware denylist, synthetic-marker scan, explicit genuine-record allowlist and a reviewed candidate export. No approved export currently exists."
+}

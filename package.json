@@ -1,0 +1,36 @@
+{
+  "name": "shalom-next",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "start:hosted": "next start --hostname 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "check:backend": "tsx scripts/check-backend.ts",
+    "check:poc": "tsx scripts/check-poc.ts",
+    "check:preproduction": "tsx scripts/check-pre-production.ts",
+    "check:env": "tsx scripts/check-deployment-env.ts"
+  },
+  "dependencies": {
+    "@next/env": "16.4.2",
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

@@ -1,0 +1,61 @@
+.page .hero {
+  min-height: clamp(420px, 40vw, 520px);
+  padding: 64px 24px 96px;
+}
+.page .hero::after { background: rgb(8 27 48 / 68%); }
+.hero :global(.ubud-hero-copy) { width: 100%; max-width: 960px; min-width: 0; }
+.page .hero h1 {
+  max-width: 22ch;
+  margin: 0 auto 24px;
+  font-size: clamp(32px, 4.3vw, 56px);
+  line-height: 1.18;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.page .hero :global(.ubud-hero-copy) > p:last-child {
+  max-width: 66ch;
+  font-size: clamp(16px, 1.4vw, 18px);
+  line-height: 1.7;
+}
+.noticeSection { background: white; padding-inline: 24px; }
+.notice {
+  position: relative;
+  max-width: 1280px;
+  margin: -32px auto 0;
+  padding: 32px 40px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px;
+  border: 1px solid #e7cfdd;
+  border-radius: 12px;
+  background: #f8edf3;
+  color: #572643;
+}
+.noticeColumn { min-width: 0; }
+.noticeColumn + .noticeColumn { padding-inline-start: 40px; border-inline-start: 1px solid #d9bdcd; }
+.noticeColumn h2 { color: inherit; font-size: 20px; line-height: 1.4; margin-bottom: 16px; font-weight: 700; }
+.noticeColumn ul { padding-inline-start: 22px; margin: 0; font-size: 16px; line-height: 1.65; }
+.noticeColumn li { padding-inline-start: 2px; overflow-wrap: anywhere; }
+.noticeColumn li + li { margin-top: 8px; }
+.page .tours { padding-top: 48px; }
+.tours :global(.tour-grid) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tours :global(.tour-card) { height: 100%; }
+.tours :global(.price-note) { font-size: 14px; line-height: 1.65; margin-top: 16px; overflow-wrap: anywhere; }
+.tours :global(.price-note-extra) { color: var(--ink); font-weight: 600; }
+.tours :global(.tour-actions) { gap: 8px; }
+.tours :global(.tour-actions .button) { min-width: 0; white-space: nowrap; }
+@media (max-width: 767px) {
+  .page .hero { padding: 56px 20px 80px; }
+  .noticeSection { padding-inline: 20px; }
+  .notice { padding: 28px; gap: 24px; }
+  .noticeColumn + .noticeColumn { padding-inline-start: 24px; }
+  .page .tours { padding: 36px 20px 64px; }
+  .tours :global(.tour-grid) { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+}
+@media (max-width: 600px) {
+  .notice { grid-template-columns: minmax(0, 1fr); padding: 24px; }
+  .noticeColumn + .noticeColumn { border-inline-start: 0; padding-inline-start: 0; border-top: 1px solid #d9bdcd; padding-top: 24px; }
+}
+@media (max-width: 390px) {
+  .tours :global(.tour-actions .button) { font-size: 13px; padding-inline: 16px; }
+}
