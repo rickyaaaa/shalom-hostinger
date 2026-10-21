@@ -5,13 +5,14 @@ import { accountSchema, type CustomerAccount as AccountData } from "@/lib/custom
 import { customerFetch } from "@/lib/customer-client";
 import { useCustomerSession } from "./CustomerSession";
 import { intentQuery,type BookingIntent } from "@/lib/booking-intent";
+import { Icon } from "./Icon";
 
-function ReviewForm({onSubmitted,title,tourId}:{onSubmitted:()=>void;title:string;tourId:number}) {
+function ReviewForm({onSubmitted,title,tourId,entitlementId}:{onSubmitted:()=>void;title:string;tourId:number;entitlementId?:string|number}) {
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState("");
   async function submit(event:FormEvent<HTMLFormElement>) {
     event.preventDefault(); if (busy) return; setBusy(true); setError("");
-    try { await customerFetch("reviews",{...Object.fromEntries(new FormData(event.currentTarget)),tour_id:tourId}); onSubmitted(); }
+    try { await customerFetch("reviews",{...Object.fromEntries(new FormData(event.currentTarget)),tour_id:tourId,...(entitlementId === undefined ? {} : {entitlement_id:entitlementId})}); onSubmitted(); }
     catch (reason) { setError(reason instanceof Error ? reason.message : "Please try again."); setBusy(false); }
   }
   return <form className="customer-form" onSubmit={submit} aria-busy={busy}>
@@ -31,6 +32,8 @@ export function CustomerAccount() {
   const [review,setReview] = useState<number|null>(null);
   const [notice,setNotice] = useState("");
   const [busy,setBusy] = useState(false);
+  const entitlements = account?.review_entitlements ?? account?.completed_tours.filter(tour => tour.can_review).map(tour => ({id:`legacy-${tour.id}`,tour_id:tour.id,title:tour.title})) ?? [];
+  const authoritativeEntitlements = account?.review_entitlements;
   const load = () => {setError("");void reload();};
   const submitted = () => {setReview(null);setNotice("Thank you. Your review is awaiting approval.");load();};
   async function logout() { setBusy(true);try {await customerFetch("logout",{});window.location.assign("/login");}catch(reason){setError(reason instanceof Error ? reason.message : "Please try again.");setBusy(false);} }
@@ -40,14 +43,36 @@ export function CustomerAccount() {
     {(error||(!guest&&loadError)) && <p className="customer-error" role="alert">{error||loadError} {!guest && <button className="text-button" onClick={load}>Retry</button>}</p>}
     {guest ? <p><Link className="button" href="/login">Log In</Link> <Link href="/register">Create Account</Link></p> : loading && !account ? <p role="status">Loading your account…</p> : account && <>
       <p className="customer-intro">Welcome, {account.customer.name}.</p>
+      <ProfilePanel account={account} onUpdated={load} />
       <section className="account-block"><h2>Completed Tours</h2><p>Completed Tours are confirmed by Shalom Bali Tour.</p>
-        {account.completed_tours.length ? <ul className="account-list">{account.completed_tours.map(tour=><li key={tour.id}><strong>{tour.title}</strong>{tour.can_review ? <button className="button button-outline" onClick={()=>setReview(review===tour.id?null:tour.id)} aria-expanded={review===tour.id}>{review===tour.id ? "Close review form" : "Leave Review"}</button>:account.reviews.some(item=>item.tour_id===tour.id)&&<ReviewStatus status={account.reviews.find(item=>item.tour_id===tour.id)!.status}/>}</li>)}</ul> : <p>You have no completed Tours yet. <Link href="/">Explore Bali Tours</Link>.</p>}
+        {account.completed_tours.length ? <ul className="account-list">{account.completed_tours.map(tour=>{const entitlement=entitlements.find(item=>item.tour_id===tour.id);return <li key={tour.id}><strong>{tour.title}</strong>{entitlement ? <button className="button button-outline" onClick={()=>setReview(review===tour.id?null:tour.id)} aria-expanded={review===tour.id}>{review===tour.id ? "Close review form" : "Leave Review"}</button>:account.reviews.some(item=>item.tour_id===tour.id)&&<ReviewStatus status={account.reviews.find(item=>item.tour_id===tour.id)!.status}/>}</li>})}</ul> : <p>You have no completed Tours yet. <Link href="/">Explore Bali Tours</Link>.</p>}
+        {!entitlements.length && <p className="account-empty-review">You can leave a review after completing an eligible tour.</p>}
       </section>
-      {review && account.completed_tours.some(tour=>tour.id===review && tour.can_review) && <section className="account-block"><ReviewForm key={review} tourId={review} onSubmitted={submitted} title={account.completed_tours.find(tour=>tour.id===review)!.title} /></section>}
+      {review && entitlements.some(tour=>tour.tour_id===review) && <section id="leave-review" className="account-block"><ReviewForm key={review} tourId={review} entitlementId={authoritativeEntitlements?.find(tour=>tour.tour_id===review)?.id} onSubmitted={submitted} title={entitlements.find(tour=>tour.tour_id===review)!.title} /></section>}
       <InquiryHistory key={account.customer.id} initial={account.inquiries} />
-      <section className="account-block"><h2>My Reviews</h2>{account.reviews.length ? <ul className="account-list">{account.reviews.map((item,i)=><li key={item.id??i}><div><h3>{item.title}</h3><ReviewStatus status={item.status}/><p className="customer-experience">{item.experience}</p></div></li>)}</ul> : <p>You have not submitted any reviews yet.</p>}</section>
+      <section id="reviews" className="account-block"><h2>My Reviews</h2>{account.reviews.length ? <ul className="account-list">{account.reviews.map((item,i)=><li key={item.id??i}><div><h3>{item.title}</h3><ReviewStatus status={item.status}/><p className="customer-experience">{item.experience}</p></div></li>)}</ul> : <p>You have not submitted any reviews yet.</p>}</section>
     </>}
   </div></section>;
+}
+
+function ProfilePanel({ account, onUpdated }: { account: AccountData; onUpdated: () => void }) {
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function upload(file: File) {
+    setBusy(true); setError(""); setMessage("");
+    const body = new FormData(); body.set("avatar", file);
+    try { const response = await fetch("/api/customer/profile", { method: "POST", body, credentials: "same-origin" }); const value = await response.json(); if (!response.ok) throw new Error(value.message || "We could not update your profile photo."); setMessage("Your profile photo was updated."); onUpdated(); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : "We could not update your profile photo."); }
+    finally { setBusy(false); }
+  }
+  async function remove() {
+    setBusy(true); setError(""); setMessage("");
+    try { const response = await fetch("/api/customer/profile", { method: "DELETE", credentials: "same-origin" }); const value = await response.json(); if (!response.ok) throw new Error(value.message || "We could not remove your profile photo."); setMessage("Your profile photo was removed."); onUpdated(); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : "We could not remove your profile photo."); }
+    finally { setBusy(false); }
+  }
+  return <section id="profile" className="account-block profile-panel"><div className="profile-panel-heading"><div><h2>My Profile</h2><p>Update the photo shown beside your profile control.</p></div><span className="profile-avatar profile-avatar-large">{account.customer.avatar_url ? <img src={account.customer.avatar_url} alt="" /> : <Icon name="user" />}</span></div><label className="profile-upload">Profile photo<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={event => { const file=event.target.files?.[0]; if(file) void upload(file); }} /><span className="field-help">JPEG, PNG or WebP. SVG files are not accepted.</span></label>{account.customer.avatar_url && <button className="button button-outline" type="button" disabled={busy} onClick={remove}>Remove photo</button>}{message && <p className="customer-notice" role="status">{message}</p>}{error && <p className="customer-error" role="alert">{error}</p>}<p id="password" className="field-help profile-password-note">To change your password, use <Link href="/request-help">Request Help</Link>.</p></section>;
 }
 
 function InquiryHistory({initial}:{initial:AccountData["inquiries"]}) {

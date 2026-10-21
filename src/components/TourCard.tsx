@@ -7,7 +7,7 @@ import { BookingButton } from "./BookingButton";
 
 type CardPresentation = {title:string;priceNote:string;additionalNote?:string};
 
-export function TourCard({ tour, presentation }: { tour: Tour; presentation?:CardPresentation }) {
+export function TourCard({ tour, presentation, requestedTravelDate }: { tour: Tour; presentation?:CardPresentation; requestedTravelDate?: string }) {
   const { regular, sale, currency } = tour.pricing;
   const current = sale ?? regular;
   const discounted = sale !== null && regular !== null && sale < regular;
@@ -24,7 +24,7 @@ export function TourCard({ tour, presentation }: { tour: Tour; presentation?:Car
         {presentation.additionalNote && <p className="price-note price-note-extra">{presentation.additionalNote}</p>}
         <p className="price-note">{presentation.priceNote}</p>
       </>}
-      <div className="tour-actions"><BookingButton tourId={tour.id} title={tour.title} /><ReviewModal tourId={tour.id} title={tour.title} /></div>
+      <div className="tour-actions"><BookingButton tourId={tour.id} title={tour.title} requestedTravelDate={requestedTravelDate} /><ReviewModal tourId={tour.id} title={tour.title} /></div>
       {!presentation && tour.price_note && <p className="price-note">{tour.price_note}</p>}
     </div>
   </article>;

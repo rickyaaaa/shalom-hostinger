@@ -36,6 +36,16 @@ test("booking return intent permits only canonical Tour IDs or custom requests",
   assert.equal(bookingInput.safeParse({kind:"contact",tour_id:0,phone:"forged"}).success,false);
   assert.equal(inquiryInput.safeParse({kind:"tour",tour_id:599,ticket:"x".repeat(48),user_id:1}).success,false);
 });
+test("requested travel date stays in the booking intent and entitlement DTO is explicit",()=>{
+  const intent=parseIntent({tour:"523",requested_travel_date:"2026-12-24"})!;
+  assert.deepEqual(intent,{kind:"tour",tour_id:523,requested_travel_date:"2026-12-24"});
+  assert.equal(bookingPath(intent),"/book/523?requested_travel_date=2026-12-24");
+  assert.equal(intentQuery(intent),"?tour=523&requested_travel_date=2026-12-24");
+  assert.equal(bookingInput.safeParse(intent).success,true);
+  assert.equal(bookingInput.safeParse({...intent,requested_travel_date:"24-12-2026"}).success,false);
+  const account=accountSchema.parse({customer:{name:"QA",country:"ID",avatar_url:null},completed_tours:[],review_entitlements:[{id:"booking-1",tour_id:523,title:"Temple Tour"}],reviews:[],inquiries:{items:[],page:1,has_more:false}});
+  assert.equal(account.review_entitlements?.[0].id,"booking-1");
+});
 test("account DTO strips private upstream fields and session nonce",()=>{
   const parsed = accountSchema.parse({customer:{name:"QA",country:"QA",email:"private@example.test"},completed_tours:[],reviews:[],inquiries:{items:[],page:1,has_more:false},nonce:"secret"});
   assert.equal("nonce" in parsed,false); assert.equal("email" in parsed.customer,false);

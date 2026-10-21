@@ -7,6 +7,7 @@ import { ServiceUnavailable } from "@/components/ServiceUnavailable";
 import { Icon } from "@/components/Icon";
 import { WhyChooseUs, FAQ, AboutSection } from "@/components/HomeInformation";
 import { publicMetadata } from "@/lib/seo";
+import { BookingSearch } from "@/components/BookingSearch";
 
 export const dynamic = "force-dynamic";
 export const metadata = publicMetadata("Private Bali Tours", "Explore Bali your way. Choose a flexible private tour in South Kuta, Ubud or West Bali, or customize your own itinerary with Shalom Bali Tour.", "/");
@@ -22,6 +23,7 @@ export default async function HomePage() {
   return <>
     <section className="home-itineraries" aria-labelledby="home-title">
       <div className="home-intro"><h1 id="home-title">Explore Bali Your Way</h1><p>Choose your preferred Bali experience from South Kuta, Ubud, or West Bali. Every itinerary is flexible and can be adjusted to match your travel plans.</p></div>
+      <BookingSearch />
       <div className="area-grid">{areas.map((area, index) => <Link key={area.title} className="area-panel" href={area.href}>
         <Image src={area.image} alt="" fill priority={index < 2} sizes={index === 0 ? "(max-width: 767px) 100vw, 48vw" : "(max-width: 767px) 100vw, 24vw"} />
         <div className="area-panel-copy"><h2>{area.title}</h2><p>{area.text}</p></div>

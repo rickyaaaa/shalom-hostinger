@@ -1,3 +1,4 @@
-export function BookingButton({ tourId, title }: { tourId: number; title: string }) {
-  return <a className="button" href={`/book/${tourId}`} aria-label={`Book Now — ${title}`}>Book Now</a>;
+export function BookingButton({ tourId, title, requestedTravelDate }: { tourId: number; title: string; requestedTravelDate?: string }) {
+  const query = requestedTravelDate ? `?requested_travel_date=${encodeURIComponent(requestedTravelDate)}` : "";
+  return <a className="button" href={`/book/${tourId}${query}`} aria-label={`Order Now — ${title}`}>Order Now</a>;
 }

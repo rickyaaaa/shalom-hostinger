@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { accountSchema, customerConfigSchema, forgotInput, loginInput, registerInput, reviewInput, bookingInput, inquiryInput } from "@/lib/customer-types";
-import { appOrigin, clearSession, CustomerError, customerRequest, readSession, writeSession } from "@/lib/customer-server";
+import { appOrigin, clearSession, CustomerError, customerMultipartRequest, customerRequest, readSession, writeSession } from "@/lib/customer-server";
 
 export const runtime = "nodejs";
 const headers = { "Cache-Control": "private, no-store, max-age=0", Vary: "Cookie", "X-Content-Type-Options": "nosniff" };
@@ -10,6 +10,26 @@ type Context = { params: Promise<{action:string}> };
 async function handle(request: Request, context: Context) {
   const {action} = await context.params;
   try {
+    if (request.method === "POST" && action === "profile") {
+      if (request.headers.get("origin") !== appOrigin()) return reply({message:"This request could not be verified."},403);
+      const session = await readSession();
+      if (!session) return reply({message:"Please sign in to continue."},401);
+      const contentLength = Number(request.headers.get("content-length") || 0);
+      if (contentLength > 5 * 1024 * 1024) return reply({message:"Profile photos must be 5 MB or smaller."},413);
+      const form = await request.formData();
+      const file = form.get("avatar");
+      if (!(file instanceof File) || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) return reply({message:"Please choose a JPEG, PNG or WebP image."},400);
+      if (file.size > 5 * 1024 * 1024) return reply({message:"Profile photos must be 5 MB or smaller."},413);
+      const value = await customerMultipartRequest("profile", form, session);
+      return reply(z.object({avatar_url:z.url().nullable().optional(),message:z.string().optional()}).parse(value));
+    }
+    if (request.method === "DELETE" && action === "profile") {
+      if (request.headers.get("origin") !== appOrigin()) return reply({message:"This request could not be verified."},403);
+      const session = await readSession();
+      if (!session) return reply({message:"Please sign in to continue."},401);
+      const {value} = await customerRequest("profile", "POST", {remove_avatar:true}, session);
+      return reply(z.object({avatar_url:z.url().nullable().optional(),message:z.string().optional()}).parse(value));
+    }
     if (request.method === "GET") {
       if (action === "config") return reply(customerConfigSchema.parse((await customerRequest("config", "GET")).value));
       if (action !== "me") return reply({message:"Not found."},404);
@@ -68,3 +88,4 @@ async function handle(request: Request, context: Context) {
 }
 export const GET = handle;
 export const POST = handle;
+export const DELETE = handle;

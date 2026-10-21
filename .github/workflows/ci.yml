@@ -1,0 +1,30 @@
+name: Next.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+      ALLOW_INDEXING: "false"
+      WORDPRESS_SITE_URL: https://ci.example.test/
+      WORDPRESS_API_URL: https://ci.example.test/wp-json/shalom/v1
+      APP_URL: https://ci.example.test/
+      PUBLIC_SITE_URL: https://ci.example.test/
+      SESSION_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      SHALOM_HEADLESS_SIGNING_KEY: fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210
+      HEADLESS_RATE_LIMIT_MODE: signed
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build

@@ -21,7 +21,7 @@ export function WestBaliNotice() {
     <div className={styles.notice}>
       <div className={styles.noticeColumn}>
         <h2>NB: <span>NOT INCLUDING</span></h2>
-        <ul><li>ticket entrace</li><li>activities payment</li><li>lunch</li></ul>
+        <ul><li>ticket entrance</li><li>activities payment</li><li>lunch</li></ul>
       </div>
       <div className={styles.noticeColumn}>
         <h2>INCLUDE</h2>

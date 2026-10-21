@@ -5,8 +5,9 @@ import { TourCard } from "./TourCard";
 import { ServiceUnavailable } from "./ServiceUnavailable";
 import { WestBaliNotice, westBaliCardPresentation } from "./WestBaliNotice";
 import westBaliStyles from "./WestBali.module.css";
+import { BookingSearch } from "./BookingSearch";
 
-export async function AreaPage({area}:{area:AreaSlug}) {
+export async function AreaPage({area, requestedTravelDate}:{area:AreaSlug; requestedTravelDate?: string}) {
   const content=areas[area];
   const tours=await getAreaTours(area).catch(()=>null);
   const isWestBali=area==="west-bali";
@@ -18,10 +19,11 @@ export async function AreaPage({area}:{area:AreaSlug}) {
         <h1 id="area-title">{content.heading}</h1><p>{content.description}</p>
       </div>
     </section>
+    <BookingSearch initialDestination={`/${area}`} initialDate={requestedTravelDate} />
     {isWestBali && <WestBaliNotice/>}
-    <section className={isWestBali ? `tour-section ${westBaliStyles.tours}` : "tour-section"} aria-label={`${content.name} tour packages`}>
+    <section id="tour-packages" className={isWestBali ? `tour-section ${westBaliStyles.tours}` : "tour-section"} aria-label={`${content.name} tour packages`}>
       {tours===null ? <ServiceUnavailable subject="tour" retryHref={`/${area}`}/> : tours.length ?
-        <div className="tour-grid">{tours.map(tour=><TourCard tour={tour} key={tour.id} presentation={isWestBali ? westBaliCardPresentation(tour) : undefined}/>)}</div> :
+        <div className="tour-grid">{tours.map(tour=><TourCard tour={tour} key={tour.id} requestedTravelDate={requestedTravelDate} presentation={isWestBali ? westBaliCardPresentation(tour) : undefined}/>)}</div> :
         <p className="status-message">Tour packages are being updated. Please contact Shalom Bali Tour.</p>}
     </section>
   </>;
