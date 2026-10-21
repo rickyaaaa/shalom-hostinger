@@ -5,7 +5,6 @@ import { TourCard } from "./TourCard";
 import { ServiceUnavailable } from "./ServiceUnavailable";
 import { WestBaliNotice, westBaliCardPresentation } from "./WestBaliNotice";
 import westBaliStyles from "./WestBali.module.css";
-import { BookingSearch } from "./BookingSearch";
 
 export async function AreaPage({area, requestedTravelDate}:{area:AreaSlug; requestedTravelDate?: string}) {
   const content=areas[area];
@@ -19,7 +18,6 @@ export async function AreaPage({area, requestedTravelDate}:{area:AreaSlug; reque
         <h1 id="area-title">{content.heading}</h1><p>{content.description}</p>
       </div>
     </section>
-    <BookingSearch initialDestination={`/${area}`} initialDate={requestedTravelDate} />
     {isWestBali && <WestBaliNotice/>}
     <section id="tour-packages" className={isWestBali ? `tour-section ${westBaliStyles.tours}` : "tour-section"} aria-label={`${content.name} tour packages`}>
       {tours===null ? <ServiceUnavailable subject="tour" retryHref={`/${area}`}/> : tours.length ?
