@@ -30,3 +30,13 @@ test("signature binds exact bytes, audience, method, route, client, timestamp an
   const expected = createHmac("sha256", Buffer.from(process.env.SHALOM_HEADLESS_SIGNING_KEY!, "hex"));
   assert.ok(expected);
 });
+test("hosting-panel whitespace around the signing key does not change or break signatures", () => {
+  const key = randomBytes(32).toString("hex");
+  const args = ["https://staging.example/wp-json/shalom/v1", "/shalom/v1/customer/login", "{}", "b".repeat(64), 1_800_000_000, "c".repeat(32)] as const;
+  process.env.SHALOM_HEADLESS_SIGNING_KEY = key;
+  const clean = signedRequestHeaders(...args)["X-Shalom-Signature"];
+  process.env.SHALOM_HEADLESS_SIGNING_KEY = key + "\r\n";
+  assert.equal(signedRequestHeaders(...args)["X-Shalom-Signature"], clean);
+  process.env.SHALOM_HEADLESS_SIGNING_KEY = key.slice(1) + "\r";
+  assert.throws(() => signedRequestHeaders(...args));
+});

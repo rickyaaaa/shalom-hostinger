@@ -6,9 +6,16 @@ export const runtime = "nodejs";
 const headers = { "Cache-Control": "private, no-store, max-age=0", Vary: "Cookie", "X-Content-Type-Options": "nosniff" };
 const reply = (value: unknown, status = 200) => Response.json(value, {status, headers});
 type Context = { params: Promise<{action:string}> };
+// Operational trace only: never log request bodies, cookies, nonces or key material.
+function logFailure(action: string, stage: string, status: number, error: unknown) {
+  const name = error instanceof Error ? error.constructor.name : typeof error;
+  const reason = (error instanceof Error ? error.message : "").replace(/[A-Za-z0-9+/_=%-]{20,}/g, run => /^[A-Z_]+$/.test(run) ? run : "[redacted]").slice(0, 160);
+  console.error("[customer-bff]", JSON.stringify({action: /^[a-z-]{1,32}$/.test(action) ? action : "invalid", stage, status, error: name, reason}));
+}
 
 async function handle(request: Request, context: Context) {
   const {action} = await context.params;
+  let stage = "request";
   try {
     if (request.method === "POST" && action === "profile") {
       if (request.headers.get("origin") !== appOrigin()) return reply({message:"This request could not be verified."},403);
@@ -51,11 +58,15 @@ async function handle(request: Request, context: Context) {
     }
     if (action === "login" || action === "register") {
       const input = (action === "login" ? loginInput : registerInput).parse(body);
+      stage = "upstream";
       const {value, response} = await customerRequest(action, "POST", input);
+      stage = "contract";
       const result = z.object({signed_in:z.boolean(), nonce:z.string().optional(), account_created:z.boolean().optional()}).parse(value);
       if (result.signed_in) {
+        stage = "set-cookie";
         const cookie = response.headers.getSetCookie().map(line => line.split(";")[0]).find(line => /^wordpress_logged_in_[a-f0-9]+=/.test(line));
         if (!cookie || !result.nonce) throw new CustomerError(502, "Your session could not be started. Please sign in again.");
+        stage = "session-write";
         await writeSession({cookie, nonce:result.nonce, expires:Date.now() + 12 * 60 * 60 * 1000});
       } else await clearSession();
       return reply({signed_in:result.signed_in, account_created:!!result.account_created});
@@ -79,10 +90,12 @@ async function handle(request: Request, context: Context) {
     return reply(result);
   } catch (error) {
     if (error instanceof CustomerError) {
+      if (error.status >= 500) logFailure(action, stage, error.status, error);
       if ([401,403].includes(error.status)) await clearSession();
       return reply({message:error.message},error.status === 404 ? 503 : error.status);
     }
     if (error instanceof z.ZodError || error instanceof SyntaxError) return reply({message:"Please check the form details and try again."},400);
+    logFailure(action, stage, 503, error);
     return reply({message:"The customer service is unavailable. Please try again later."},503);
   }
 }

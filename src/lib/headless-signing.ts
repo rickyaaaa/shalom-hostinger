@@ -1,8 +1,9 @@
 // Node-only protocol primitives. Imported by the server adapter, never a client component.
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { serverEnv } from "./server-env";
 
 export function signingKey() {
-  const value = process.env.SHALOM_HEADLESS_SIGNING_KEY || "";
+  const value = serverEnv("SHALOM_HEADLESS_SIGNING_KEY");
   if (!/^[a-f0-9]{64}$/i.test(value) || new Set(value.toLowerCase()).size < 4) throw new Error("Configure a private random headless signing key.");
   return Buffer.from(value, "hex");
 }

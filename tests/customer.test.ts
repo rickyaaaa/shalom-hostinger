@@ -50,3 +50,14 @@ test("account DTO strips private upstream fields and session nonce",()=>{
   const parsed = accountSchema.parse({customer:{name:"QA",country:"QA",email:"private@example.test"},completed_tours:[],reviews:[],inquiries:{items:[],page:1,has_more:false},nonce:"secret"});
   assert.equal("nonce" in parsed,false); assert.equal("email" in parsed.customer,false);
 });
+test("session key tolerates CR/whitespace from hosting env imports but stays strictly hex",()=>{
+  const session = {cookie:"wordpress_logged_in_123abc=private-native-token",nonce:"wpnonce",expires:Date.now()+10000};
+  process.env.SESSION_ENCRYPTION_KEY = "d9".repeat(32) + "\r";
+  const value = sealSession(session);
+  process.env.SESSION_ENCRYPTION_KEY = " " + "d9".repeat(32) + "\n";
+  assert.deepEqual(openSession(value),session);
+  process.env.SESSION_ENCRYPTION_KEY = "d9".repeat(31) + "zz";
+  assert.throws(() => sealSession(session));
+  delete process.env.SESSION_ENCRYPTION_KEY;
+  assert.throws(() => sealSession(session));
+});

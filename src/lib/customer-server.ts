@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { wordpressConfig } from "./config";
 import { openSession, sealSession, type CustomerSession } from "./session-crypto";
 import { newClientToken, readClientToken, signedRequestHeaders } from "./headless-signing";
+import { serverEnv } from "./server-env";
 
 export const SESSION_COOKIE = "shalom_customer";
 export function appOrigin() {
@@ -31,7 +32,7 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
     if (method === "GET") url.searchParams.set("_shalom_request", randomUUID());
     const body = method === "POST" ? JSON.stringify(data || {}) : undefined;
     let signatureHeaders: Record<string, string> = {};
-    if (method === "POST" && process.env.HEADLESS_RATE_LIMIT_MODE === "signed") {
+    if (method === "POST" && serverEnv("HEADLESS_RATE_LIMIT_MODE") === "signed") {
       const jar = await cookies();
       let token = jar.get("shalom_rate_client")?.value || "";
       let client = readClientToken(token);

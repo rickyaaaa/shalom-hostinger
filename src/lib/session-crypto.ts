@@ -1,11 +1,12 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { z } from "zod";
+import { serverEnv } from "./server-env";
 
 const sessionSchema = z.object({ cookie: z.string().regex(/^wordpress_logged_in_[a-f0-9]+=[^;\r\n]+$/), nonce: z.string().min(1).max(100), expires: z.number().int() }).strict();
 export type CustomerSession = z.infer<typeof sessionSchema>;
 
 function key() {
-  const value = process.env.SESSION_ENCRYPTION_KEY;
+  const value = serverEnv("SESSION_ENCRYPTION_KEY");
   if (!value || !/^[a-f0-9]{64}$/i.test(value)) throw new Error("Set SESSION_ENCRYPTION_KEY to 32 random bytes encoded as hex.");
   return Buffer.from(value, "hex");
 }
