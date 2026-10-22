@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useCustomerSession } from "./CustomerSession";
 
 const destinations = [
   { label: "South Kuta", path: "/south-kuta" },
@@ -10,10 +11,13 @@ const destinations = [
 ];
 
 export function BookingSearch({ initialDestination, initialDate }: { initialDestination?: string; initialDate?: string }) {
+  const { account, guest, loading } = useCustomerSession();
   const router = useRouter();
   const [destination, setDestination] = useState(initialDestination ?? "");
   const [date, setDate] = useState(initialDate ?? "");
   const [error, setError] = useState("");
+
+  if (loading || guest || !account) return null;
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
