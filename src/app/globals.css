@@ -365,6 +365,8 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .booking-search-field select, .booking-search-field input { width: 100%; min-width: 0; height: 52px; border: 1px solid var(--input-border); border-radius: 10px; padding: 12px 14px; background: #fff; color: var(--ink); font: inherit; transition: border-color .15s ease, box-shadow .15s ease; }
 .booking-search-field select:hover, .booking-search-field input:hover { border-color: #9fb4c4; }
 .booking-search-field .field-help { min-height: 1.2em; font-weight: 400; }
+.booking-search-field-wide { grid-column: 1 / -1; }
+.booking-search-field select:disabled { background: var(--surface, #f6f8fa); color: var(--muted); cursor: not-allowed; }
 .booking-search-submit { width: 100%; min-height: 52px; white-space: nowrap; }
 .booking-search-error { margin: 0; }
 .profile-control { position: relative; }

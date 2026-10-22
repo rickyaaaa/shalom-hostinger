@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { accountSchema, customerConfigSchema, forgotInput, loginInput, registerInput, reviewInput, bookingInput, inquiryInput } from "@/lib/customer-types";
+import { accountSchema, customerConfigSchema, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput } from "@/lib/customer-types";
 import { appOrigin, clearSession, CustomerError, customerMultipartRequest, customerRequest, readSession, writeSession } from "@/lib/customer-server";
 
 export const runtime = "nodejs";
@@ -55,6 +55,10 @@ async function handle(request: Request, context: Context) {
     if (action === "forgot-password") {
       const {value} = await customerRequest(action,"POST",forgotInput.parse(body));
       return reply(z.object({message:z.string()}).parse(value));
+    }
+    if (action === "reset-password") {
+      const {value} = await customerRequest(action,"POST",resetInput.parse(body));
+      return reply(z.object({reset:z.literal(true),message:z.string()}).parse(value));
     }
     if (action === "login" || action === "register") {
       const input = (action === "login" ? loginInput : registerInput).parse(body);

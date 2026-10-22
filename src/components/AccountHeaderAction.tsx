@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { useCustomerSession } from "./CustomerSession";
+import { useShareSite } from "./ShareSite";
 
 function Avatar({ url }: { url?: string | null }) {
   return <span className="profile-avatar" aria-hidden="true">{url ? <img src={url} alt="" /> : <Icon name="user" />}</span>;
@@ -10,6 +11,7 @@ function Avatar({ url }: { url?: string | null }) {
 
 export function AccountHeaderAction() {
   const { account } = useCustomerSession();
+  const { share, status } = useShareSite();
   const [open, setOpen] = useState(false);
   const wrapper = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -28,9 +30,10 @@ export function AccountHeaderAction() {
     </button>
     {open && <div id="profile-menu" className="profile-menu" role="menu">
       <Link role="menuitem" href="/account#profile" onClick={() => setOpen(false)}>My Profile</Link>
-      <Link role="menuitem" href="/account#password" onClick={() => setOpen(false)}>Change Password</Link>
+      <Link role="menuitem" href="/request-help" onClick={() => setOpen(false)}>Change Password</Link>
       <Link role="menuitem" href="/account#reviews" onClick={() => setOpen(false)}>My Reviews</Link>
       {canReview && <Link role="menuitem" href="/account#leave-review" onClick={() => setOpen(false)}>Leave a Review</Link>}
+      {account.customer.referral_enabled === true && <button role="menuitem" type="button" onClick={() => void share()}>{status ? status : "Share Shalom Bali Tour"}</button>}
       <button role="menuitem" type="button" onClick={async () => { setOpen(false); await fetch("/api/customer/logout", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: "{}" }); window.location.assign("/login"); }}>Log out</button>
     </div>}
   </div>;
