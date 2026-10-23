@@ -5,16 +5,22 @@ export const customerConfigSchema = z.object({
   countries: z.record(z.string(), z.object({ name: z.string(), calling_code: z.string() })),
 });
 export const inquiryHistorySchema = z.object({
-  items: z.array(z.object({id:z.number().int().positive(),title:z.string(),submitted_at:z.iso.datetime().nullable(),status:z.enum(["inquiry","confirmed","completed","cancelled","unavailable"])})),
+  // kind/dates/pickup arrive from WordPress 1.18; optional so a 1.17 backend still renders.
+  items: z.array(z.object({id:z.number().int().positive(),title:z.string(),submitted_at:z.iso.datetime().nullable(),status:z.enum(["inquiry","confirmed","completed","cancelled","unavailable"]),
+    kind:z.enum(["tour","custom","contact"]).optional(),travel_date:z.iso.date().nullable().optional(),booking_date:z.iso.date().nullable().optional(),pickup_place:z.string().max(200).nullable().optional(),pickup_time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).nullable().optional()})),
   page:z.number().int().min(1).max(9999), has_more:z.boolean(),
 });
+export const customerSchema = z.object({ id: z.number().int().positive().optional(), name: z.string(), country: z.string(), avatar_url: z.url().nullable().optional(), email: z.string().max(254).nullable().optional(), referral_enabled: z.boolean().optional() });
 export const accountSchema = z.object({
   inquiries: inquiryHistorySchema,
-  customer: z.object({ id: z.number().int().positive().optional(), name: z.string(), country: z.string(), avatar_url: z.url().nullable().optional(), email: z.string().max(254).nullable().optional(), referral_enabled: z.boolean().optional() }),
+  customer: customerSchema,
+  // Only WhatsApp links are accepted; the number itself is configured in WordPress Settings.
+  support_whatsapp_url: z.url().refine(value => new URL(value).origin === "https://wa.me").optional(),
   completed_tours: z.array(z.object({ id: z.number().int(), title: z.string(), can_review: z.boolean() })),
   // New WordPress adapters return one row per currently usable entitlement.
   // Optional keeps the frontend readable while staging is upgraded from the legacy DTO.
-  review_entitlements: z.array(z.object({ id: z.union([z.string().min(1), z.number().int().positive()]), tour_id: z.number().int().positive(), title: z.string() })).optional(),
+  // inquiry_id (1.18) names the completed booking that funded the entitlement; null for legacy grants.
+  review_entitlements: z.array(z.object({ id: z.union([z.string().min(1), z.number().int().positive()]), tour_id: z.number().int().positive(), title: z.string(), inquiry_id: z.number().int().positive().nullable().optional() })).optional(),
   reviews: z.array(z.object({ id: z.number().int().positive().optional(), tour_id: z.number().int(), title: z.string(), experience: z.string(), status: z.enum(["approved", "pending", "unavailable"]), submitted_at: z.string().optional(), ratings: z.object({driving_skill:z.number().int(),service:z.number().int(),car:z.number().int()}).optional(), price:z.string().optional(), recommend:z.boolean().optional() })),
 });
 export type CustomerConfig = z.infer<typeof customerConfigSchema>;
@@ -25,6 +31,8 @@ const text = z.string().max(4096);
 export const loginInput = z.object({ identifier: z.string().trim().min(1).max(254).optional(), phone: text.optional(), phone_region_hint: z.string().max(2), legacy_identifier: text.optional(), password: text.min(1) }).strict().refine(value => !!(value.identifier || value.phone || value.legacy_identifier));
 const registrationFields = {full_name:z.string().min(1).max(100),password:z.string().min(8).max(128),confirm_password:z.string().min(8).max(128),terms:z.literal("1")};
 export const registerInput = z.object({...registrationFields,phone:text.min(1),phone_region_hint:z.string().max(2),email:z.string().trim().toLowerCase().min(3).max(100),customer_type:z.enum(["new_customer","existing_customer"])}).strict();
+// Same rule as registration; WordPress sanitises and validates again.
+export const profileNameInput = z.object({display_name:z.string().trim().min(2).max(100)}).strict();
 export const forgotInput = z.union([z.object({email:z.string().trim().min(3).max(254)}).strict(),z.object({phone:text.min(1),phone_region_hint:z.string().max(2)}).strict()]);
 // login/key come from the reset link fragment; WordPress validates the native key.
 export const resetInput = z.object({login:z.string().min(1).max(60),key:z.string().regex(/^[A-Za-z0-9]{1,100}$/),password:z.string().min(8).max(128),confirm_password:z.string().min(8).max(128)}).strict();

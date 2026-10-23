@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { accountSchema, type CustomerAccount as AccountData } from "@/lib/customer-types";
 import { customerFetch } from "@/lib/customer-client";
 import { useCustomerSession } from "./CustomerSession";
 import { intentQuery,type BookingIntent } from "@/lib/booking-intent";
-import { Icon } from "./Icon";
 import { ShareSite } from "./ShareSite";
+import { formatDate, orderStatus, tourDateLabel } from "@/lib/account-display";
 
 function ReviewForm({onSubmitted,title,tourId,entitlementId}:{onSubmitted:()=>void;title:string;tourId:number;entitlementId?:string|number}) {
   const [busy,setBusy] = useState(false);
@@ -27,59 +27,43 @@ function ReviewForm({onSubmitted,title,tourId,entitlementId}:{onSubmitted:()=>vo
   </form>;
 }
 
-export function CustomerAccount() {
-  const {account,guest,error:loadError,loading,reload}=useCustomerSession();
-  const [error,setError] = useState("");
-  const [review,setReview] = useState<string|number|null>(null);
-  const [notice,setNotice] = useState("");
-  const [busy,setBusy] = useState(false);
-  const entitlements = account?.review_entitlements ?? account?.completed_tours.filter(tour => tour.can_review).map(tour => ({id:`legacy-${tour.id}`,tour_id:tour.id,title:tour.title})) ?? [];
-  const load = () => {setError("");void reload();};
-  const submitted = () => {setReview(null);setNotice("Thank you. Your review is awaiting approval.");load();};
-  async function logout() { setBusy(true);try {await customerFetch("logout",{});window.location.assign("/login");}catch(reason){setError(reason instanceof Error ? reason.message : "Please try again.");setBusy(false);} }
-  return <section className="customer-section account-section"><div className="customer-panel account-panel">
-    <div className="account-heading"><h1>My Account</h1>{account && <button className="button button-outline" onClick={logout} disabled={busy}>{busy ? "Signing out…" : "Log Out"}</button>}</div>
-    {notice && <p className="customer-notice" role="status">{notice}</p>}
-    {(error||(!guest&&loadError)) && <p className="customer-error" role="alert">{error||loadError} {!guest && <button className="text-button" onClick={load}>Retry</button>}</p>}
-    {guest ? <p><Link className="button" href="/login">Log In</Link> <Link href="/register">Create Account</Link></p> : loading && !account ? <p role="status">Loading your account…</p> : account && <>
-      <p className="customer-intro">Welcome, {account.customer.name}.</p>
-      <ProfilePanel account={account} onUpdated={load} />
-      {account.customer.referral_enabled === true && <ShareSite />}
-      <section className="account-block"><h2>Completed Tours</h2><p>Completed Tours are confirmed by Shalom Bali Tour.</p>
-        {account.completed_tours.length ? <ul className="account-list">{account.completed_tours.map(tour=>{const latest=account.reviews.find(item=>item.tour_id===tour.id);return <li key={tour.id}><strong>{tour.title}</strong>{latest && <ReviewStatus status={latest.status}/>}</li>})}</ul> : <p>You have no completed Tours yet. <Link href="/">Explore Bali Tours</Link>.</p>}
-      </section>
-      {/* One row per unused review entitlement: each completed booking funds one review of its Tour. */}
-      <section id="leave-review" className="account-block"><h2>Leave a Review</h2>
-        {entitlements.length ? <ul className="account-list">{entitlements.map(item=><li key={String(item.id)}><strong>{item.title}</strong><button className="button button-outline" onClick={()=>setReview(review===item.id?null:item.id)} aria-expanded={review===item.id}>{review===item.id ? "Close review form" : "Leave Review"}</button></li>)}</ul> : <p className="account-empty-review">You can leave a review after Shalom Bali Tour marks your booking as completed.</p>}
-        {review !== null && entitlements.some(item=>item.id===review) && <ReviewForm key={String(review)} tourId={entitlements.find(item=>item.id===review)!.tour_id} entitlementId={review} onSubmitted={submitted} title={entitlements.find(item=>item.id===review)!.title} />}
-      </section>
-      <InquiryHistory key={account.customer.id} initial={account.inquiries} />
-      <section id="reviews" className="account-block"><h2>My Reviews</h2>{account.reviews.length ? <ul className="account-list">{account.reviews.map((item,i)=><li key={item.id??i}><div><h3>{item.title}</h3><ReviewStatus status={item.status}/><p className="customer-experience">{item.experience}</p></div></li>)}</ul> : <p>You have not submitted any reviews yet.</p>}</section>
-    </>}
+type Entitlement = { id: string | number; tour_id: number; title: string; inquiry_id?: number | null };
+
+// Shared guest/loading/error handling for every signed-in account page.
+export function AccountGate({ title, wide = false, children }: { title: string; wide?: boolean; children: (account: AccountData, reload: () => void) => ReactNode }) {
+  const {account,guest,error,loading,reload}=useCustomerSession();
+  const load = () => {void reload();};
+  return <section className="customer-section account-section"><div className={`customer-panel${wide ? " account-panel" : ""}`}>
+    <h1>{title}</h1>
+    {!guest && error && !account && <p className="customer-error" role="alert">{error} <button className="text-button" onClick={load}>Retry</button></p>}
+    {guest ? <p><Link className="button" href="/login">Log In</Link> <Link href="/register">Create Account</Link></p> : loading && !account ? <p role="status">Loading your account…</p> : account && children(account, load)}
   </div></section>;
 }
 
-function ProfilePanel({ account, onUpdated }: { account: AccountData; onUpdated: () => void }) {
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  async function upload(file: File) {
-    setBusy(true); setError(""); setMessage("");
-    const body = new FormData(); body.set("avatar", file);
-    try { const response = await fetch("/api/customer/profile", { method: "POST", body, credentials: "same-origin" }); const value = await response.json(); if (!response.ok) throw new Error(value.message || "We could not update your profile photo."); setMessage("Your profile photo was updated."); onUpdated(); }
-    catch (reason) { setError(reason instanceof Error ? reason.message : "We could not update your profile photo."); }
-    finally { setBusy(false); }
-  }
-  async function remove() {
-    setBusy(true); setError(""); setMessage("");
-    try { const response = await fetch("/api/customer/profile", { method: "DELETE", credentials: "same-origin" }); const value = await response.json(); if (!response.ok) throw new Error(value.message || "We could not remove your profile photo."); setMessage("Your profile photo was removed."); onUpdated(); }
-    catch (reason) { setError(reason instanceof Error ? reason.message : "We could not remove your profile photo."); }
-    finally { setBusy(false); }
-  }
-  return <section id="profile" className="account-block profile-panel"><div className="profile-panel-heading"><div><h2>My Profile</h2><p>Update the photo shown beside your profile control.</p></div><span className="profile-avatar profile-avatar-large">{account.customer.avatar_url ? <img src={account.customer.avatar_url} alt="" /> : <Icon name="user" />}</span></div><label className="profile-upload">Profile photo<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={event => { const file=event.target.files?.[0]; if(file) void upload(file); }} /><span className="field-help">JPEG, PNG or WebP. SVG files are not accepted.</span></label>{account.customer.avatar_url && <button className="button button-outline" type="button" disabled={busy} onClick={remove}>Remove photo</button>}{message && <p className="customer-notice" role="status">{message}</p>}{error && <p className="customer-error" role="alert">{error}</p>}{account.customer.email ? <p className="field-help">Email: <strong>{account.customer.email}</strong></p> : <p className="field-help">No email address is saved on your account. Contact Shalom Bali Tour to add one for password reset.</p>}<p id="password" className="field-help profile-password-note">To change your password, use <Link href="/request-help">Forgot Password</Link>{account.customer.email ? " and we will email you a reset link" : ""}.</p></section>;
+/** WordPress-configured Shalom WhatsApp when the backend provides it; otherwise the site contact section. */
+export function supportHref(account: AccountData | null) { return account?.support_whatsapp_url ?? "/#contact"; }
+
+
+export function CustomerAccount() {
+  return <AccountGate title="My Account" wide>{(account, reload) => <AccountDashboard account={account} reload={reload} />}</AccountGate>;
 }
 
-function InquiryHistory({initial}:{initial:AccountData["inquiries"]}) {
+function AccountDashboard({ account, reload }: { account: AccountData; reload: () => void }) {
+  const [review,setReview] = useState<string|number|null>(null);
+  const [notice,setNotice] = useState("");
+  const entitlements: Entitlement[] = account.review_entitlements ?? account.completed_tours.filter(tour => tour.can_review).map(tour => ({id:`legacy-${tour.id}`,tour_id:tour.id,title:tour.title}));
+  const submitted = () => {setReview(null);setNotice("Thank you. Your review is awaiting approval.");reload();};
+  const openReview = (id: string | number) => { setReview(id); requestAnimationFrame(() => document.getElementById("leave-review")?.scrollIntoView({behavior:"smooth",block:"start"})); };
+  return <>
+    <p className="customer-intro">Welcome, {account.customer.name}.</p>
+    {notice && <p className="customer-notice" role="status">{notice}</p>}
+    <OrderHistory key={account.customer.id} initial={account.inquiries} entitlements={entitlements} onReview={openReview} />
+    <ReviewsSection account={account} entitlements={entitlements} review={review} setReview={setReview} onSubmitted={submitted} />
+    {account.customer.referral_enabled === true && <ShareSite />}
+  </>;
+}
+
+function OrderHistory({initial,entitlements,onReview}:{initial:AccountData["inquiries"];entitlements:Entitlement[];onReview:(id:string|number)=>void}) {
   const [history,setHistory]=useState(initial);
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState("");
@@ -90,19 +74,43 @@ function InquiryHistory({initial}:{initial:AccountData["inquiries"]}) {
     try {
       const next=accountSchema.parse(await customerFetch(`me?inquiry_page=${history.page+1}`)).inquiries;
       setHistory(previous=>({...next,items:[...previous.items,...next.items.filter(item=>!previous.items.some(old=>old.id===item.id))]}));
-    } catch(reason) {setError(reason instanceof Error?reason.message:"Your inquiry history could not be loaded. Please try again.");}
+    } catch(reason) {setError(reason instanceof Error?reason.message:"Your order history could not be loaded. Please try again.");}
     finally {setBusy(false);}
   }
-  const statuses={inquiry:"Inquiry",confirmed:"Confirmed",completed:"Completed",cancelled:"Cancelled",unavailable:"Status unavailable"};
-  return <section className="account-block" aria-labelledby="my-inquiries-title">
-    <h2 id="my-inquiries-title">My Inquiries</h2>
-    {history.items.length ? <>
-      <p className="field-help">Dates are shown in UTC. An inquiry is not a confirmed booking.</p>
-      <table className="inquiry-history"><caption className="sr-only">Your inquiry history</caption><thead><tr><th scope="col">Tour</th><th scope="col">Date</th><th scope="col">Status</th></tr></thead>
-      <tbody>{history.items.map(item=><tr key={item.id}><th scope="row">{item.title}</th><td>{item.submitted_at ? <time dateTime={item.submitted_at}>{new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}).format(new Date(item.submitted_at))}</time>:"Date unavailable"}</td><td>{statuses[item.status]}</td></tr>)}</tbody></table>
-    </> : <p>You have no inquiries yet. <Link href="/">Explore Bali Tours</Link>.</p>}
+  // General Contact messages are inquiries, not orders.
+  const orders = history.items.filter(item => item.kind !== "contact");
+  return <section className="account-block" aria-labelledby="order-history-title">
+    <h2 id="order-history-title">Order History</h2>
+    {orders.length ? <ul className="order-list">{orders.map(item => {
+      const status = orderStatus[item.status];
+      const entitlement = item.status === "completed" ? entitlements.find(row => row.inquiry_id === item.id) : undefined;
+      return <li key={item.id} className="order-card">
+        <div className="order-card-head"><h3>{item.title}</h3><span className={`order-status order-status-${status.tone}`}>{status.label}</span></div>
+        {status.note && <p className="order-status-note">{status.note}</p>}
+        <dl className="order-details">
+          <dt>Tour date</dt><dd>{tourDateLabel(item)}</dd>
+          {item.pickup_place && <><dt>Pickup</dt><dd>{item.pickup_place}{item.pickup_time ? ` · ${item.pickup_time}` : ""}</dd></>}
+          <dt>Ordered</dt><dd>{item.submitted_at ? <time dateTime={item.submitted_at}>{formatDate(item.submitted_at, true)}</time> : "Date unavailable"}</dd>
+        </dl>
+        {entitlement && <button type="button" className="button button-outline" onClick={() => onReview(entitlement.id)}>Leave a Review</button>}
+      </li>;
+    })}</ul> : !history.has_more && <div className="order-empty"><p>You have no orders yet.</p><Link className="button" href="/">Explore Bali Tours</Link></div>}
     {error && <p className="customer-error" role="alert">{error}</p>}
-    {history.has_more && <button type="button" className="button button-outline" disabled={busy} onClick={more}>{busy?"Loading inquiries…":error?"Retry loading inquiries":"Load more inquiries"}</button>}
+    {history.has_more && <button type="button" className="button button-outline order-more" disabled={busy} onClick={more}>{busy?"Loading orders…":error?"Retry loading orders":"Load more orders"}</button>}
+  </section>;
+}
+
+function ReviewsSection({account,entitlements,review,setReview,onSubmitted}:{account:AccountData;entitlements:Entitlement[];review:string|number|null;setReview:(id:string|number|null)=>void;onSubmitted:()=>void}) {
+  const selected = entitlements.find(item => item.id === review);
+  const booking = (item: Entitlement) => account.inquiries.items.find(order => order.id === item.inquiry_id);
+  return <section id="reviews" className="account-block" aria-labelledby="reviews-title">
+    <h2 id="reviews-title">Reviews</h2>
+    {/* One row per unused review entitlement: each completed booking funds one review of its Tour. */}
+    <h3 id="leave-review" className="account-subheading">Ready to review</h3>
+    {entitlements.length ? <ul className="account-list">{entitlements.map(item => { const order = booking(item); const date = order?.booking_date ?? order?.travel_date; return <li key={String(item.id)}><div><strong>{item.title}</strong>{date && <p className="field-help">Tour on {formatDate(date)}</p>}</div><button className="button button-outline" onClick={()=>setReview(review===item.id?null:item.id)} aria-expanded={review===item.id}>{review===item.id ? "Close review form" : "Leave Review"}</button></li>; })}</ul> : <p className="account-empty-review">You can leave a review after Shalom Bali Tour marks your booking as completed.</p>}
+    {selected && <ReviewForm key={String(selected.id)} tourId={selected.tour_id} entitlementId={selected.id} onSubmitted={onSubmitted} title={selected.title} />}
+    <h3 className="account-subheading">My Reviews</h3>
+    {account.reviews.length ? <ul className="account-list">{account.reviews.map((item,i)=><li key={item.id??i}><div><strong>{item.title}</strong><ReviewStatus status={item.status}/><p className="customer-experience">{item.experience}</p></div></li>)}</ul> : <p className="account-empty-review">You have not submitted any reviews yet.</p>}
   </section>;
 }
 

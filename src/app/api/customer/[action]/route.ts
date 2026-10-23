@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { accountSchema, customerConfigSchema, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput } from "@/lib/customer-types";
+import { accountSchema, customerConfigSchema, customerSchema, profileNameInput, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput } from "@/lib/customer-types";
 import { appOrigin, clearSession, CustomerError, customerMultipartRequest, customerRequest, readSession, writeSession } from "@/lib/customer-server";
 
 export const runtime = "nodejs";
@@ -21,6 +21,15 @@ async function handle(request: Request, context: Context) {
       if (request.headers.get("origin") !== appOrigin()) return reply({message:"This request could not be verified."},403);
       const session = await readSession();
       if (!session) return reply({message:"Please sign in to continue."},401);
+      if (request.headers.get("content-type")?.startsWith("application/json")) {
+        // Own-name update. WordPress resolves the owner from the session; no user ID is forwarded.
+        const bodyText = await request.text();
+        if (bodyText.length > 2000) return reply({message:"This form is too large."},413);
+        const input = profileNameInput.safeParse(JSON.parse(bodyText));
+        if (!input.success) return reply({message:"Please enter a full name between 2 and 100 characters."},400);
+        const {value} = await customerRequest("profile", "POST", input.data, session);
+        return reply(z.object({customer:customerSchema,message:z.string().optional()}).parse(value));
+      }
       const contentLength = Number(request.headers.get("content-length") || 0);
       if (contentLength > 5 * 1024 * 1024) return reply({message:"Profile photos must be 5 MB or smaller."},413);
       const form = await request.formData();

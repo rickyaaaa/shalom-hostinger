@@ -27,12 +27,6 @@
 .account-block h2 { color: var(--navy); font-size: 24px; margin-bottom: 12px; }
 .account-list { list-style: none; padding: 0; margin: 20px 0 0; }
 .account-list li { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--border); }
-.inquiry-history { width: 100%; table-layout: fixed; border-collapse: collapse; margin: 20px 0; text-align: left; }
-.inquiry-history th, .inquiry-history td { padding: 16px 8px; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
-.inquiry-history thead th { color: var(--navy); }
-.inquiry-history th:first-child { width: 48%; padding-left: 0; }
-.inquiry-history tbody th { font-weight: 600; }
-.inquiry-history th:last-child, .inquiry-history td:last-child { padding-right: 0; }
 .account-list h3 { font-size: 18px; }
 .review-status { color: var(--gold-text); font-size: 14px; margin: 4px 0 12px; }
 .customer-experience { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 70ch; }
@@ -383,15 +377,38 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .profile-chevron { width: 14px; height: 14px; }
 .profile-menu { position: absolute; top: calc(100% + 12px); right: 0; z-index: 40; min-width: 210px; padding: 8px 0; border: 1px solid var(--border); border-radius: 14px; background: #fff; box-shadow: 0 12px 30px #081c3626; }
 .profile-menu a, .profile-menu button { display: block; width: 100%; padding: 11px 16px; border: 0; background: transparent; color: var(--ink); text-align: left; font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; }
+.profile-menu { width: max-content; max-width: min(280px, calc(100vw - 32px)); }
+.profile-avatar { flex-shrink: 0; }
 .profile-menu a:hover, .profile-menu button:hover { background: #f1f5f7; color: var(--navy); }
-.profile-panel { max-width: none; }
-.profile-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 20px; }
-.profile-panel-heading h2 { color: var(--navy); margin-bottom: 4px; }
-.profile-avatar-large { width: 72px; height: 72px; }
-.profile-upload { display: grid; gap: 7px; max-width: 420px; margin-bottom: 16px; font-size: 14px; font-weight: 600; }
-.profile-upload input[type=file] { min-height: 46px; padding: 10px; border: 1px solid var(--input-border); border-radius: 10px; background: #fff; font: inherit; }
-.profile-password-note { margin-top: 18px; }
 .account-empty-review { margin-top: 16px; color: var(--muted); }
+/* Account dashboard: order cards and review sub-sections. */
+.account-subheading { margin: 28px 0 4px; color: var(--navy); font-size: 18px; scroll-margin-top: 24px; }
+.order-list { display: grid; gap: 12px; margin: 16px 0 0; padding: 0; list-style: none; }
+.order-card { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+.order-card-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 6px 12px; }
+.order-card h3 { flex: 1 1 160px; min-width: 0; color: var(--navy); font-size: 17px; line-height: 1.35; overflow-wrap: anywhere; }
+.order-status { flex-shrink: 0; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; line-height: 1.5; white-space: nowrap; }
+.order-status-done { background: #e3f4ea; color: #1c5d36; }
+.order-status-pending { background: #fdf3dc; color: #6b4a07; }
+.order-status-muted { background: #eef1f4; color: var(--muted); }
+.order-status-note { margin-top: 4px; color: var(--muted); font-size: 13px; }
+.order-details { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; margin: 12px 0 0; font-size: 14px; }
+.order-details dt { color: var(--muted); }
+.order-details dd { margin: 0; overflow-wrap: anywhere; }
+.order-card .button, .order-more { margin-top: 14px; }
+.order-empty { display: grid; justify-items: start; gap: 14px; margin-top: 12px; }
+/* My Profile page. */
+.profile-section { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+.profile-section h2 { margin-bottom: 14px; color: var(--navy); font-size: 20px; }
+.profile-photo { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px; margin-bottom: 10px; }
+.profile-avatar-xl { flex-shrink: 0; width: 96px; height: 96px; border-color: var(--blue-light); }
+.profile-avatar-xl svg { width: 48px; height: 48px; }
+.profile-photo-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.profile-file { position: relative; overflow: hidden; cursor: pointer; }
+.profile-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.profile-file:focus-within { outline: 2px solid var(--navy); outline-offset: 2px; }
+.profile-file.is-busy { opacity: .7; pointer-events: none; }
+.profile-email { font-weight: 600; overflow-wrap: anywhere; }
 @media (max-width: 1024px) { .profile-control { display: block; } .profile-trigger { flex-direction: column; gap: 2px; } .profile-trigger .profile-chevron { display: none; } .profile-label { font-size: 8px; line-height: 10px; } .booking-search { width: auto; margin-inline: 24px; } }
 @media (max-width: 900px) { .booking-search { padding: 32px 28px; gap: 24px; } }
 @media (max-width: 767px) { .booking-search { margin: 32px 16px 40px; padding: 24px 20px; gap: 22px; } .home-itineraries > .booking-search { margin-top: 0; } .booking-search-fields { grid-template-columns: 1fr; gap: 16px; } .booking-search-copy h2 { font-size: 24px; } .profile-panel-heading { align-items: flex-start; } }

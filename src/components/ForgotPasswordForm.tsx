@@ -4,6 +4,12 @@ import { useRef, useState, type FormEvent } from "react";
 import { customerFetch } from "@/lib/customer-client";
 import { intentQuery,type BookingIntent } from "@/lib/booking-intent";
 
+// WordPress answers identically whether or not the address has an account.
+// An "unavailable" answer (delivery off or paused) is shown as-is; never claim an email is on its way then.
+export function resetRequestMessage(message: string) {
+  return /not available/i.test(message) ? message : "If an account exists for this email, password reset instructions will be sent.";
+}
+
 export function ForgotPasswordForm({intent}:{intent:BookingIntent|null}) {
   const [busy,setBusy] = useState(false);
   const [message,setMessage] = useState("");
@@ -13,9 +19,7 @@ export function ForgotPasswordForm({intent}:{intent:BookingIntent|null}) {
     event.preventDefault(); if (busy) return;
     const data = Object.fromEntries(new FormData(event.currentTarget));
     setBusy(true);setError("");
-    // WordPress answers identically whether or not the address has an account.
-    // An "unavailable" answer (delivery off or paused) is shown as-is; never claim an email is on its way then.
-    try { const result = await customerFetch("forgot-password",data);setMessage(/not available/i.test(result.message) ? result.message : "If an account exists for this email, password reset instructions will be sent."); }
+    try { const result = await customerFetch("forgot-password",data);setMessage(resetRequestMessage(result.message)); }
     catch(reason) { setError(reason instanceof Error ? reason.message : "Please try again.");requestAnimationFrame(()=>alert.current?.focus()); }
     finally {setBusy(false);}
   }
