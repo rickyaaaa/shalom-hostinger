@@ -38,7 +38,7 @@ export function Header({ links: _links }: { links: SiteLinks }) {
   return <header className="site-header" ref={header}>
     <div className="header-inner">
       <Link href="/" className="brand" aria-label="Shalom Bali Tour home" onClick={close}>
-        <Image src="/images/shalom-logo.webp" alt="Shalom Bali Tour" width={768} height={256} priority sizes="(max-width: 390px) 210px, (max-width: 1024px) 260px, 226px" />
+        <Image src="/images/shalom-logo.webp" alt="Shalom Bali Tour" width={768} height={256} loading="eager" fetchPriority="low" sizes="(max-width: 390px) 210px, (max-width: 1024px) 260px, 226px" />
       </Link>
       <MobileMenu open={open} itinerary={itinerary} setItinerary={setItinerary} pathname={pathname} close={close} toggleRef={itineraryToggle}/>
       <div className="header-actions">

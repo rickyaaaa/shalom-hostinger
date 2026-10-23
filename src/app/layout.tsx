@@ -8,12 +8,14 @@ import { CustomerSession } from "@/components/CustomerSession";
 import { indexingEnabled } from "@/lib/seo";
 import "./globals.css";
 
+// Raleway subset to Latin and converted to WOFF2 (~20 KiB per weight instead of ~75 KiB TTF).
+// Renamed "Shalom Sans" internally because the OFL reserves the name "Raleway" for unmodified fonts.
 const raleway = localFont({
   src: [
-    { path: "../../public/fonts/raleway-400.ttf", weight: "400", style: "normal" },
-    { path: "../../public/fonts/raleway-500.ttf", weight: "500", style: "normal" },
-    { path: "../../public/fonts/raleway-600.ttf", weight: "600", style: "normal" },
-    { path: "../../public/fonts/raleway-700.ttf", weight: "700", style: "normal" },
+    { path: "../../public/fonts/shalom-sans-400.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/shalom-sans-500.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/shalom-sans-600.woff2", weight: "600", style: "normal" },
+    { path: "../../public/fonts/shalom-sans-700.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-raleway", display: "swap",
 });

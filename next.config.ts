@@ -8,7 +8,12 @@ const config: NextConfig = {
   poweredByHeader: false,
   // These two origins are public configuration; never include secrets in Next env.
   ...(process.env.VERCEL_ENV === "preview" ? { env: vercelPreviewOrigins(process.env) } : {}),
+  experimental: {
+    // The stylesheet is small (~7 KiB gzip); inlining removes the render-blocking request on mobile.
+    inlineCss: true,
+  },
   images: {
+    qualities: [60, 75],
     dangerouslyAllowLocalIP: process.env.NODE_ENV === "development" && ["localhost", "127.0.0.1", "[::1]"].includes(wordpress.hostname),
     remotePatterns: [{
       protocol: wordpress.protocol === "http:" ? "http" : "https",

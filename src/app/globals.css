@@ -194,6 +194,9 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .footer-contact a:hover { text-decoration: underline; }
 .copyright { margin-top: 72px; font-size: 13px; color: #344c61; }
 .page-loading, .message-page { min-height: 50vh; padding: 96px 24px; text-align: center; background: white; }
+/* Keeps the footer below the fold while a page streams in, so it does not jump (CLS). */
+.page-loading { min-height: 100svh; }
+.reviews-loading { min-height: 320px; text-align: center; }
 .message-page h1 { font-size: 40px; line-height: 50px; margin-bottom: 16px; }
 .message-page p { margin-bottom: 24px; }
 
