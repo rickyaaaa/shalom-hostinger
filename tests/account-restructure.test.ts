@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { accountSchema, customerSchema, profileNameInput } from "../src/lib/customer-types";
+import { accountSchema, changePasswordInput, customerSchema, profileNameInput } from "../src/lib/customer-types";
 import { orderStatus, tourDateLabel } from "../src/lib/account-display";
 
 const base = { customer:{id:3,name:"QA",country:"",avatar_url:null,email:"qa@example.test",referral_enabled:false}, completed_tours:[], reviews:[], inquiries:{items:[],page:1,has_more:false} };
@@ -39,4 +39,10 @@ test("Name update input is trimmed, bounded and carries no account selector", ()
   assert.deepEqual(profileNameInput.parse({display_name:"  Ana Maria "}), {display_name:"Ana Maria"});
   for (const bad of [{display_name:"A"}, {display_name:"n".repeat(101)}, {display_name:"Ana", user_id:7}, {name:"Ana"}]) assert.equal(profileNameInput.safeParse(bad).success, false, JSON.stringify(bad));
   assert.equal("user_login" in customerSchema.parse({...base.customer, user_login:"internal"}), false);
+});
+
+test("Signed-in password change input is strict and carries no account selector", () => {
+  const valid = {current_password:"Old!pass1", password:"New!pass12", confirm_password:"New!pass12"};
+  assert.deepEqual(changePasswordInput.parse(valid), valid);
+  for (const bad of [{...valid, user_id:7}, {...valid, current_password:""}, {password:"New!pass12", confirm_password:"New!pass12"}, {...valid, password:"x".repeat(4097)}]) assert.equal(changePasswordInput.safeParse(bad).success, false, JSON.stringify(bad).slice(0, 60));
 });

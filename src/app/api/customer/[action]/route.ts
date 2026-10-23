@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { accountSchema, customerConfigSchema, customerSchema, profileNameInput, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput } from "@/lib/customer-types";
+import { accountSchema, customerConfigSchema, customerSchema, profileNameInput, changePasswordInput, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput } from "@/lib/customer-types";
 import { appOrigin, clearSession, CustomerError, customerMultipartRequest, customerRequest, readSession, writeSession } from "@/lib/customer-server";
 
 export const runtime = "nodejs";
@@ -83,6 +83,21 @@ async function handle(request: Request, context: Context) {
         await writeSession({cookie, nonce:result.nonce, expires:Date.now() + 12 * 60 * 60 * 1000});
       } else await clearSession();
       return reply({signed_in:result.signed_in, account_created:!!result.account_created});
+    }
+    if (action === "change-password") {
+      const session = await readSession();
+      if (!session) return reply({message:"Please sign in to continue."},401);
+      const input = changePasswordInput.parse(body);
+      stage = "upstream";
+      const {value, response} = await customerRequest(action, "POST", input, session);
+      stage = "contract";
+      const result = z.object({changed:z.literal(true), signed_in:z.boolean(), nonce:z.string().min(1).max(100).optional(), message:z.string()}).parse(value);
+      // WordPress clears the old cookie, then re-issues it; the last non-empty one is the live session.
+      const cookie = response.headers.getSetCookie().map(line => line.split(";")[0]).filter(line => /^wordpress_logged_in_[a-f0-9]+=[^+\s]/.test(line)).at(-1);
+      stage = "session-write";
+      const signedIn = result.signed_in && !!cookie && !!result.nonce;
+      if (signedIn) await writeSession({...session, cookie: cookie!, nonce: result.nonce!}); else await clearSession();
+      return reply({changed:true, signed_in:signedIn, message:result.message});
     }
     if (!["logout","booking-ticket","inquiries","reviews"].includes(action)) return reply({message:"Not found."},404);
     const session = await readSession();

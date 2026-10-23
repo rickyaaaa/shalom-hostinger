@@ -27,10 +27,11 @@ export function AccountHeaderAction() {
       <span className="profile-avatar-wrap"><Avatar url={account.customer.avatar_url}/><span className="profile-status" /></span><span className="profile-label">PROFILE</span><Icon name="chevron" className="profile-chevron"/>
     </button>
     {open && <div id="profile-menu" className="profile-menu" role="menu">
-      {/* Client-approved menu: exactly these four items. Reviews and sharing live on /account. */}
-      <Link role="menuitem" href="/account/profile" onClick={() => setOpen(false)}>My Profile</Link>
+      {/* Client-approved menu: exactly these five items. Ordering, history and reviews live on /account. */}
+      <Link role="menuitem" href="/account" onClick={() => setOpen(false)}>My Account</Link>
       <Link role="menuitem" href="/account/password" onClick={() => setOpen(false)}>Change Password</Link>
       <SupportLink account={account} role="menuitem" onClick={() => setOpen(false)}>Contact Customer Service</SupportLink>
+      <Link role="menuitem" href="/account/profile" onClick={() => setOpen(false)}>Change Profile</Link>
       <button role="menuitem" type="button" onClick={async () => { setOpen(false); await fetch("/api/customer/logout", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: "{}" }); window.location.assign("/login"); }}>Log out</button>
     </div>}
   </div>;

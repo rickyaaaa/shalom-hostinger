@@ -14,7 +14,7 @@ const CUSTOM = "custom";
 type Package = { id: number; title: string };
 
 export function BookingSearch({ initialDestination, initialDate }: { initialDestination?: string; initialDate?: string }) {
-  const { account, guest, loading } = useCustomerSession();
+  const { account } = useCustomerSession();
   const router = useRouter();
   const [area, setArea] = useState(initialDestination ?? "");
   const [packages, setPackages] = useState<Package[] | null>(null);
@@ -39,7 +39,8 @@ export function BookingSearch({ initialDestination, initialDate }: { initialDest
     return () => controller.abort();
   }, [area]);
 
-  if (loading || guest || !account) return null;
+  // Keep the form mounted while the session refreshes on navigation; only signed-out visitors never see it.
+  if (!account) return null;
   const custom = area === CUSTOM;
   const today = new Date().toISOString().slice(0, 10);
 

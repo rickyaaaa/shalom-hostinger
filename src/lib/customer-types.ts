@@ -33,6 +33,8 @@ const registrationFields = {full_name:z.string().min(1).max(100),password:z.stri
 export const registerInput = z.object({...registrationFields,phone:text.min(1),phone_region_hint:z.string().max(2),email:z.string().trim().toLowerCase().min(3).max(100),customer_type:z.enum(["new_customer","existing_customer"])}).strict();
 // Same rule as registration; WordPress sanitises and validates again.
 export const profileNameInput = z.object({display_name:z.string().trim().min(2).max(100)}).strict();
+// Signed-in change: WordPress verifies the current password and applies the password policy.
+export const changePasswordInput = z.object({current_password:text.min(1),password:text.min(1),confirm_password:text.min(1)}).strict();
 export const forgotInput = z.union([z.object({email:z.string().trim().min(3).max(254)}).strict(),z.object({phone:text.min(1),phone_region_hint:z.string().max(2)}).strict()]);
 // login/key come from the reset link fragment; WordPress validates the native key.
 export const resetInput = z.object({login:z.string().min(1).max(60),key:z.string().regex(/^[A-Za-z0-9]{1,100}$/),password:z.string().min(8).max(128),confirm_password:z.string().min(8).max(128)}).strict();

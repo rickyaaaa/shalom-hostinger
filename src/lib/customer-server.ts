@@ -60,6 +60,11 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
       reset_key: "This password reset link is invalid or has expired. Please request a new link.",
       password: "Use at least 8 characters, up to 128 bytes, for your password.",
       confirmation: "The passwords do not match.",
+      // Signed-in profile and password changes (WordPress 1.18/1.19).
+      name: "Please enter a full name between 2 and 100 characters.",
+      current_password: "Your current password is incorrect.",
+      new_password_mismatch: "The new passwords do not match.",
+      password_reuse: "Choose a new password that is different from your current password.",
       duplicate: "You have already reviewed this Tour.", ineligible: "This Tour is not eligible for a review on your account.",
       ticket: "Your booking request has expired. Return to Tours and select Book Now again.",
       travel_date: "Please choose a tour date from today onwards.",

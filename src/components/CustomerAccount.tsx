@@ -6,6 +6,7 @@ import { customerFetch } from "@/lib/customer-client";
 import { useCustomerSession } from "./CustomerSession";
 import { intentQuery,type BookingIntent } from "@/lib/booking-intent";
 import { ShareSite } from "./ShareSite";
+import { BookingSearch } from "./BookingSearch";
 import { formatDate, orderStatus, tourDateLabel } from "@/lib/account-display";
 
 function ReviewForm({onSubmitted,title,tourId,entitlementId}:{onSubmitted:()=>void;title:string;tourId:number;entitlementId?:string|number}) {
@@ -57,6 +58,7 @@ function AccountDashboard({ account, reload }: { account: AccountData; reload: (
   return <>
     <p className="customer-intro">Welcome, {account.customer.name}.</p>
     {notice && <p className="customer-notice" role="status">{notice}</p>}
+    <BookingSearch />
     <OrderHistory key={account.customer.id} initial={account.inquiries} entitlements={entitlements} onReview={openReview} />
     <ReviewsSection account={account} entitlements={entitlements} review={review} setReview={setReview} onSubmitted={submitted} />
     {account.customer.referral_enabled === true && <ShareSite />}
