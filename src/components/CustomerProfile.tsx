@@ -7,7 +7,7 @@ import { AccountGate, supportHref } from "./CustomerAccount";
 import { Icon } from "./Icon";
 
 export function CustomerProfile() {
-  return <AccountGate title="Change Profile">{(account, reload) => <ProfileEditor account={account} onUpdated={reload} />}</AccountGate>;
+  return <AccountGate title="Customized Profile">{(account, reload) => <ProfileEditor account={account} onUpdated={reload} />}</AccountGate>;
 }
 
 type Status = { message: string; error: string };

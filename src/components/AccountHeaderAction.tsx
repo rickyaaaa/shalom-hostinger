@@ -31,7 +31,7 @@ export function AccountHeaderAction() {
       <Link role="menuitem" href="/account" onClick={() => setOpen(false)}>My Account</Link>
       <Link role="menuitem" href="/account/password" onClick={() => setOpen(false)}>Change Password</Link>
       <SupportLink account={account} role="menuitem" onClick={() => setOpen(false)}>Contact Customer Service</SupportLink>
-      <Link role="menuitem" href="/account/profile" onClick={() => setOpen(false)}>Change Profile</Link>
+      <Link role="menuitem" href="/account/profile" onClick={() => setOpen(false)}>Customized Profile</Link>
       <button role="menuitem" type="button" onClick={async () => { setOpen(false); await fetch("/api/customer/logout", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: "{}" }); window.location.assign("/login"); }}>Log out</button>
     </div>}
   </div>;

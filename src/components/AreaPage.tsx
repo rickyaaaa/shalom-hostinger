@@ -4,7 +4,7 @@ import { areas, type AreaSlug } from "@/lib/marketing";
 import { getAreaTours } from "@/lib/wordpress";
 import { TourCard } from "./TourCard";
 import { ServiceUnavailable } from "./ServiceUnavailable";
-import { WestBaliNotice, westBaliCardPresentation } from "./WestBaliNotice";
+import { westBaliCardPresentation } from "./westBaliPresentation";
 import westBaliStyles from "./WestBali.module.css";
 
 // Only the package list waits for WordPress, so the hero image ships in the first HTML chunk.
@@ -27,7 +27,6 @@ export function AreaPage({area, requestedTravelDate}:{area:AreaSlug; requestedTr
         <h1 id="area-title">{content.heading}</h1><p>{content.description}</p>
       </div>
     </section>
-    {isWestBali && <WestBaliNotice/>}
     <section id="tour-packages" className={isWestBali ? `tour-section ${westBaliStyles.tours}` : "tour-section"} aria-label={`${content.name} tour packages`}>
       <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading tour packages…</p>}><AreaTours area={area} requestedTravelDate={requestedTravelDate}/></Suspense>
     </section>
