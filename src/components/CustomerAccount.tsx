@@ -56,7 +56,7 @@ export function supportHref(account: AccountData | null) { return account?.suppo
 
 
 /** A predefined Tour resolved server-side from its canonical ID, to preselect in Order Your Bali Tour. */
-export type OrderPreselect = { area: string; tour_id: number; requested_travel_date?: string };
+export type OrderPreselect = { tour_id: number; requested_travel_date?: string };
 
 export function CustomerAccount({ intent = null, preselect = null }: { intent?: BookingIntent | null; preselect?: OrderPreselect | null }) {
   return <AccountGate title="My Account" wide intent={intent}>{(account, reload) => <AccountDashboard account={account} reload={reload} preselect={preselect} />}</AccountGate>;
@@ -74,7 +74,7 @@ function AccountDashboard({ account, reload, preselect }: { account: AccountData
   return <>
     <p className="customer-intro">Welcome, {account.customer.name}.</p>
     {notice && <p className="customer-notice" role="status">{notice}</p>}
-    <BookingSearch initialDestination={preselect?.area} initialTourId={preselect?.tour_id} initialDate={preselect?.requested_travel_date} />
+    <BookingSearch initialTourId={preselect?.tour_id} initialDate={preselect?.requested_travel_date} />
     <OrderHistory key={account.customer.id} initial={account.inquiries} entitlements={entitlements} onReview={openReview} />
     {account.previous_tour_reviews?.eligible && <PreviousTourSection summary={account.previous_tour_reviews} onBound={row => {setBound(row);setNotice("");openReview(row.id);reload();}} />}
     <ReviewsSection account={account} entitlements={entitlements} review={review} setReview={setReview} onSubmitted={submitted} />

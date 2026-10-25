@@ -4,12 +4,12 @@ import { getTour } from "@/lib/wordpress";
 export const metadata = {title:"My Account",robots:{index:false,follow:false}};
 export const dynamic = "force-dynamic";
 
-// Only the canonical Tour ID is read from the URL; its area and package come from WordPress.
+// Only the canonical Tour ID is read from the URL; WordPress confirms it is a fixed itinerary in one of the three areas.
 async function preselectFor(tourId: number, requested_travel_date?: string): Promise<OrderPreselect | null> {
   try {
     const tour = await getTour(tourId);
     const area = tour.area?.slug;
-    return area && ["south-kuta", "ubud", "west-bali"].includes(area) ? { area, tour_id: tour.id, ...(requested_travel_date ? { requested_travel_date } : {}) } : null;
+    return area && ["south-kuta", "ubud", "west-bali"].includes(area) ? { tour_id: tour.id, ...(requested_travel_date ? { requested_travel_date } : {}) } : null;
   } catch { return null; }
 }
 

@@ -10,6 +10,8 @@ const cardImages: Readonly<Record<number,string>> = {
   633: "/wp-content/uploads/2026/09/temple-tour.webp", 644: "/wp-content/uploads/2026/09/trekking-tour.webp",
   651: "/wp-content/uploads/2026/10/tur.webp", 655: "/wp-content/uploads/2026/10/relaxing-tour-1.webp",
 };
+/** The client-approved card title, so the order form names a West Bali itinerary the same way its card does. */
+export function westBaliCardTitle(tour: Pick<Tour, "id" | "title">) { return cardTitles[tour.id] || tour.title; }
 const supersededFragments = new Set(["NB:“NOT INCLUDING”", "NB:\nNOT"]);
 
 export function westBaliCardPresentation(tour: Tour) {
@@ -19,5 +21,5 @@ export function westBaliCardPresentation(tour: Tour) {
   const additionalNote = supersededFragments.has(originalNote) ? "" : originalNote.replace(westBaliPriceNote, "").trim();
   const imagePath = cardImages[tour.id];
   const image = tour.card_image && imagePath ? { ...tour.card_image, url: new URL(imagePath, tour.card_image.url).href } : tour.card_image;
-  return { title: cardTitles[tour.id] || tour.title, priceNote: westBaliPriceNote, additionalNote, image };
+  return { title: westBaliCardTitle(tour), priceNote: westBaliPriceNote, additionalNote, image };
 }

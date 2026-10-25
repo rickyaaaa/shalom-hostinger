@@ -14,16 +14,16 @@ export const areas = [
 const CUSTOM = "custom";
 export type Package = { id: number; title: string };
 
-export function BookingSearch({ initialDestination, initialTourId, initialDate }: { initialDestination?: string; initialTourId?: number; initialDate?: string }) {
+type PackageGroup = { label: string; items: Package[] };
+
+export function BookingSearch({ initialTourId, initialDate }: { initialTourId?: number; initialDate?: string }) {
   const { account } = useCustomerSession();
   const router = useRouter();
-  const [area, setArea] = useState(initialDestination ?? "");
-  const [packages, setPackages] = useState<Package[] | null>(null);
+  const [groups, setGroups] = useState<PackageGroup[] | null>(null);
   const [packagesError, setPackagesError] = useState("");
+  // A canonical Tour ID, or CUSTOM for the Customized Itinerary request page. WordPress derives the area from the Tour ID.
   const [tourId, setTourId] = useState("");
   const [date, setDate] = useState(() => initialDate && initialDate >= new Date().toISOString().slice(0, 10) ? initialDate : "");
-  // The Tour chosen on a Tour card is selected once its area's packages load, until the customer picks another area.
-  const preselect = useRef(initialTourId);
   const [pickupPlace, setPickupPlace] = useState("");
   const [pickupTime, setPickupTime] = useState("");
   const [error, setError] = useState("");
@@ -31,21 +31,26 @@ export function BookingSearch({ initialDestination, initialTourId, initialDate }
   const [whatsapp, setWhatsapp] = useState("");
   // A ticket is bound to the exact order details; any change requests a new one.
   const ticket = useRef<{ key: string; value: string } | null>(null);
+  // Synchronous guard: two submits in one tick both still see busy === false.
+  const submitting = useRef(false);
 
+  // Every fixed itinerary, grouped by area; an area that fails to load is left out and reported.
   useEffect(() => {
-    setTourId(""); setPackages(null); setPackagesError("");
-    if (!area || area === CUSTOM) return;
     const controller = new AbortController();
-    fetch(`/api/tours?area=${encodeURIComponent(area)}`, { cache: "no-store", signal: controller.signal })
-      .then(async response => {
-        const value = await response.json(); if (!response.ok) throw new Error();
-        const items: Package[] = value.items;
-        setPackages(items);
-        if (items.some(item => item.id === preselect.current)) setTourId(String(preselect.current));
-      })
-      .catch(() => { if (!controller.signal.aborted) setPackagesError("Itineraries could not be loaded. Please try again."); });
+    Promise.allSettled(areas.map(async item => {
+      const response = await fetch(`/api/tours?area=${encodeURIComponent(item.slug)}`, { cache: "no-store", signal: controller.signal });
+      const value = await response.json(); if (!response.ok) throw new Error();
+      return { label: item.label, items: value.items as Package[] };
+    })).then(results => {
+      if (controller.signal.aborted) return;
+      const loaded = results.flatMap(result => result.status === "fulfilled" && result.value.items.length ? [result.value] : []);
+      setGroups(loaded);
+      setPackagesError(results.some(result => result.status === "rejected") ? "Some itineraries could not be loaded. Please try again." : "");
+      // The itinerary chosen on a card is selected unless the customer already picked one.
+      if (initialTourId && loaded.some(group => group.items.some(item => item.id === initialTourId))) setTourId(current => current || String(initialTourId));
+    });
     return () => controller.abort();
-  }, [area]);
+  }, [initialTourId]);
 
   // The form mounts only once the session loads, after the browser's own #order-tour jump.
   const signedIn = Boolean(account);
@@ -55,20 +60,21 @@ export function BookingSearch({ initialDestination, initialTourId, initialDate }
 
   // Keep the form mounted while the session refreshes on navigation; only signed-out visitors never see it.
   if (!account) return null;
-  const custom = area === CUSTOM;
+  const custom = tourId === CUSTOM;
   const today = new Date().toISOString().slice(0, 10);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
-    if (!area) { setError("Choose an itinerary area to continue."); return; }
+    if (!tourId) { setError("Choose an itinerary."); return; }
     if (!date) { setError("Choose the date you want to travel."); return; }
     if (custom) { setError(""); router.push(`/book/custom?requested_travel_date=${encodeURIComponent(date)}`); return; }
-    if (!tourId) { setError("Choose an itinerary."); return; }
     if (!pickupPlace.trim()) { setError("Enter your pickup place or hotel."); return; }
     if (!pickupTime) { setError("Choose your pickup time."); return; }
     const order = { kind: "tour" as const, tour_id: Number(tourId), requested_travel_date: date, pickup_place: pickupPlace.trim(), pickup_time: pickupTime };
     const key = JSON.stringify(order);
+    if (submitting.current) return;
+    submitting.current = true;
     setBusy(true); setError(""); setWhatsapp("");
     try {
       if (ticket.current?.key !== key) ticket.current = { key, value: (await customerFetch("booking-ticket", order)).ticket };
@@ -78,17 +84,18 @@ export function BookingSearch({ initialDestination, initialTourId, initialDate }
       window.location.assign(result.whatsapp_url);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Please try again.");
-    } finally { setBusy(false); }
+    } finally { submitting.current = false; setBusy(false); }
   }
 
-  const areaLabel = areas.find(item => item.slug === area)?.label;
   return <section id="order-tour" className="booking-search" aria-labelledby="booking-search-title">
     <div className="booking-search-copy"><p className="section-label">PLAN YOUR DAY IN BALI</p><h2 id="booking-search-title">Order your Bali itinerary</h2><p>Choose your itinerary, date and pickup details. We&apos;ll save your order and open WhatsApp with a reconfirmation message for you to send.</p></div>
     <form className="booking-search-form" onSubmit={submit} noValidate>
       <div className="booking-search-fields">
-        <label className="booking-search-field">Itinerary Area<select value={area} onChange={event => { preselect.current = undefined; setArea(event.target.value); }} required><option value="">Choose an itinerary area</option>{areas.map(item => <option key={item.slug} value={item.slug}>{item.label}</option>)}<option value={CUSTOM}>Customized Itinerary</option></select></label>
-        {!custom && <label className="booking-search-field">Itinerary<select value={tourId} onChange={event => setTourId(event.target.value)} required disabled={!packages?.length}><option value="">{!area ? "Choose an itinerary area first" : packages ? (packages.length ? "Choose an itinerary" : "No itineraries available") : packagesError ? "Unavailable" : "Loading itineraries…"}</option>{packages?.map(item => <option key={item.id} value={item.id}>{itineraryTitle(item.title)}</option>)}</select>
-          <span className="field-help">{packagesError || (areaLabel && date ? <a href={`/${area}?requested_travel_date=${encodeURIComponent(date)}#tour-packages`}>View {areaLabel} itinerary details</a> : areaLabel ? <a href={`/${area}#tour-packages`}>View {areaLabel} itinerary details</a> : "")}</span></label>}
+        <label className="booking-search-field booking-search-field-wide">Itinerary<select value={tourId} onChange={event => setTourId(event.target.value)} required><option value="">{groups ? "Choose an itinerary" : "Loading itineraries…"}</option>
+          {groups?.map(group => <optgroup key={group.label} label={group.label}>{group.items.map(item => <option key={item.id} value={item.id}>{itineraryTitle(item.title)}</option>)}</optgroup>)}
+          {/* Not a fixed itinerary: a shortcut to the separate Customized Itinerary request page. */}
+          <optgroup label="Plan your own"><option value={CUSTOM}>Customized Itinerary</option></optgroup>
+        </select>{packagesError && <span className="field-help">{packagesError}</span>}</label>
         <label className="booking-search-field">Travel Date<input type="date" value={date} min={today} onChange={event => setDate(event.target.value)} required /><span className="field-help">The date you want to travel.</span></label>
         {!custom && <label className="booking-search-field">Pickup Time<input type="time" value={pickupTime} step={900} onChange={event => setPickupTime(event.target.value)} required /><span className="field-help">Local Bali time.</span></label>}
         {!custom && <label className="booking-search-field booking-search-field-wide">Pickup Place / Hotel<input type="text" value={pickupPlace} maxLength={200} autoComplete="off" placeholder="e.g. Svara by Mazari, Uluwatu" onChange={event => setPickupPlace(event.target.value)} required /></label>}
