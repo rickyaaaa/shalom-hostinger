@@ -36,7 +36,7 @@ async function inspectTour(tour:Tour):Promise<AuditedTour>{
  const text=decode(card!);
  const fields=[tour.title,...tour.destinations,tour.duration,tour.price_note];
  check(fields.every(value=>text.includes(value.replace(/\s+/g," ").trim())),`${tour.id}: title/destinations/duration/note render faithfully`);
- check(card!.includes(encodeURIComponent(tour.card_image!.url))&&card!.includes(`/book/${tour.id}`),`${tour.id}: rendered image and booking target use native ID/asset`);
+ check(card!.includes(encodeURIComponent(tour.card_image!.url))&&card!.includes(`/account?tour=${tour.id}`),`${tour.id}: rendered image and booking target use native ID/asset`);
  check(text.includes(money(tour.pricing.sale!,tour.pricing.currency))&&text.includes(money(tour.pricing.regular!,tour.pricing.currency)),`${tour.id}: canonical regular/sale prices render`);
  const reviews=reviewPageSchema.parse(await(await get(`${api}/tours/${tour.id}/reviews`)).json());
  check(JSON.stringify(reviews.summary)===JSON.stringify(tour.rating),`${tour.id}: public reviews summary matches canonical rating/count`);

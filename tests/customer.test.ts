@@ -26,7 +26,7 @@ test("customer writes reject forged identity and invalid review values",()=>{
 test("booking return intent permits only canonical Tour IDs or custom requests",()=>{
   for(const id of [523,599,633]){
     const intent=parseIntent({tour:String(id)})!;
-    assert.equal(bookingPath(intent),`/book/${id}`);
+    assert.equal(bookingPath(intent),`/account?tour=${id}#order-tour`);
     assert.equal(intentQuery(intent),`?tour=${id}`);
     assert.equal(bookingInput.safeParse(intent).success,true);
   }
@@ -39,7 +39,8 @@ test("booking return intent permits only canonical Tour IDs or custom requests",
 test("requested travel date stays in the booking intent and entitlement DTO is explicit",()=>{
   const intent=parseIntent({tour:"523",requested_travel_date:"2026-12-24"})!;
   assert.deepEqual(intent,{kind:"tour",tour_id:523,requested_travel_date:"2026-12-24"});
-  assert.equal(bookingPath(intent),"/book/523?requested_travel_date=2026-12-24");
+  assert.equal(bookingPath(intent),"/account?tour=523&requested_travel_date=2026-12-24#order-tour");
+  assert.equal(bookingPath({kind:"custom",tour_id:0,requested_travel_date:"2026-12-24"}),"/book/custom?requested_travel_date=2026-12-24");
   assert.equal(intentQuery(intent),"?tour=523&requested_travel_date=2026-12-24");
   assert.equal(bookingInput.safeParse(intent).success,true);
   assert.equal(bookingInput.safeParse({...intent,requested_travel_date:"24-12-2026"}).success,false);

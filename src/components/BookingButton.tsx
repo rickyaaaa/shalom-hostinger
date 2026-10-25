@@ -1,4 +1,5 @@
+import { bookingPath } from "@/lib/booking-intent";
+
 export function BookingButton({ tourId, title, requestedTravelDate }: { tourId: number; title: string; requestedTravelDate?: string }) {
-  const query = requestedTravelDate ? `?requested_travel_date=${encodeURIComponent(requestedTravelDate)}` : "";
-  return <a className="button" href={`/book/${tourId}${query}`} aria-label={`Order Now — ${title}`}>Order Now</a>;
+  return <a className="button" href={bookingPath({ kind: "tour", tour_id: tourId, ...(requestedTravelDate ? { requested_travel_date: requestedTravelDate } : {}) })} aria-label={`Order Now — ${title}`}>Order Now</a>;
 }

@@ -37,13 +37,16 @@ function previousTourLine(previous: NonNullable<Entitlement["previous_tour"]>) {
 }
 
 // Shared guest/loading/error handling for every signed-in account page.
-export function AccountGate({ title, wide = false, children }: { title: string; wide?: boolean; children: (account: AccountData, reload: () => void) => ReactNode }) {
+export function AccountGate({ title, wide = false, intent = null, children }: { title: string; wide?: boolean; intent?: BookingIntent | null; children: (account: AccountData, reload: () => void) => ReactNode }) {
   const {account,guest,error,loading,reload}=useCustomerSession();
   const load = () => {void reload();};
+  const suffix = intentQuery(intent);
+  // A guest arriving with a Tour to order signs in first; the intent comes back here afterwards.
+  useEffect(()=>{if(guest&&intent)window.location.replace(`/login${suffix}`);},[guest,intent,suffix]);
   return <section className="customer-section account-section"><div className={`customer-panel${wide ? " account-panel" : ""}`}>
     <h1>{title}</h1>
     {!guest && error && !account && <p className="customer-error" role="alert">{error} <button className="text-button" onClick={load}>Retry</button></p>}
-    {guest ? <p><Link className="button" href="/login">Log In</Link> <Link href="/register">Create Account</Link></p> : loading && !account ? <p role="status">Loading your account…</p> : account && children(account, load)}
+    {guest ? <p><Link className="button" href={`/login${suffix}`}>Log In</Link> <Link href={`/register${suffix}`}>Create Account</Link></p> : loading && !account ? <p role="status">Loading your account…</p> : account && children(account, load)}
   </div></section>;
 }
 
@@ -51,11 +54,14 @@ export function AccountGate({ title, wide = false, children }: { title: string; 
 export function supportHref(account: AccountData | null) { return account?.support_whatsapp_url ?? "/#contact"; }
 
 
-export function CustomerAccount() {
-  return <AccountGate title="My Account" wide>{(account, reload) => <AccountDashboard account={account} reload={reload} />}</AccountGate>;
+/** A predefined Tour resolved server-side from its canonical ID, to preselect in Order Your Bali Tour. */
+export type OrderPreselect = { area: string; tour_id: number; requested_travel_date?: string };
+
+export function CustomerAccount({ intent = null, preselect = null }: { intent?: BookingIntent | null; preselect?: OrderPreselect | null }) {
+  return <AccountGate title="My Account" wide intent={intent}>{(account, reload) => <AccountDashboard account={account} reload={reload} preselect={preselect} />}</AccountGate>;
 }
 
-function AccountDashboard({ account, reload }: { account: AccountData; reload: () => void }) {
+function AccountDashboard({ account, reload, preselect }: { account: AccountData; reload: () => void; preselect: OrderPreselect | null }) {
   const [review,setReview] = useState<string|number|null>(null);
   const [notice,setNotice] = useState("");
   // A just-bound previous-tour slot shows immediately; the account reload then lists it as well.
@@ -67,7 +73,7 @@ function AccountDashboard({ account, reload }: { account: AccountData; reload: (
   return <>
     <p className="customer-intro">Welcome, {account.customer.name}.</p>
     {notice && <p className="customer-notice" role="status">{notice}</p>}
-    <BookingSearch />
+    <BookingSearch initialDestination={preselect?.area} initialTourId={preselect?.tour_id} initialDate={preselect?.requested_travel_date} />
     <OrderHistory key={account.customer.id} initial={account.inquiries} entitlements={entitlements} onReview={openReview} />
     {account.previous_tour_reviews?.eligible && <PreviousTourSection summary={account.previous_tour_reviews} onBound={row => {setBound(row);setNotice("");openReview(row.id);reload();}} />}
     <ReviewsSection account={account} entitlements={entitlements} review={review} setReview={setReview} onSubmitted={submitted} />
@@ -182,7 +188,8 @@ function PreviousTourSection({summary,onBound}:{summary:PreviousTourReviews;onBo
 
 export function ReviewStatus({status}:{status:"pending"|"approved"|"unavailable"}){return <p className="review-status">{status==="pending"?"Pending approval":status==="approved"?"Approved":"Unavailable"}</p>;}
 
-export function BookingFlow({title,intent,backHref}:{title:string;intent:BookingIntent;backHref:string}) {
+/** Customized Tour request page: the itinerary is not predefined, so the customer asks Shalom and continues on WhatsApp. */
+export function BookingFlow({title,intent,backHref}:{title:string;intent:Extract<BookingIntent,{kind:"custom"}>;backHref:string}) {
   const {account,guest,error:sessionError,loading}=useCustomerSession();
   const [ready,setReady] = useState(false);
   const [error,setError] = useState("");

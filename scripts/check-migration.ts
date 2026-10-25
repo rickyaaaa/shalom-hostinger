@@ -11,7 +11,7 @@ for(const area of ["ubud","south-kuta","west-bali"]){
   const response=await fetch(`${base}/${area}`);const html=await response.text();
   const expected=canonical.items.filter((tour:{area:{slug:string}})=>tour.area?.slug===area);
   check(response.status===200,`${area}: route renders successfully`);
-  for(const tour of expected){check(html.includes(`tour-${tour.id}-title`),`${area}: canonical Tour ${tour.id} renders in SSR`);check(html.includes(`/book/${tour.id}`),`${area}: Tour ${tour.id} keeps native booking target`);}
+  for(const tour of expected){check(html.includes(`tour-${tour.id}-title`),`${area}: canonical Tour ${tour.id} renders in SSR`);check(html.includes(`/account?tour=${tour.id}`),`${area}: Tour ${tour.id} orders from My Account by native ID`);}
   check((html.match(/class="tour-card"/g)||[]).length===expected.length,`${area}: no fabricated or cross-area cards`);
   check(html.includes(`rel="canonical" href="${base}/${area}"`),`${area}: canonical metadata uses frontend origin`);
   check(html.includes('name="description"'),`${area}: description metadata present`);

@@ -13,14 +13,16 @@ export const areas = [
 const CUSTOM = "custom";
 export type Package = { id: number; title: string };
 
-export function BookingSearch({ initialDestination, initialDate }: { initialDestination?: string; initialDate?: string }) {
+export function BookingSearch({ initialDestination, initialTourId, initialDate }: { initialDestination?: string; initialTourId?: number; initialDate?: string }) {
   const { account } = useCustomerSession();
   const router = useRouter();
   const [area, setArea] = useState(initialDestination ?? "");
   const [packages, setPackages] = useState<Package[] | null>(null);
   const [packagesError, setPackagesError] = useState("");
   const [tourId, setTourId] = useState("");
-  const [date, setDate] = useState(initialDate ?? "");
+  const [date, setDate] = useState(() => initialDate && initialDate >= new Date().toISOString().slice(0, 10) ? initialDate : "");
+  // The Tour chosen on a Tour card is selected once its area's packages load, until the customer picks another area.
+  const preselect = useRef(initialTourId);
   const [pickupPlace, setPickupPlace] = useState("");
   const [pickupTime, setPickupTime] = useState("");
   const [error, setError] = useState("");
@@ -34,10 +36,21 @@ export function BookingSearch({ initialDestination, initialDate }: { initialDest
     if (!area || area === CUSTOM) return;
     const controller = new AbortController();
     fetch(`/api/tours?area=${encodeURIComponent(area)}`, { cache: "no-store", signal: controller.signal })
-      .then(async response => { const value = await response.json(); if (!response.ok) throw new Error(); setPackages(value.items); })
+      .then(async response => {
+        const value = await response.json(); if (!response.ok) throw new Error();
+        const items: Package[] = value.items;
+        setPackages(items);
+        if (items.some(item => item.id === preselect.current)) setTourId(String(preselect.current));
+      })
       .catch(() => { if (!controller.signal.aborted) setPackagesError("Tour packages could not be loaded. Please try again."); });
     return () => controller.abort();
   }, [area]);
+
+  // The form mounts only once the session loads, after the browser's own #order-tour jump.
+  const signedIn = Boolean(account);
+  useEffect(() => {
+    if (signedIn && window.location.hash === "#order-tour") document.getElementById("order-tour")?.scrollIntoView({ block: "start" });
+  }, [signedIn]);
 
   // Keep the form mounted while the session refreshes on navigation; only signed-out visitors never see it.
   if (!account) return null;
@@ -68,11 +81,11 @@ export function BookingSearch({ initialDestination, initialDate }: { initialDest
   }
 
   const areaLabel = areas.find(item => item.slug === area)?.label;
-  return <section className="booking-search" aria-labelledby="booking-search-title">
+  return <section id="order-tour" className="booking-search" aria-labelledby="booking-search-title">
     <div className="booking-search-copy"><p className="section-label">PLAN YOUR DAY IN BALI</p><h2 id="booking-search-title">Order your Bali tour</h2><p>Choose your tour, date and pickup details. We&apos;ll save your order and open WhatsApp with a reconfirmation message for you to send.</p></div>
     <form className="booking-search-form" onSubmit={submit} noValidate>
       <div className="booking-search-fields">
-        <label className="booking-search-field">Tour area<select value={area} onChange={event => setArea(event.target.value)} required><option value="">Choose a tour area</option>{areas.map(item => <option key={item.slug} value={item.slug}>{item.label}</option>)}<option value={CUSTOM}>Customized Tour</option></select></label>
+        <label className="booking-search-field">Tour area<select value={area} onChange={event => { preselect.current = undefined; setArea(event.target.value); }} required><option value="">Choose a tour area</option>{areas.map(item => <option key={item.slug} value={item.slug}>{item.label}</option>)}<option value={CUSTOM}>Customized Tour</option></select></label>
         {!custom && <label className="booking-search-field">Tour package<select value={tourId} onChange={event => setTourId(event.target.value)} required disabled={!packages?.length}><option value="">{!area ? "Choose a tour area first" : packages ? (packages.length ? "Choose a tour package" : "No packages available") : packagesError ? "Unavailable" : "Loading packages…"}</option>{packages?.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select>
           <span className="field-help">{packagesError || (areaLabel && date ? <a href={`/${area}?requested_travel_date=${encodeURIComponent(date)}#tour-packages`}>View {areaLabel} package details</a> : areaLabel ? <a href={`/${area}#tour-packages`}>View {areaLabel} package details</a> : "")}</span></label>}
         <label className="booking-search-field">Tour date<input type="date" value={date} min={today} onChange={event => setDate(event.target.value)} required /><span className="field-help">The day you want to take the tour.</span></label>
