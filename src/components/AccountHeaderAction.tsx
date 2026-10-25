@@ -21,7 +21,7 @@ export function AccountHeaderAction() {
     document.addEventListener("pointerdown", outside); document.addEventListener("keydown", escape);
     return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
   }, [open]);
-  if (!account) return <><Link href="/login" className="button header-signin">Sign In</Link><Link href="/login" className="mobile-account" aria-label="Login or Register"><Icon name="user"/><span>LOGIN / REGISTER</span></Link></>;
+  if (!account) return <><Link href="/login" className="button header-signin">Sign In</Link><Link href="/login" className="mobile-account" aria-label="Login or Sign Up"><Icon name="user"/><span>LOGIN / SIGN UP</span></Link></>;
   return <div className="profile-control" ref={wrapper}>
     <button ref={toggle} type="button" className="profile-trigger" aria-expanded={open} aria-haspopup="menu" aria-controls="profile-menu" onClick={() => setOpen(value => !value)}>
       <span className="profile-avatar-wrap"><Avatar url={account.customer.avatar_url}/><span className="profile-status" /></span><span className="profile-label">PROFILE</span><Icon name="chevron" className="profile-chevron"/>

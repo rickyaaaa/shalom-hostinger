@@ -13,7 +13,7 @@ async function AreaTours({area, requestedTravelDate}:{area:AreaSlug; requestedTr
   const isWestBali=area==="west-bali";
   return tours===null ? <ServiceUnavailable subject="tour" retryHref={`/${area}`}/> : tours.length ?
     <div className="tour-grid">{tours.map(tour=><TourCard tour={tour} key={tour.id} requestedTravelDate={requestedTravelDate} presentation={isWestBali ? westBaliCardPresentation(tour) : undefined}/>)}</div> :
-    <p className="status-message">Tour packages are being updated. Please contact Shalom Bali Tour.</p>;
+    <p className="status-message">Itineraries are being updated. Please contact Shalom Bali Tour.</p>;
 }
 
 export function AreaPage({area, requestedTravelDate}:{area:AreaSlug; requestedTravelDate?: string}) {
@@ -27,8 +27,8 @@ export function AreaPage({area, requestedTravelDate}:{area:AreaSlug; requestedTr
         <h1 id="area-title">{content.heading}</h1><p>{content.description}</p>
       </div>
     </section>
-    <section id="tour-packages" className={isWestBali ? `tour-section ${westBaliStyles.tours}` : "tour-section"} aria-label={`${content.name} tour packages`}>
-      <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading tour packages…</p>}><AreaTours area={area} requestedTravelDate={requestedTravelDate}/></Suspense>
+    <section id="tour-packages" className={isWestBali ? `tour-section ${westBaliStyles.tours}` : "tour-section"} aria-label={`${content.name} itineraries`}>
+      <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading itineraries…</p>}><AreaTours area={area} requestedTravelDate={requestedTravelDate}/></Suspense>
     </section>
   </>;
   return isWestBali ? <div className={westBaliStyles.page}>{body}</div> : body;

@@ -22,7 +22,7 @@ const raleway = localFont({
 
 export const metadata: Metadata = {
   title: { default: "Shalom Bali Tour", template: "%s | Shalom Bali Tour" },
-  description: "Explore Bali your way with flexible private tours from Shalom Bali Tour.",
+  description: "Explore Bali your way with flexible private itineraries from Shalom Bali Tour.",
   metadataBase: new URL(process.env.PUBLIC_SITE_URL || process.env.APP_URL || "http://127.0.0.1:3000"),
   robots: { index: indexingEnabled(), follow: indexingEnabled() },
 };

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useCustomerSession } from "./CustomerSession";
 import { customerFetch } from "@/lib/customer-client";
+import { itineraryTitle } from "@/lib/format";
 
 export const areas = [
   { label: "South Kuta", slug: "south-kuta" },
@@ -42,7 +43,7 @@ export function BookingSearch({ initialDestination, initialTourId, initialDate }
         setPackages(items);
         if (items.some(item => item.id === preselect.current)) setTourId(String(preselect.current));
       })
-      .catch(() => { if (!controller.signal.aborted) setPackagesError("Tour packages could not be loaded. Please try again."); });
+      .catch(() => { if (!controller.signal.aborted) setPackagesError("Itineraries could not be loaded. Please try again."); });
     return () => controller.abort();
   }, [area]);
 
@@ -60,10 +61,10 @@ export function BookingSearch({ initialDestination, initialTourId, initialDate }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
-    if (!area) { setError("Choose a tour area to continue."); return; }
-    if (!date) { setError("Choose the date you want your tour to take place."); return; }
+    if (!area) { setError("Choose an itinerary area to continue."); return; }
+    if (!date) { setError("Choose the date you want to travel."); return; }
     if (custom) { setError(""); router.push(`/book/custom?requested_travel_date=${encodeURIComponent(date)}`); return; }
-    if (!tourId) { setError("Choose a tour package."); return; }
+    if (!tourId) { setError("Choose an itinerary."); return; }
     if (!pickupPlace.trim()) { setError("Enter your pickup place or hotel."); return; }
     if (!pickupTime) { setError("Choose your pickup time."); return; }
     const order = { kind: "tour" as const, tour_id: Number(tourId), requested_travel_date: date, pickup_place: pickupPlace.trim(), pickup_time: pickupTime };
@@ -82,15 +83,15 @@ export function BookingSearch({ initialDestination, initialTourId, initialDate }
 
   const areaLabel = areas.find(item => item.slug === area)?.label;
   return <section id="order-tour" className="booking-search" aria-labelledby="booking-search-title">
-    <div className="booking-search-copy"><p className="section-label">PLAN YOUR DAY IN BALI</p><h2 id="booking-search-title">Order your Bali tour</h2><p>Choose your tour, date and pickup details. We&apos;ll save your order and open WhatsApp with a reconfirmation message for you to send.</p></div>
+    <div className="booking-search-copy"><p className="section-label">PLAN YOUR DAY IN BALI</p><h2 id="booking-search-title">Order your Bali itinerary</h2><p>Choose your itinerary, date and pickup details. We&apos;ll save your order and open WhatsApp with a reconfirmation message for you to send.</p></div>
     <form className="booking-search-form" onSubmit={submit} noValidate>
       <div className="booking-search-fields">
-        <label className="booking-search-field">Tour area<select value={area} onChange={event => { preselect.current = undefined; setArea(event.target.value); }} required><option value="">Choose a tour area</option>{areas.map(item => <option key={item.slug} value={item.slug}>{item.label}</option>)}<option value={CUSTOM}>Customized Tour</option></select></label>
-        {!custom && <label className="booking-search-field">Tour package<select value={tourId} onChange={event => setTourId(event.target.value)} required disabled={!packages?.length}><option value="">{!area ? "Choose a tour area first" : packages ? (packages.length ? "Choose a tour package" : "No packages available") : packagesError ? "Unavailable" : "Loading packages…"}</option>{packages?.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select>
-          <span className="field-help">{packagesError || (areaLabel && date ? <a href={`/${area}?requested_travel_date=${encodeURIComponent(date)}#tour-packages`}>View {areaLabel} package details</a> : areaLabel ? <a href={`/${area}#tour-packages`}>View {areaLabel} package details</a> : "")}</span></label>}
-        <label className="booking-search-field">Tour date<input type="date" value={date} min={today} onChange={event => setDate(event.target.value)} required /><span className="field-help">The day you want to take the tour.</span></label>
-        {!custom && <label className="booking-search-field">Pickup time<input type="time" value={pickupTime} step={900} onChange={event => setPickupTime(event.target.value)} required /><span className="field-help">Local Bali time.</span></label>}
-        {!custom && <label className="booking-search-field booking-search-field-wide">Pickup place / hotel<input type="text" value={pickupPlace} maxLength={200} autoComplete="off" placeholder="e.g. Svara by Mazari, Uluwatu" onChange={event => setPickupPlace(event.target.value)} required /></label>}
+        <label className="booking-search-field">Itinerary Area<select value={area} onChange={event => { preselect.current = undefined; setArea(event.target.value); }} required><option value="">Choose an itinerary area</option>{areas.map(item => <option key={item.slug} value={item.slug}>{item.label}</option>)}<option value={CUSTOM}>Customized Itinerary</option></select></label>
+        {!custom && <label className="booking-search-field">Itinerary<select value={tourId} onChange={event => setTourId(event.target.value)} required disabled={!packages?.length}><option value="">{!area ? "Choose an itinerary area first" : packages ? (packages.length ? "Choose an itinerary" : "No itineraries available") : packagesError ? "Unavailable" : "Loading itineraries…"}</option>{packages?.map(item => <option key={item.id} value={item.id}>{itineraryTitle(item.title)}</option>)}</select>
+          <span className="field-help">{packagesError || (areaLabel && date ? <a href={`/${area}?requested_travel_date=${encodeURIComponent(date)}#tour-packages`}>View {areaLabel} itinerary details</a> : areaLabel ? <a href={`/${area}#tour-packages`}>View {areaLabel} itinerary details</a> : "")}</span></label>}
+        <label className="booking-search-field">Travel Date<input type="date" value={date} min={today} onChange={event => setDate(event.target.value)} required /><span className="field-help">The date you want to travel.</span></label>
+        {!custom && <label className="booking-search-field">Pickup Time<input type="time" value={pickupTime} step={900} onChange={event => setPickupTime(event.target.value)} required /><span className="field-help">Local Bali time.</span></label>}
+        {!custom && <label className="booking-search-field booking-search-field-wide">Pickup Place / Hotel<input type="text" value={pickupPlace} maxLength={200} autoComplete="off" placeholder="e.g. Svara by Mazari, Uluwatu" onChange={event => setPickupPlace(event.target.value)} required /></label>}
       </div>
       <button className="button booking-search-submit" type="submit" disabled={busy}>{busy ? "Saving your order…" : <>Order Now <span aria-hidden="true">→</span></>}</button>
       {error && <p className="customer-error booking-search-error" role="alert">{error}</p>}

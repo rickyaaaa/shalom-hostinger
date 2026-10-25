@@ -6,7 +6,7 @@ type HistoryItem = CustomerAccount["inquiries"]["items"][number];
 export const orderStatus: Record<HistoryItem["status"], {label:string;note?:string;tone:"done"|"pending"|"muted"}> = {
   completed: {label:"Completed",tone:"done"},
   inquiry: {label:"Not completed",note:"Pending confirmation from Shalom Bali Tour",tone:"pending"},
-  confirmed: {label:"Not completed",note:"Confirmed — tour not completed yet",tone:"pending"},
+  confirmed: {label:"Not completed",note:"Confirmed — itinerary not completed yet",tone:"pending"},
   cancelled: {label:"Cancelled",tone:"muted"},
   unavailable: {label:"Status unavailable",tone:"muted"},
 };

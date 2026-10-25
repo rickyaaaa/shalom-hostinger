@@ -10,7 +10,7 @@ import { WhyChooseUs, FAQ, AboutSection } from "@/components/HomeInformation";
 import { publicMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = publicMetadata("Private Bali Tours", "Explore Bali your way. Choose a flexible private tour in South Kuta, Ubud or West Bali, or customize your own itinerary with Shalom Bali Tour.", "/");
+export const metadata = publicMetadata("Private Bali Itineraries", "Explore Bali your way. Choose a flexible private itinerary in South Kuta, Ubud or West Bali, or customize your own with Shalom Bali Tour.", "/");
 
 // Only the reviews wait for WordPress, so the hero and area images ship in the first HTML chunk.
 async function LatestReviews() {
@@ -39,7 +39,7 @@ export default function HomePage() {
       <div className="customized-inner"><div className="customized-copy"><h2 id="custom-title">Can&apos;t Find Your Perfect Itinerary?</h2>
         <ul>{["Choose Your Destinations", "Flexible Itinerary", "Private Driver"].map(item => <li key={item}><Icon name="check" />{item}</li>)}</ul>
         <p className="custom-note">NB: For special itinerary requests, there will be a price calculation, depending on the location and destination, so you will be directly connected to customer service for the price.</p>
-        <a href={links.customBooking} className="button button-white">Customized Tour</a>
+        <a href={links.customBooking} className="button button-white">Customized Itinerary</a>
       </div><Image src="/images/custom-itinerary.webp" alt="Choosing your own itinerary" width={640} height={498} sizes="(max-width: 767px) 80vw, 320px" /></div>
     </section>
     <section className="home-reviews" id="review" aria-labelledby="home-reviews-title">

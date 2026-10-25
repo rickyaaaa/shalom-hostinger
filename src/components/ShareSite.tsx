@@ -7,7 +7,7 @@ export function useShareSite() {
   async function share() {
     const url = `${window.location.origin}/`;
     if (typeof navigator.share === "function") {
-      try { await navigator.share({ title: "Shalom Bali Tour", text: "Private Bali tours with Shalom Bali Tour.", url }); setStatus(""); return; }
+      try { await navigator.share({ title: "Shalom Bali Tour", text: "Private Bali itineraries with Shalom Bali Tour.", url }); setStatus(""); return; }
       catch (reason) { if (reason instanceof Error && reason.name === "AbortError") return; }
     }
     try { await navigator.clipboard.writeText(url); setStatus("Website link copied."); }

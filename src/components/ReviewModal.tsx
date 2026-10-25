@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { reviewPageSchema, type ReviewPage } from "@/lib/types";
+import { itineraryTitle } from "@/lib/format";
 import { ReviewEntry } from "./ReviewEntry";
 import { ReviewScore } from "./ReviewScore";
 import { Icon } from "./Icon";
@@ -52,12 +53,12 @@ export function ReviewModal({ tourId, title }: { tourId: number; title: string }
       if(event.shiftKey && (active===first || !event.currentTarget.contains(active))){event.preventDefault();last!.focus();}
       else if(!event.shiftKey && (active===last || !event.currentTarget.contains(active))){event.preventDefault();first.focus();}
     }} onCancel={event => { event.preventDefault(); close(); }} onClick={event => { if (event.target === event.currentTarget) { const rect = event.currentTarget.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) close(); } }}>
-      <div className="modal-header"><h2 id={`reviews-${tourId}-title`}>{data?.title || title}</h2><button type="button" className="icon-button" aria-label="Close reviews" onClick={close} autoFocus><Icon name="close" /></button></div>
+      <div className="modal-header"><h2 id={`reviews-${tourId}-title`}>{data?.title ? itineraryTitle(data.title) : title}</h2><button type="button" className="icon-button" aria-label="Close reviews" onClick={close} autoFocus><Icon name="close" /></button></div>
       <div className="modal-body">
         {data && <ReviewScore rating={data.summary} large />}
         {busy && <p className="status-message" role="status">Loading reviews…</p>}
         {error && <div className="review-error" role="alert"><p>Reviews couldn’t be loaded. Please try again.</p><button type="button" className="button button-outline" onClick={() => setAttempt(attempt + 1)} disabled={busy}>Try again</button></div>}
-        {data && data.reviews.length === 0 && !busy && <p className="status-message">No reviews yet for this tour.</p>}
+        {data && data.reviews.length === 0 && !busy && <p className="status-message">No reviews yet for this itinerary.</p>}
         {data && data.reviews.map((review, index) => <ReviewEntry key={`${review.published_at}-${review.name}-${index}`} review={review} />)}
         {data?.has_more && data.next_page && !error && <button type="button" className="button button-outline load-more" disabled={busy} onClick={() => setPage(data.next_page!)}>{busy ? "Loading…" : "Load more reviews"}</button>}
       </div>

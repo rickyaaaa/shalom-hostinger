@@ -37,7 +37,7 @@ export function AuthForm({register, intent, created}: {register?:boolean; intent
     <h1>{register ? "Create Your Account" : "Log In to Your Account"}</h1>
     <p className="customer-intro">{intent ? (register ? "Create your account to continue your booking." : "Sign in to continue your booking.") : register ? "Create your account to plan your Bali journey." : "Welcome back to Shalom Bali Tour."}</p>
     {created && <p className="customer-notice" role="status">Your account was created. Please sign in to continue.</p>}
-    {configError ? <p className="customer-notice" role="alert">{configError} <button className="text-button" onClick={load}>Retry</button></p> : !config ? <p role="status">Loading account service…</p> : register && !config.registration_enabled ? <p role="status">Online registration is currently unavailable. Please contact Shalom Bali Tour.</p> : <form className="customer-form" onSubmit={submit} aria-busy={busy}>
+    {configError ? <p className="customer-notice" role="alert">{configError} <button className="text-button" onClick={load}>Retry</button></p> : !config ? <p role="status">Loading account service…</p> : register && !config.registration_enabled ? <p role="status">Online sign-up is currently unavailable. Please contact Shalom Bali Tour.</p> : <form className="customer-form" onSubmit={submit} aria-busy={busy}>
       {error && <p className="customer-error" role="alert" tabIndex={-1} ref={alert}>{error}</p>}
       {register && <label>Full Name<input name="full_name" autoComplete="name" maxLength={100} required /></label>}
       {register ? <>
@@ -56,9 +56,9 @@ export function AuthForm({register, intent, created}: {register?:boolean; intent
         <fieldset><legend>Customer Type</legend><label className="customer-check"><input type="radio" name="customer_type" value="new_customer" required /><span>New Customer</span></label><label className="customer-check"><input type="radio" name="customer_type" value="existing_customer" /><span>I Have Been a Customer Before</span></label></fieldset>
         <label className="customer-check"><input name="terms" type="checkbox" value="1" required /><span>I agree to the <a href={config.terms_url} target="_blank" rel="noreferrer">terms</a> and <a href={config.privacy_url} target="_blank" rel="noreferrer">privacy policy</a>.</span></label>
       </>}
-      <button className="button" type="submit" disabled={busy}>{busy ? (register ? "Creating account…" : "Signing in…") : register ? "Register" : "Log In"}</button>
+      <button className="button" type="submit" disabled={busy}>{busy ? (register ? "Creating account…" : "Signing in…") : register ? "Sign Up" : "Log In"}</button>
       {!register && <p className="field-help"><Link href={`/request-help${suffix}`}>Forgot Password?</Link></p>}
     </form>}
-    <p className="customer-footer">{register ? <>Already have an account? <Link href={`/login${suffix}`}>Log In</Link></> : <>Don&apos;t have an account? <Link href={`/register${suffix}`}>Register</Link></>}</p>
+    <p className="customer-footer">{register ? <>Already have an account? <Link href={`/login${suffix}`}>Log In</Link></> : <>Don&apos;t have an account? <Link href={`/register${suffix}`}>Sign Up</Link></>}</p>
   </div></section>;
 }
