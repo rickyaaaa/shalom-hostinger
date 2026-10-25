@@ -106,7 +106,7 @@ function OrderHistory({initial,entitlements,onReview}:{initial:AccountData["inqu
         </dl>
         {entitlement && <button type="button" className="button button-outline" onClick={() => onReview(entitlement.id)}>Leave a Review</button>}
       </li>;
-    })}</ul> : !history.has_more && <div className="order-empty"><p>You have no orders yet.</p><Link className="button" href="/">Explore Bali Tours</Link></div>}
+    })}</ul> : !history.has_more && <p className="order-empty">You have no orders yet.</p>}
     {error && <p className="customer-error" role="alert">{error}</p>}
     {history.has_more && <button type="button" className="button button-outline order-more" disabled={busy} onClick={more}>{busy?"Loading orders…":error?"Retry loading orders":"Load more orders"}</button>}
   </section>;

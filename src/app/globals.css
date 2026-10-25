@@ -399,7 +399,7 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .order-details dt { color: var(--muted); }
 .order-details dd { margin: 0; overflow-wrap: anywhere; }
 .order-card .button, .order-more { margin-top: 14px; }
-.order-empty { display: grid; justify-items: start; gap: 14px; margin-top: 12px; }
+.order-empty { margin-top: 12px; }
 /* My Profile page. */
 .profile-section { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
 .profile-section h2 { margin-bottom: 14px; color: var(--navy); font-size: 20px; }
