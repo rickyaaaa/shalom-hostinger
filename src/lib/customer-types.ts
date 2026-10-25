@@ -11,6 +11,13 @@ export const inquiryHistorySchema = z.object({
   page:z.number().int().min(1).max(9999), has_more:z.boolean(),
 });
 export const customerSchema = z.object({ id: z.number().int().positive().optional(), name: z.string(), country: z.string(), avatar_url: z.url().nullable().optional(), email: z.string().max(254).nullable().optional(), referral_enabled: z.boolean().optional() });
+// The customer's own previous-trip details; never a booking record.
+const previousTour = z.object({ area: z.string().max(40), tour_date: z.iso.date().nullable(), pickup_place: z.string().max(200) });
+// source (1.20): booking = completed booking, previous_tour = has-been customer slot, manual/historical = admin or pre-1.16 records.
+const entitlementRow = z.object({ id: z.union([z.string().min(1), z.number().int().positive()]), tour_id: z.number().int().positive(), title: z.string(), inquiry_id: z.number().int().positive().nullable().optional(), source: z.enum(["booking","previous_tour","manual","historical"]).optional(), previous_tour: previousTour.optional() });
+// Lifetime allowance of three previous-tour comments for "I Have Been a Customer Before" accounts (1.20).
+export const previousTourReviewsSchema = z.object({ eligible: z.boolean(), limit: z.number().int().min(0).max(10), used: z.number().int().min(0).max(10), remaining: z.number().int().min(0).max(10),
+  items: z.array(previousTour.extend({ title: z.string(), status: z.enum(["ready","submitted"]) })).max(10) });
 export const accountSchema = z.object({
   inquiries: inquiryHistorySchema,
   customer: customerSchema,
@@ -20,7 +27,9 @@ export const accountSchema = z.object({
   // New WordPress adapters return one row per currently usable entitlement.
   // Optional keeps the frontend readable while staging is upgraded from the legacy DTO.
   // inquiry_id (1.18) names the completed booking that funded the entitlement; null for legacy grants.
-  review_entitlements: z.array(z.object({ id: z.union([z.string().min(1), z.number().int().positive()]), tour_id: z.number().int().positive(), title: z.string(), inquiry_id: z.number().int().positive().nullable().optional() })).optional(),
+  review_entitlements: z.array(entitlementRow).optional(),
+  // Optional so the account still renders on a 1.19 backend; the previous-tour section stays hidden.
+  previous_tour_reviews: previousTourReviewsSchema.optional(),
   reviews: z.array(z.object({ id: z.number().int().positive().optional(), tour_id: z.number().int(), title: z.string(), experience: z.string(), status: z.enum(["approved", "pending", "unavailable"]), submitted_at: z.string().optional(), ratings: z.object({driving_skill:z.number().int(),service:z.number().int(),car:z.number().int()}).optional(), price:z.string().optional(), recommend:z.boolean().optional() })),
 });
 export type CustomerConfig = z.infer<typeof customerConfigSchema>;
@@ -39,6 +48,10 @@ export const forgotInput = z.union([z.object({email:z.string().trim().min(3).max
 // login/key come from the reset link fragment; WordPress validates the native key.
 export const resetInput = z.object({login:z.string().min(1).max(60),key:z.string().regex(/^[A-Za-z0-9]{1,100}$/),password:z.string().min(8).max(128),confirm_password:z.string().min(8).max(128)}).strict();
 export const reviewInput = z.object({ tour_id: z.number().int().positive().max(2147483647), entitlement_id: z.union([z.string().min(1).max(128), z.number().int().positive()]).optional(), driving_skill: z.string().regex(/^(?:[1-9]|10)$/), service: z.string().regex(/^(?:[1-9]|10)$/), car: z.string().regex(/^(?:[1-9]|10)$/), price: z.enum(["worth_it", "not_worth_it"]), recommend: z.enum(["yes", "no"]), experience: z.string().trim().min(1).max(1000) }).strict();
+// "Give Comment": WordPress checks the account type, the area/package pairing and the lifetime limit. No pickup time.
+export const previousTourAreas = ["south-kuta","ubud","west-bali"] as const;
+export const previousTourInput = z.object({ area: z.enum(previousTourAreas), tour_id: z.number().int().positive().max(2147483647), tour_date: z.iso.date(), pickup_place: z.string().trim().min(1).max(200) }).strict();
+export const previousTourResult = z.object({ entitlement: entitlementRow, previous_tour_reviews: previousTourReviewsSchema });
 const requestedTravelDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional();
 // Pickup details are Tour-only; WordPress requires date, place and time together when either pickup field is sent.
 const pickup = {pickup_place:z.string().trim().min(1).max(200).optional(),pickup_time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).optional()};

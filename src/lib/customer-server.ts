@@ -70,6 +70,13 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
       travel_date: "Please choose a tour date from today onwards.",
       pickup_place: "Please enter your pickup place or hotel (up to 200 characters).",
       pickup_time: "Please choose your pickup time.",
+      // Comment on a Previous Tour (WordPress 1.20).
+      previous_tour_ineligible: "Comments on a previous tour are only available to customers who have toured with Shalom Bali Tour before.",
+      previous_tour_limit: "You have used your previous-tour review opportunities. Complete a new booking to leave another review.",
+      previous_tour_busy: "Your previous tour is already being saved. Please wait a moment and try again.",
+      previous_tour_area: "Please choose your previous tour area.",
+      previous_tour_package: "Please choose a tour package from the selected area.",
+      previous_tour_date: "Please choose the date of your previous tour. It cannot be in the future.",
       disabled: "Online registration is currently unavailable. Please contact Shalom Bali Tour.",
       rate_limit: "Too many attempts. Please wait a little while and try again.",
       rest_no_route: "The customer service is awaiting its WordPress adapter update. Please try again later.",

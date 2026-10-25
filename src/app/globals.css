@@ -382,6 +382,9 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .profile-menu a:hover, .profile-menu button:hover { background: #f1f5f7; color: var(--navy); }
 .account-empty-review { margin-top: 16px; color: var(--muted); }
 /* Account dashboard: order cards and review sub-sections. */
+.account-block-intro { color: var(--muted); margin: 0 0 8px; max-width: 60ch; }
+.previous-tour-count { color: var(--navy); font-weight: 600; margin: 0 0 20px; }
+.review-context { color: var(--navy); font-weight: 600; }
 .account-subheading { margin: 28px 0 4px; color: var(--navy); font-size: 18px; scroll-margin-top: 24px; }
 .order-list { display: grid; gap: 12px; margin: 16px 0 0; padding: 0; list-style: none; }
 .order-card { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }

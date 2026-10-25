@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { accountSchema, customerConfigSchema, customerSchema, profileNameInput, changePasswordInput, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput } from "@/lib/customer-types";
+import { accountSchema, customerConfigSchema, customerSchema, profileNameInput, changePasswordInput, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput, previousTourInput, previousTourResult } from "@/lib/customer-types";
 import { appOrigin, clearSession, CustomerError, customerMultipartRequest, customerRequest, readSession, writeSession } from "@/lib/customer-server";
 
 export const runtime = "nodejs";
@@ -99,7 +99,7 @@ async function handle(request: Request, context: Context) {
       if (signedIn) await writeSession({...session, cookie: cookie!, nonce: result.nonce!}); else await clearSession();
       return reply({changed:true, signed_in:signedIn, message:result.message});
     }
-    if (!["logout","booking-ticket","inquiries","reviews"].includes(action)) return reply({message:"Not found."},404);
+    if (!["logout","booking-ticket","inquiries","reviews","previous-tour"].includes(action)) return reply({message:"Not found."},404);
     const session = await readSession();
     if (!session) return reply({message:"Please sign in to continue."},401);
     if (action === "logout") {
@@ -107,6 +107,11 @@ async function handle(request: Request, context: Context) {
       await customerRequest("logout", "POST", {}, session);
       await clearSession();
       return reply({signed_in:false});
+    }
+    if (action === "previous-tour") {
+      // The owner comes from the session; WordPress enforces the account type and the lifetime limit.
+      const {value} = await customerRequest(action, "POST", previousTourInput.parse(body), session);
+      return reply(previousTourResult.parse(value));
     }
     const input = action === "reviews" ? reviewInput.parse(body) : action === "booking-ticket" ? bookingInput.parse(body) : inquiryInput.parse(body);
     const {value} = await customerRequest(action, "POST", input, session);

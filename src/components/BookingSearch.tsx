@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { useCustomerSession } from "./CustomerSession";
 import { customerFetch } from "@/lib/customer-client";
 
-const areas = [
+export const areas = [
   { label: "South Kuta", slug: "south-kuta" },
   { label: "Ubud", slug: "ubud" },
   { label: "West Bali", slug: "west-bali" },
 ];
 const CUSTOM = "custom";
-type Package = { id: number; title: string };
+export type Package = { id: number; title: string };
 
 export function BookingSearch({ initialDestination, initialDate }: { initialDestination?: string; initialDate?: string }) {
   const { account } = useCustomerSession();
