@@ -7,6 +7,18 @@ import { bookingTermsSchema } from "../src/lib/types";
 
 const answer = (question: string) => { const faq = faqs.find(item => item.question === question); return faq && "answer" in faq ? faq.answer : undefined; };
 
+test("FAQ lists exactly the client-approved questions, in order", () => {
+  assert.deepEqual(faqs.map(item => item.question), [
+    "How do I order a Bali tour?",
+    "The itinerary I wanted isn't here",
+    "What is included and not included in the itinerary?",
+    "How long is the tour and can I take a short tour?",
+    "What happens if I need to cancel?",
+  ]);
+  const all = JSON.stringify(faqs);
+  for (const removed of ["Can I customize my itinerary?", "Can I combine destinations from different itineraries?"]) assert.equal(all.includes(removed), false, removed);
+});
+
 test("FAQ uses the client-approved questions and answers", () => {
   assert.equal(answer("How do I order a Bali tour?"), "You can sign up, then select your preferred itinerary, specify the pickup date and time, and provide the name of the hotel or resort where you are staying.");
   assert.equal(answer("The itinerary I wanted isn't here"), "No need to worry, we provide option for this, you can choose the Customized Itinerary section.");

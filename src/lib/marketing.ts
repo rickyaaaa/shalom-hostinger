@@ -20,9 +20,7 @@ export type Faq = { question: string; answer: string } | { question: string; ter
 export const faqs: Faq[] = [
   { question: "How do I order a Bali tour?", answer: "You can sign up, then select your preferred itinerary, specify the pickup date and time, and provide the name of the hotel or resort where you are staying." },
   { question: "The itinerary I wanted isn't here", answer: "No need to worry, we provide option for this, you can choose the Customized Itinerary section." },
-  { question: "Can I customize my itinerary?", answer: "Yes. Our itineraries are flexible. You can request changes or mix destinations based on your preferences and available travel time." },
   { question: "What is included and not included in the itinerary?", terms: true },
   { question: "How long is the tour and can I take a short tour?", answer: "The trip duration is 10 hours, calculated from the agreed-upon pickup time. If the duration exceeds 10 hours, an additional charge will apply. We exclusively offer 10-hour daily tour services, as we specialize in private, 10-hour day tours." },
-  { question: "Can I combine destinations from different itineraries?", answer: "Yes. Let us know which destinations you would like to visit and we can help arrange a suitable itinerary." },
   { question: "What happens if I need to cancel?", answer: "If you wish to cancel, please provide notification as soon as possible.\n\nOnce an agreement has been reached, cancellations are no longer permitted, and you remain obligated to pay the full, agreed-upon amount.\n\nThis policy includes full payment for any booked activities, and the timeframe for the engagement is calculated from the moment the agreement is made.\n\nThank you." },
 ];
