@@ -12,12 +12,17 @@ export const benefits = [
   {title:"Comfortable Journey",text:"Enjoy private transportation with fuel and parking included in every itinerary.",image:"7-18-1-AQVLJK4TH3.png"},
   {title:"Local Bali Experience",text:"Explore beaches, temples, waterfalls, rice terraces, and local attractions at your own pace.",image:"7-20-1-AQVLJK4TH3.png"},
 ];
-export const faqs = [
-  ["How do I book a Bali itinerary?","Choose your preferred itinerary and contact us via WhatsApp. We will confirm your travel date, pickup details, and booking information."],
-  ["Can I customize my itinerary?","Yes. Our itineraries are flexible. You can request changes or mix destinations based on your preferences and available travel time."],
-  ["What is included in the itinerary price?","Your itinerary includes a private driver, fuel, and parking fees unless otherwise stated."],
-  ["What is not included in the itinerary price?","Entrance tickets, activity tickets, meals, and personal expenses are not included unless specifically mentioned in the itinerary."],
-  ["How long does an itinerary take?","Most full-day itineraries are planned for up to 10 hours. Starting times and duration may vary depending on the selected itinerary."],
-  ["Can I combine destinations from different itineraries?","Yes. Let us know which destinations you would like to visit and we can help arrange a suitable itinerary."],
-  ["What happens if I need to cancel?","Please inform us as early as possible. Once a booking and itinerary have been confirmed, cancellation charges may apply, especially if activities have already been reserved."],
+/**
+ * Client-approved FAQ copy. Paragraphs are separated by a blank line. The included / not included answer has no
+ * copy here: it renders WordPress's canonical NB terms (the same list the WhatsApp reconfirmation uses).
+ */
+export type Faq = { question: string; answer: string } | { question: string; terms: true };
+export const faqs: Faq[] = [
+  { question: "How do I order a Bali tour?", answer: "You can sign up, then select your preferred itinerary, specify the pickup date and time, and provide the name of the hotel or resort where you are staying." },
+  { question: "The itinerary I wanted isn't here", answer: "No need to worry, we provide option for this, you can choose the Customized Itinerary section." },
+  { question: "Can I customize my itinerary?", answer: "Yes. Our itineraries are flexible. You can request changes or mix destinations based on your preferences and available travel time." },
+  { question: "What is included and not included in the itinerary?", terms: true },
+  { question: "How long is the tour and can I take a short tour?", answer: "The trip duration is 10 hours, calculated from the agreed-upon pickup time. If the duration exceeds 10 hours, an additional charge will apply. We exclusively offer 10-hour daily tour services, as we specialize in private, 10-hour day tours." },
+  { question: "Can I combine destinations from different itineraries?", answer: "Yes. Let us know which destinations you would like to visit and we can help arrange a suitable itinerary." },
+  { question: "What happens if I need to cancel?", answer: "If you wish to cancel, please provide notification as soon as possible.\n\nOnce an agreement has been reached, cancellations are no longer permitted, and you remain obligated to pay the full, agreed-upon amount.\n\nThis policy includes full payment for any booked activities, and the timeframe for the engagement is calculated from the moment the agreement is made.\n\nThank you." },
 ];

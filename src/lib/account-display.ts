@@ -18,3 +18,8 @@ export const formatDate = (value: string, withTime = false) => new Intl.DateTime
 export function tourDateLabel(item: Pick<HistoryItem, "booking_date" | "travel_date">) {
   return item.booking_date ? `${formatDate(item.booking_date)} (confirmed)` : item.travel_date ? `${formatDate(item.travel_date)} (requested)` : "Not set yet";
 }
+
+/** Customer-facing order number, e.g. "#10001", from the stored code "AU-10001". Admin keeps the full code. */
+export function orderNumber(code: string) {
+  return `#${code.slice(code.indexOf("-") + 1)}`;
+}

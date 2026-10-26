@@ -188,7 +188,12 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .footer-label { font-size: 13px; letter-spacing: 1.5px; margin-bottom: 8px; }
 .footer-contact a { text-decoration: none; font-size: 15px; }
 .footer-contact a:hover { text-decoration: underline; }
-.copyright { margin-top: 72px; font-size: 13px; color: #344c61; }
+.footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 72px; }
+.copyright { font-size: 13px; color: #344c61; }
+.back-to-top { flex-shrink: 0; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid #344c61; border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer; }
+.back-to-top svg { transform: rotate(180deg); }
+.back-to-top:hover { background: rgba(255, 255, 255, .55); }
+.back-to-top:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
 .page-loading, .message-page { min-height: 50vh; padding: 96px 24px; text-align: center; background: white; }
 /* Keeps the footer below the fold while a page streams in, so it does not jump (CLS). */
 .page-loading { min-height: 100svh; }
@@ -272,7 +277,7 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
   .review-dimensions { gap: 8px; }
   .site-footer { padding: 48px 24px 32px; }
   .footer-top { grid-template-columns: minmax(0, 1fr); gap: 36px; }
-  .copyright { margin-top: 48px; }
+  .footer-bottom { margin-top: 48px; }
   .message-page h1 { font-size: 30px; line-height: 40px; }
 }
 @media (max-width: 390px) {
@@ -306,6 +311,9 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .faq-list details[open] { background: #c89b3c; color: var(--navy); }
 .faq-list details p { margin: 20px 0 4px; max-width: 75ch; color: var(--muted); }
 .faq-list details[open] p { color: var(--navy); }
+.faq-list .faq-terms-label { font-weight: 700; letter-spacing: .04em; }
+.faq-list .faq-terms ul { margin: 6px 0 0; padding-left: 22px; max-width: 75ch; color: var(--muted); }
+.faq-list details[open] .faq-terms ul { color: var(--navy); }
 .about-section { background: white; }
 .about-grid { display: grid; gap: 48px; text-align: center; }
 .about-grid h2 { max-width: 1000px; margin-inline: auto; }

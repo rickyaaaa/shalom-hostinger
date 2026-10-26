@@ -6,6 +6,9 @@ const rating = z.object({
   review_count: z.number().int().nonnegative(),
 });
 
+/** INCLUDE / NOT INCLUDING lists from WordPress: per itinerary (booking page) or site-wide (/booking-terms, FAQ). */
+export const bookingTermsSchema = z.object({ not_included: z.array(z.string().max(300)).max(30), included: z.array(z.string().max(300)).max(30) });
+
 export const tourSchema = z.object({
   id: z.number().int().positive(),
   title: z.string().min(1),
@@ -18,7 +21,7 @@ export const tourSchema = z.object({
   price_note: z.string(),
   rating,
   // 1.23: effective INCLUDE / NOT INCLUDING terms (the Tour's own lists, else the site-wide terms). Absent on older plugins.
-  booking_terms: z.object({ not_included: z.array(z.string().max(300)).max(30), included: z.array(z.string().max(300)).max(30) }).optional(),
+  booking_terms: bookingTermsSchema.optional(),
 });
 
 export const reviewSchema = z.object({

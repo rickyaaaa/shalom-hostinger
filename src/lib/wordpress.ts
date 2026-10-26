@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import type { z } from "zod";
 import { wordpressConfig } from "./config";
-import { latestReviewsSchema, reviewPageSchema, tourSchema, tourCollectionSchema, type Tour } from "./types";
+import { bookingTermsSchema, latestReviewsSchema, reviewPageSchema, tourSchema, tourCollectionSchema, type Tour } from "./types";
 
 export class WordPressApiError extends Error {
   constructor(public readonly kind: "network" | "http" | "contract", public readonly status?: number) {
@@ -55,6 +55,9 @@ export const getAreaTours = cache(async (area: string) => {
 });
 
 export const getLatestReviews = cache(() => get("/latest-reviews?limit=3", latestReviewsSchema));
+
+/** Site-wide NB terms in the client's wording (WordPress 1.27): the same source as the WhatsApp reconfirmation. */
+export const getBookingTerms = cache(() => get("/booking-terms", bookingTermsSchema));
 
 export async function getTourReviews(tourId: number, page: number, signal?: AbortSignal) {
   if (!Number.isSafeInteger(tourId) || tourId < 1 || !Number.isSafeInteger(page) || page < 1 || page > 10_000) throw new WordPressApiError("http", 400);
