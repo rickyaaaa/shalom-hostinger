@@ -26,11 +26,11 @@ test("customer writes reject forged identity and invalid review values",()=>{
 test("booking return intent permits only canonical Tour IDs or custom requests",()=>{
   for(const id of [523,599,633]){
     const intent=parseIntent({tour:String(id)})!;
-    assert.equal(bookingPath(intent),`/account?tour=${id}#order-tour`);
+    assert.equal(bookingPath(intent),`/book/${id}`);
     assert.equal(intentQuery(intent),`?tour=${id}`);
     assert.equal(bookingInput.safeParse(intent).success,true);
   }
-  assert.equal(bookingPath(parseIntent({booking:"custom"})!),"/account?booking=custom#order-tour");
+  assert.equal(bookingPath(parseIntent({booking:"custom"})!),"/book/custom");
   for(const tour of ["0","-1","523x","https://evil.test",["523"]])assert.equal(parseIntent({tour}),null);
   assert.equal(bookingInput.safeParse({kind:"custom",tour_id:523}).success,false);
   assert.equal(bookingInput.safeParse({kind:"contact",tour_id:0,phone:"forged"}).success,false);
@@ -39,8 +39,8 @@ test("booking return intent permits only canonical Tour IDs or custom requests",
 test("requested travel date stays in the booking intent and entitlement DTO is explicit",()=>{
   const intent=parseIntent({tour:"523",requested_travel_date:"2026-12-24"})!;
   assert.deepEqual(intent,{kind:"tour",tour_id:523,requested_travel_date:"2026-12-24"});
-  assert.equal(bookingPath(intent),"/account?tour=523&requested_travel_date=2026-12-24#order-tour");
-  assert.equal(bookingPath({kind:"custom",tour_id:0,requested_travel_date:"2026-12-24"}),"/account?booking=custom&requested_travel_date=2026-12-24#order-tour");
+  assert.equal(bookingPath(intent),"/book/523?requested_travel_date=2026-12-24");
+  assert.equal(bookingPath({kind:"custom",tour_id:0,requested_travel_date:"2026-12-24"}),"/book/custom?requested_travel_date=2026-12-24");
   assert.equal(intentQuery(intent),"?tour=523&requested_travel_date=2026-12-24");
   assert.equal(bookingInput.safeParse(intent).success,true);
   assert.equal(bookingInput.safeParse({...intent,requested_travel_date:"24-12-2026"}).success,false);

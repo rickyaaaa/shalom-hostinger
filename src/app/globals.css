@@ -445,3 +445,11 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 @media (max-width: 767px) { .site-footer { padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px)); } }
 /* Smallest phones: give fields a little more width inside the account panel. */
 @media (max-width: 360px) { .customer-section { padding: 0 12px; } .customer-panel { padding: 20px 16px; } }
+/* Booking page: the itinerary being ordered, shown read-only (it is chosen on the card, not here). */
+.booking-selected { display: grid; gap: 4px; margin: 0 0 24px; padding: 16px 18px; border: 1px solid var(--border); border-left: 4px solid var(--navy); border-radius: 12px; background: #f6f8fa; }
+.booking-selected-label { color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.booking-selected-title { color: var(--navy); font-size: 20px; font-weight: 600; line-height: 1.35; overflow-wrap: break-word; }
+.booking-selected-meta { color: var(--muted); font-size: 14px; }
+.booking-selected-change { justify-self: start; margin-top: 6px; color: var(--navy); font-size: 14px; font-weight: 600; }
+/* Order History groups: Not completed / Completed / Cancelled. */
+.order-group-count { color: var(--muted); font-size: 14px; font-weight: 400; }

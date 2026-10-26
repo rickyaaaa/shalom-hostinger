@@ -18,7 +18,7 @@ function fakeDom({ header = 102, sticky = true, top = 900, scrollY = 0, gap = "1
   return { calls, rootStyle, target: { getBoundingClientRect: () => ({ top }) } as unknown as Element };
 }
 
-test("#order-tour lands below the measured sticky header, not a fixed guess", () => {
+test("Anchors land below the measured sticky header, not a fixed guess", () => {
   for (const header of [102, 119, 150]) {
     const { calls, target } = fakeDom({ header, top: 900, scrollY: 40 });
     scrollToAnchor(target);

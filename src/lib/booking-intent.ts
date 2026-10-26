@@ -1,6 +1,6 @@
 export type BookingIntent = { kind: "tour"; tour_id: number; requested_travel_date?: string } | { kind: "custom"; tour_id: 0; requested_travel_date?: string };
-// Fixed itineraries and Customized Itinerary requests are both ordered from Order Your Bali Itinerary on /account.
-export function bookingPath(intent: BookingIntent) { return `/account${intentQuery(intent)}#order-tour`; }
+// The dedicated booking page: /book/<id> locks one fixed itinerary; /book/custom is a Customized Itinerary request.
+export function bookingPath(intent: BookingIntent) { return `/book/${intent.kind === "custom" ? "custom" : intent.tour_id}${intent.requested_travel_date ? `?requested_travel_date=${encodeURIComponent(intent.requested_travel_date)}` : ""}`; }
 export function intentQuery(intent: BookingIntent | null) {
   if (!intent) return "";
   const params = new URLSearchParams(intent.kind === "custom" ? { booking: "custom" } : { tour: String(intent.tour_id) });

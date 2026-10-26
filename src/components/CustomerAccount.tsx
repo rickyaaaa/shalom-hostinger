@@ -6,7 +6,7 @@ import { customerFetch } from "@/lib/customer-client";
 import { useCustomerSession } from "./CustomerSession";
 import { intentQuery,type BookingIntent } from "@/lib/booking-intent";
 import { ShareSite } from "./ShareSite";
-import { areas, BookingSearch, type Package } from "./BookingSearch";
+import { areas, type Package } from "./BookingForm";
 import { formatDate, orderStatus, tourDateLabel } from "@/lib/account-display";
 import { itineraryTitle } from "@/lib/format";
 import { scrollToAnchor } from "@/lib/anchor";
@@ -56,14 +56,12 @@ export function AccountGate({ title, wide = false, intent = null, children }: { 
 export function supportHref(account: AccountData | null) { return account?.support_whatsapp_url ?? "/#contact"; }
 
 
-/** What Order Your Bali Itinerary opens with: a fixed itinerary resolved server-side from its canonical ID, or a Customized Itinerary request. */
-export type OrderPreselect = { tour_id: number | "custom"; requested_travel_date?: string };
-
-export function CustomerAccount({ intent = null, preselect = null }: { intent?: BookingIntent | null; preselect?: OrderPreselect | null }) {
-  return <AccountGate title="My Account" wide intent={intent}>{(account, reload) => <AccountDashboard account={account} reload={reload} preselect={preselect} />}</AccountGate>;
+/** Account history only: orders and reviews. Booking happens on /book/<id> and /book/custom. */
+export function CustomerAccount() {
+  return <AccountGate title="My Account" wide>{(account, reload) => <AccountDashboard account={account} reload={reload} />}</AccountGate>;
 }
 
-function AccountDashboard({ account, reload, preselect }: { account: AccountData; reload: () => void; preselect: OrderPreselect | null }) {
+function AccountDashboard({ account, reload }: { account: AccountData; reload: () => void }) {
   const [review,setReview] = useState<string|number|null>(null);
   const [notice,setNotice] = useState("");
   // A just-bound previous-tour slot shows immediately; the account reload then lists it as well.
@@ -75,7 +73,6 @@ function AccountDashboard({ account, reload, preselect }: { account: AccountData
   return <>
     <p className="customer-intro">Welcome, {account.customer.name}.</p>
     {notice && <p className="customer-notice" role="status">{notice}</p>}
-    <BookingSearch initialSelection={preselect?.tour_id} initialDate={preselect?.requested_travel_date} />
     <OrderHistory key={account.customer.id} initial={account.inquiries} entitlements={entitlements} onReview={openReview} />
     {account.previous_tour_reviews?.eligible && <PreviousTourSection summary={account.previous_tour_reviews} onBound={row => {setBound(row);setNotice("");openReview(row.id);reload();}} />}
     <ReviewsSection account={account} entitlements={entitlements} review={review} setReview={setReview} onSubmitted={submitted} />
@@ -97,11 +94,14 @@ function OrderHistory({initial,entitlements,onReview}:{initial:AccountData["inqu
     } catch(reason) {setError(reason instanceof Error?reason.message:"Your order history could not be loaded. Please try again.");}
     finally {setBusy(false);}
   }
-  // General Contact messages are inquiries, not orders.
+  // General Contact messages are inquiries, not orders. Grouped by the WordPress status only; a past travel date never completes an order.
   const orders = history.items.filter(item => item.kind !== "contact");
-  return <section className="account-block" aria-labelledby="order-history-title">
-    <h2 id="order-history-title">Order History</h2>
-    {orders.length ? <ul className="order-list">{orders.map(item => {
+  const groups = [
+    { key: "open", title: "Not completed", items: orders.filter(item => item.status === "inquiry" || item.status === "confirmed" || item.status === "unavailable") },
+    { key: "completed", title: "Completed", items: orders.filter(item => item.status === "completed") },
+    { key: "cancelled", title: "Cancelled", items: orders.filter(item => item.status === "cancelled") },
+  ].filter(group => group.items.length);
+  const card = (item: (typeof orders)[number]) => {
       const status = orderStatus[item.status];
       const entitlement = item.status === "completed" ? entitlements.find(row => row.inquiry_id === item.id) : undefined;
       return <li key={item.id} className="order-card">
@@ -114,7 +114,13 @@ function OrderHistory({initial,entitlements,onReview}:{initial:AccountData["inqu
         </dl>
         {entitlement && <button type="button" className="button button-outline" onClick={() => onReview(entitlement.id)}>Leave a Review</button>}
       </li>;
-    })}</ul> : !history.has_more && <p className="order-empty">You have no orders yet.</p>}
+  };
+  return <section className="account-block" aria-labelledby="order-history-title">
+    <h2 id="order-history-title">Order History</h2>
+    {orders.length ? groups.map(group => <div key={group.key} className="order-group">
+      <h3 className="account-subheading" id={`orders-${group.key}`}>{group.title} <span className="order-group-count">({group.items.length})</span></h3>
+      <ul className="order-list" aria-labelledby={`orders-${group.key}`}>{group.items.map(card)}</ul>
+    </div>) : !history.has_more && <p className="order-empty">You have no orders yet.</p>}
     {error && <p className="customer-error" role="alert">{error}</p>}
     {history.has_more && <button type="button" className="button button-outline order-more" disabled={busy} onClick={more}>{busy?"Loading orders…":error?"Retry loading orders":"Load more orders"}</button>}
   </section>;
