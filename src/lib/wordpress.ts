@@ -56,6 +56,9 @@ export const getAreaTours = cache(async (area: string) => {
 
 export const getLatestReviews = cache(() => get("/latest-reviews?limit=3", latestReviewsSchema));
 
+/** All itineraries in one request (Home photo slider); images are validated like everywhere else. */
+export const getItineraries = cache(async () => (await get("/tours?per_page=50&page=1", tourCollectionSchema)).items.map(validateImage));
+
 /** Site-wide NB terms in the client's wording (WordPress 1.27): the same source as the WhatsApp reconfirmation. */
 export const getBookingTerms = cache(() => get("/booking-terms", bookingTermsSchema));
 

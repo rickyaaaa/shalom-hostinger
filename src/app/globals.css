@@ -99,26 +99,27 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .customized-copy li svg { width: 15px; height: 15px; color: var(--gold); stroke-width: 3; }
 .custom-note { margin: 34px 0 40px; color: #e5b750; font-size: 12px; line-height: 24px; letter-spacing: .5px; }
 .customized-copy .button { width: auto; font-weight: 500; }
-/* Photo slider in the original image's box: same width, radius and 640:498 ratio, so nothing around it moves. */
+/* Photo sliders (PhotoSlider): each takes the box of the image it replaced, so nothing around it moves. */
+.photo-slider { position: relative; overflow: hidden; background: var(--navy-dark); }
 .custom-gallery { position: relative; width: 320px; min-width: 0; aspect-ratio: 640 / 498; justify-self: center; border-radius: 24px; overflow: hidden; background: var(--navy-dark); }
-.custom-gallery-track { display: flex; height: 100%; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
-.custom-gallery-track::-webkit-scrollbar { display: none; }
-.custom-gallery-track:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
-.custom-gallery-slide { position: relative; flex: 0 0 100%; scroll-snap-align: start; }
-.custom-gallery-slide img { object-fit: cover; }
-.custom-gallery-nav { position: absolute; top: 50%; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: rgba(13, 49, 91, .72); color: white; cursor: pointer; transform: translateY(-50%); }
-.custom-gallery-nav svg { width: 20px; height: 20px; }
-.custom-gallery-prev { left: 8px; }
-.custom-gallery-prev svg { transform: rotate(90deg); }
-.custom-gallery-next { right: 8px; }
-.custom-gallery-next svg { transform: rotate(-90deg); }
-.custom-gallery-nav:hover { background: var(--navy); }
-.custom-gallery-nav:disabled { opacity: 0; pointer-events: none; }
-.custom-gallery-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
-.custom-gallery-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .6); box-shadow: 0 0 0 1px rgba(13, 49, 91, .35); }
-.custom-gallery-dots .is-active { background: var(--gold); }
+.photo-slider-track { display: flex; height: 100%; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.photo-slider-track::-webkit-scrollbar { display: none; }
+.photo-slider-track:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
+.photo-slider-slide { position: relative; flex: 0 0 100%; scroll-snap-align: start; }
+.photo-slider-slide img { object-fit: cover; }
+.photo-slider-nav { position: absolute; top: 50%; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: rgba(13, 49, 91, .72); color: white; cursor: pointer; transform: translateY(-50%); }
+.photo-slider-nav svg { width: 20px; height: 20px; }
+.photo-slider-prev { left: 8px; }
+.photo-slider-prev svg { transform: rotate(90deg); }
+.photo-slider-next { right: 8px; }
+.photo-slider-next svg { transform: rotate(-90deg); }
+.photo-slider-nav:hover { background: var(--navy); }
+.photo-slider-nav:disabled { opacity: 0; pointer-events: none; }
+.photo-slider-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
+.photo-slider-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .6); box-shadow: 0 0 0 1px rgba(13, 49, 91, .35); }
+.photo-slider-dots .is-active { background: var(--gold); }
 /* Touch screens swipe; the arrows are for mouse and keyboard. */
-@media (pointer: coarse) { .custom-gallery-nav { display: none; } }
+@media (pointer: coarse) { .photo-slider-nav { display: none; } }
 .home-reviews { margin: 0 auto 104px; max-width: 1180px; background: #faf9f6; padding: 56px 40px; }
 .home-reviews-heading { text-align: center; margin-bottom: 36px; }
 .section-label { font-size: 13px; letter-spacing: 1.5px; line-height: 23px; margin-bottom: 24px; }
@@ -318,9 +319,10 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .why-section, .faq-section, .about-section { padding: 96px 24px; }
 .why-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 80px; }
 .why-image { position: relative; margin-top: 36px; }
-.why-image > img { width: 100%; height: 400px; object-fit: cover; }
-.why-image > div { position: absolute; bottom: 0; inset-inline: 0; padding: 20px 24px; background: #092542b3; color: white; display: flex; justify-content: space-between; align-items: center; }
-.why-image span { text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+.why-image > img, .why-slider { width: 100%; height: 400px; object-fit: cover; }
+.why-slider .photo-slider-dots { bottom: 74px; }
+.why-follow { position: absolute; z-index: 1; bottom: 0; inset-inline: 0; padding: 20px 24px; background: #092542b3; color: white; display: flex; justify-content: space-between; align-items: center; }
+.why-follow span { text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
 .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px 48px; padding-top: 36px; }
 .benefits-grid img { object-fit: contain; margin-bottom: 40px; }
 .benefits-grid h3 { font-size: 21px; line-height: 1.4; margin-bottom: 12px; }
@@ -351,7 +353,7 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 @media(max-width:1024px) {
   .why-grid { gap: 36px; }
   .benefits-grid { gap: 40px 24px; }
-  .why-image > img { height: 340px; }
+  .why-image > img, .why-slider { height: 340px; }
   .about-grid { gap: 40px; }
 }
 @media(max-width:767px) {
@@ -359,12 +361,12 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
   .why-section, .faq-section, .about-section { padding: 64px 24px; }
   .why-grid, .about-grid { grid-template-columns: minmax(0,1fr); gap: 36px; }
   .why-grid { text-align: center; }
-  .why-image > div { justify-content: center; gap: 24px; }
+  .why-follow { justify-content: center; gap: 24px; }
   .benefits-grid { grid-template-columns: minmax(0,1fr); gap: 36px; padding-top: 0; }
   .benefits-grid article { padding: 24px; }
   .benefits-grid img { width: 64px; height: 64px; margin: 0 auto 32px; }
   .benefits-grid h3 { font-size: 20px; }
-  .why-image > img { height: auto; aspect-ratio: 4/3; }
+  .why-image > img, .why-slider { height: auto; aspect-ratio: 4/3; }
   .faq-list { margin-top: 24px; }
   .faq-list details { padding: 24px 12px; }
   .faq-list summary { font-size: 18px; }
