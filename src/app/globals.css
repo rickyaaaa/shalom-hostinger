@@ -29,6 +29,8 @@
 .account-list li { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--border); }
 .account-list h3 { font-size: 18px; }
 .review-status { color: var(--gold-text); font-size: 14px; margin: 4px 0 12px; }
+.review-status-approved { color: #1c5d36; }
+.review-status-rejected { color: var(--muted); }
 .customer-experience { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 70ch; }
 @media(max-width: 640px) { .customer-section { padding: 0 16px; margin-top: 32px; } .customer-panel { padding: 24px; } .account-heading, .account-list li { align-items: flex-start; flex-direction: column; } .customer-columns { grid-template-columns: 1fr; } }
 
@@ -393,6 +395,8 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .account-subheading { margin: 28px 0 4px; color: var(--navy); font-size: 18px; }
 .order-list { display: grid; gap: 12px; margin: 16px 0 0; padding: 0; list-style: none; }
 .order-card { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+.order-code { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: .02em; }
+.order-code strong { color: var(--navy); font-variant-numeric: tabular-nums; }
 .order-card-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 6px 12px; }
 .order-card h3 { flex: 1 1 160px; min-width: 0; color: var(--navy); font-size: 17px; line-height: 1.35; overflow-wrap: anywhere; }
 .order-status { flex-shrink: 0; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; line-height: 1.5; white-space: nowrap; }

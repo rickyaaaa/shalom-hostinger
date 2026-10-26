@@ -6,7 +6,8 @@ export const customerConfigSchema = z.object({
 });
 export const inquiryHistorySchema = z.object({
   // kind/dates/pickup arrive from WordPress 1.18; optional so a 1.17 backend still renders.
-  items: z.array(z.object({id:z.number().int().positive(),title:z.string(),submitted_at:z.iso.datetime().nullable(),status:z.enum(["inquiry","confirmed","completed","cancelled","unavailable"]),
+  // order_code (1.25): the permanent public order code, e.g. AU-10001; null for orders placed before codes existed.
+  items: z.array(z.object({id:z.number().int().positive(),title:z.string(),order_code:z.string().regex(/^[A-Z]{2}-[1-9]\d{4,9}$/).nullable().optional(),submitted_at:z.iso.datetime().nullable(),status:z.enum(["inquiry","confirmed","completed","cancelled","unavailable"]),
     kind:z.enum(["tour","custom","contact"]).optional(),travel_date:z.iso.date().nullable().optional(),booking_date:z.iso.date().nullable().optional(),pickup_place:z.string().max(200).nullable().optional(),pickup_time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).nullable().optional()})),
   page:z.number().int().min(1).max(9999), has_more:z.boolean(),
 });
@@ -32,7 +33,7 @@ export const accountSchema = z.object({
   previous_tour_reviews: previousTourReviewsSchema.optional(),
   // 1.21: the signed-in partner's own referral slug, only while an admin has referral enabled for them.
   referral: z.object({ slug: z.string().min(2).max(40).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) }).nullable().optional(),
-  reviews: z.array(z.object({ id: z.number().int().positive().optional(), tour_id: z.number().int(), title: z.string(), experience: z.string(), status: z.enum(["approved", "pending", "unavailable"]), submitted_at: z.string().optional(), ratings: z.object({driving_skill:z.number().int(),service:z.number().int(),car:z.number().int()}).optional(), price:z.string().optional(), recommend:z.boolean().optional() })),
+  reviews: z.array(z.object({ id: z.number().int().positive().optional(), tour_id: z.number().int(), title: z.string(), experience: z.string(), status: z.enum(["approved", "pending", "rejected", "unavailable"]), submitted_at: z.string().optional(), ratings: z.object({driving_skill:z.number().int(),service:z.number().int(),car:z.number().int()}).optional(), price:z.string().optional(), recommend:z.boolean().optional() })),
 });
 export type CustomerConfig = z.infer<typeof customerConfigSchema>;
 export type CustomerAccount = z.infer<typeof accountSchema>;

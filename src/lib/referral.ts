@@ -11,7 +11,18 @@ export function isReferralToken(value: string | undefined): value is string {
   return typeof value === "string" && value.length <= 512 && /^[A-Za-z0-9_-]+\.[a-f0-9]{64}$/.test(value);
 }
 
-/** Public referral link for a partner, on the current site origin. */
+/** Public referral link for a partner, on the current site origin: /<slug> at the root. */
 export function referralUrl(origin: string, slug: string) {
-  return `${origin.replace(/\/$/, "")}/ref/${slug}`;
+  return `${origin.replace(/\/$/, "")}/${slug}`;
+}
+
+/** Where a link to `raw` continues: the partner's own root path, or Home for anything that is not a slug. Never off-site. */
+export function referralPath(raw: string) {
+  const slug = raw.trim().toLowerCase();
+  return isReferralSlug(slug) ? `/${slug}` : "/";
+}
+
+/** The one place a click becomes attribution (sets the cookie, then continues to Home). */
+export function referralAttributionPath(slug: string) {
+  return `/api/referral/${slug}`;
 }

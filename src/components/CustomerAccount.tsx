@@ -11,16 +11,17 @@ import { formatDate, orderStatus, tourDateLabel } from "@/lib/account-display";
 import { itineraryTitle } from "@/lib/format";
 import { scrollToAnchor } from "@/lib/anchor";
 
-function ReviewForm({onSubmitted,title,tourId,entitlementId,context}:{onSubmitted:()=>void;title:string;tourId:number;entitlementId?:string|number;context?:string}) {
+function ReviewForm({onSubmitted,title,tourId,entitlementId,context,publishes=false}:{onSubmitted:(published:boolean)=>void;title:string;tourId:number;entitlementId?:string|number;context?:string;publishes?:boolean}) {
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState("");
   async function submit(event:FormEvent<HTMLFormElement>) {
     event.preventDefault(); if (busy) return; setBusy(true); setError("");
-    try { await customerFetch("reviews",{...Object.fromEntries(new FormData(event.currentTarget)),tour_id:tourId,...(entitlementId === undefined ? {} : {entitlement_id:entitlementId})}); onSubmitted(); }
+    // WordPress decides: a review from a completed order publishes now; a previous-itinerary review awaits approval.
+    try { const result = await customerFetch("reviews",{...Object.fromEntries(new FormData(event.currentTarget)),tour_id:tourId,...(entitlementId === undefined ? {} : {entitlement_id:entitlementId})}); onSubmitted(result?.status === "approved"); }
     catch (reason) { setError(reason instanceof Error ? reason.message : "Please try again."); setBusy(false); }
   }
   return <form className="customer-form" onSubmit={submit} aria-busy={busy}>
-    <h3>Review {itineraryTitle(title)}</h3>{context && <p className="review-context">{context}</p>}<p>Your review will appear publicly after approval.</p>
+    <h3>Review {itineraryTitle(title)}</h3>{context && <p className="review-context">{context}</p>}<p>{publishes ? "Your review will be published right away." : "Your review will appear publicly after approval."}</p>
     {error && <p role="alert" className="customer-error">{error}</p>}
     <div className="customer-columns">{[["driving_skill","Driving Skill"],["service","Service"],["car","Car"]].map(([key,label])=><label key={key}>{label}<select name={key} required defaultValue=""><option value="">Choose 1–10</option>{Array.from({length:10},(_,i)=><option key={i} value={i+1}>{i+1}</option>)}</select></label>)}</div>
     <label>Was the itinerary worth it?<select name="price" required defaultValue=""><option value="">Choose an answer</option><option value="worth_it">Worth it</option><option value="not_worth_it">Not worth it</option></select></label>
@@ -68,7 +69,7 @@ function AccountDashboard({ account, reload }: { account: AccountData; reload: (
   const [bound,setBound] = useState<Entitlement|null>(null);
   const listed: Entitlement[] = account.review_entitlements ?? account.completed_tours.filter(tour => tour.can_review).map(tour => ({id:`legacy-${tour.id}`,tour_id:tour.id,title:tour.title}));
   const entitlements = bound && !listed.some(item => item.id === bound.id) && review === bound.id ? [...listed, bound] : listed;
-  const submitted = () => {setReview(null);setBound(null);setNotice("Thank you. Your review is awaiting approval.");reload();};
+  const submitted = (published: boolean) => {setReview(null);setBound(null);setNotice(published ? "Thank you. Your review is now published." : "Thank you. Your review is awaiting approval.");reload();};
   const openReview = (id: string | number) => { setReview(id); requestAnimationFrame(() => scrollToAnchor(document.getElementById("leave-review"), "smooth")); };
   return <>
     <p className="customer-intro">Welcome, {account.customer.name}.</p>
@@ -105,6 +106,7 @@ function OrderHistory({initial,entitlements,onReview}:{initial:AccountData["inqu
       const status = orderStatus[item.status];
       const entitlement = item.status === "completed" ? entitlements.find(row => row.inquiry_id === item.id) : undefined;
       return <li key={item.id} className="order-card">
+        {item.order_code && <p className="order-code">Order <strong>{item.order_code}</strong></p>}
         <div className="order-card-head"><h3>{itineraryTitle(item.title)}</h3><span className={`order-status order-status-${status.tone}`}>{status.label}</span></div>
         {status.note && <p className="order-status-note">{status.note}</p>}
         <dl className="order-details">
@@ -126,7 +128,7 @@ function OrderHistory({initial,entitlements,onReview}:{initial:AccountData["inqu
   </section>;
 }
 
-function ReviewsSection({account,entitlements,review,setReview,onSubmitted}:{account:AccountData;entitlements:Entitlement[];review:string|number|null;setReview:(id:string|number|null)=>void;onSubmitted:()=>void}) {
+function ReviewsSection({account,entitlements,review,setReview,onSubmitted}:{account:AccountData;entitlements:Entitlement[];review:string|number|null;setReview:(id:string|number|null)=>void;onSubmitted:(published:boolean)=>void}) {
   const selected = entitlements.find(item => item.id === review);
   const booking = (item: Entitlement) => account.inquiries.items.find(order => order.id === item.inquiry_id);
   return <section id="reviews" className="account-block" aria-labelledby="reviews-title">
@@ -134,7 +136,7 @@ function ReviewsSection({account,entitlements,review,setReview,onSubmitted}:{acc
     {/* One row per unused review entitlement: each completed booking funds one review of its Tour. */}
     <h3 id="leave-review" className="account-subheading">Ready to review</h3>
     {entitlements.length ? <ul className="account-list">{entitlements.map(item => { const order = booking(item); const date = order?.booking_date ?? order?.travel_date; return <li key={String(item.id)}><div><strong>{itineraryTitle(item.title)}</strong>{item.previous_tour ? <p className="field-help">Previous itinerary · {previousTourLine(item.previous_tour)}</p> : date && <p className="field-help">Travel date {formatDate(date)}</p>}</div><button className="button button-outline" onClick={()=>setReview(review===item.id?null:item.id)} aria-expanded={review===item.id}>{review===item.id ? "Close review form" : "Leave Review"}</button></li>; })}</ul> : <p className="account-empty-review">You can leave a review after Shalom Bali Tour marks your booking as completed.</p>}
-    {selected && <ReviewForm key={String(selected.id)} tourId={selected.tour_id} entitlementId={selected.id} onSubmitted={onSubmitted} title={selected.title} context={selected.previous_tour ? `Your previous itinerary: ${previousTourLine(selected.previous_tour)}` : undefined} />}
+    {selected && <ReviewForm key={String(selected.id)} tourId={selected.tour_id} entitlementId={selected.id} onSubmitted={onSubmitted} publishes={selected.source === "booking"} title={selected.title} context={selected.previous_tour ? `Your previous itinerary: ${previousTourLine(selected.previous_tour)}` : undefined} />}
     <h3 className="account-subheading">My Reviews</h3>
     {account.reviews.length ? <ul className="account-list">{account.reviews.map((item,i)=><li key={item.id??i}><div><strong>{itineraryTitle(item.title)}</strong><ReviewStatus status={item.status}/><p className="customer-experience">{item.experience}</p></div></li>)}</ul> : <p className="account-empty-review">You have not submitted any reviews yet.</p>}
   </section>;
@@ -179,7 +181,7 @@ function PreviousTourSection({summary,onBound}:{summary:PreviousTourReviews;onBo
   return <section className="account-block previous-tour" aria-labelledby="previous-tour-title">
     <h2 id="previous-tour-title">Comment on a Previous Itinerary</h2>
     <p className="account-block-intro">Traveled with Shalom Bali Tour before? Tell us which itinerary you took, then share your experience.</p>
-    <p className="previous-tour-count">Previous itinerary comments remaining: <strong>{summary.remaining}</strong></p>
+    {summary.remaining > 0 && <p className="previous-tour-count">Previous itinerary comments remaining: <strong>{summary.remaining}</strong></p>}
     {summary.remaining > 0 ? <form className="booking-search-form" onSubmit={submit} noValidate aria-busy={busy}>
       <div className="booking-search-fields">
         <label className="booking-search-field">Previous Itinerary Area<select value={area} onChange={event => setArea(event.target.value)} required><option value="">Choose the area</option>{areas.map(item => <option key={item.slug} value={item.slug}>{item.label}</option>)}</select></label>
@@ -189,9 +191,10 @@ function PreviousTourSection({summary,onBound}:{summary:PreviousTourReviews;onBo
       </div>
       <button className="button booking-search-submit" type="submit" disabled={busy}>{busy ? "Preparing your comment…" : "Give Comment"}</button>
       {error && <p className="customer-error booking-search-error" role="alert">{error}</p>}
-    </form> : <p className="account-empty-review">You have used your previous-itinerary review opportunities. Complete a new booking to leave another review.</p>}
+    </form> : <p className="account-empty-review">You have used all {summary.limit} previous-itinerary review opportunities. Complete a new booking to leave another review.</p>}
     {summary.items.length > 0 && <><h3 className="account-subheading">Your previous itineraries</h3><ul className="account-list">{summary.items.map((item,i) => <li key={i}><div><strong>{itineraryTitle(item.title)}</strong><p className="field-help">{previousTourLine(item)}</p></div><p className="review-status">{item.status === "submitted" ? "Comment submitted" : "Ready to comment below"}</p></li>)}</ul></>}
   </section>;
 }
 
-export function ReviewStatus({status}:{status:"pending"|"approved"|"unavailable"}){return <p className="review-status">{status==="pending"?"Pending approval":status==="approved"?"Approved":"Unavailable"}</p>;}
+const reviewStatusLabels = { pending: "Pending review", approved: "Published", rejected: "Rejected", unavailable: "Unavailable" } as const;
+export function ReviewStatus({status}:{status:keyof typeof reviewStatusLabels}){return <p className={`review-status review-status-${status}`}>{reviewStatusLabels[status]}</p>;}

@@ -39,7 +39,8 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
       if (!client) {
         token = newClientToken();
         client = readClientToken(token);
-        jar.set("shalom_rate_client", token, { httpOnly: true, secure: appOrigin().startsWith("https:"), sameSite: "lax", path: "/", maxAge: 86400 });
+        // Route Handlers persist the identity. A Server Component cannot set cookies, so there it covers this request only.
+        try { jar.set("shalom_rate_client", token, { httpOnly: true, secure: appOrigin().startsWith("https:"), sameSite: "lax", path: "/", maxAge: 86400 }); } catch {}
       }
       if (!client) throw new Error("Could not establish a rate identity.");
       signatureHeaders = signedRequestHeaders(wordpressConfig().api, "/shalom/v1/customer/" + action, body!, client);
@@ -70,9 +71,12 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
       travel_date: "This travel date is no longer available for online ordering. Next-day orders close at 20:00 Bali time.",
       pickup_place: "Please enter your pickup place or hotel (up to 200 characters).",
       pickup_time: "Please choose your pickup time.",
+      // Order codes (WordPress 1.25): the same booking is still being saved, or no order number could be issued.
+      busy: "Your order is still being saved. Please wait a moment and try again.",
+      order_number: "We could not save your order. Please try again.",
       // Comment on a Previous Tour (WordPress 1.20).
       previous_tour_ineligible: "Comments on a previous itinerary are only available to customers who have traveled with Shalom Bali Tour before.",
-      previous_tour_limit: "You have used your previous-itinerary review opportunities. Complete a new booking to leave another review.",
+      previous_tour_limit: "You have used all 3 previous-itinerary review opportunities. Complete a new booking to leave another review.",
       previous_tour_busy: "Your previous itinerary is already being saved. Please wait a moment and try again.",
       previous_tour_area: "Please choose your previous itinerary area.",
       previous_tour_package: "Please choose an itinerary from the selected area.",

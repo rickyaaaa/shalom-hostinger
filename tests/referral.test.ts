@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isReferralSlug, isReferralToken, referralUrl, REFERRAL_COOKIE } from "../src/lib/referral";
+import fs from "node:fs";
+import path from "node:path";
+import { isReferralSlug, isReferralToken, referralAttributionPath, referralPath, referralUrl, REFERRAL_COOKIE } from "../src/lib/referral";
 import { accountSchema, inquiryInput } from "../src/lib/customer-types";
 
 const base = { customer:{id:3,name:"QA",country:"",avatar_url:null,email:"qa@example.test",referral_enabled:true}, completed_tours:[], reviews:[], inquiries:{items:[],page:1,has_more:false} };
@@ -17,10 +19,28 @@ test("Only a signed-token shape is ever stored or forwarded", () => {
   assert.equal(REFERRAL_COOKIE, "shalom_referral");
 });
 
-test("Referral link is built on the site origin", () => {
-  assert.equal(referralUrl("https://shalombalitour.com", "ricky"), "https://shalombalitour.com/ref/ricky");
-  assert.equal(referralUrl("https://shalombalitour.com/", "ricky"), "https://shalombalitour.com/ref/ricky");
-  assert.equal(referralUrl("shalombalitour.com", "ricky"), "shalombalitour.com/ref/ricky");
+test("Referral link is the root-level /<slug> on the site origin", () => {
+  assert.equal(referralUrl("https://shalombalitour.com", "ricky"), "https://shalombalitour.com/ricky");
+  assert.equal(referralUrl("https://shalombalitour.com/", "ricky"), "https://shalombalitour.com/ricky");
+  assert.equal(referralUrl("shalombalitour.com", "john-doe"), "shalombalitour.com/john-doe");
+  assert.equal(referralUrl("", "ricky"), "/ricky");
+});
+
+test("Old /ref/<slug> links continue to /<slug>; anything else goes Home, never off-site", () => {
+  assert.equal(referralPath("ricky"), "/ricky");
+  assert.equal(referralPath("Ricky"), "/ricky");
+  for (const bad of ["", "//evil.example", "/evil", "https://evil.example", "https:evil.example", "..", "../login", "%2F%2Fevil", "ricky/../../x", "ricky?x=1", "a".repeat(41)]) assert.equal(referralPath(bad), "/", bad);
+  assert.equal(referralAttributionPath("ricky"), "/api/referral/ricky");
+});
+
+test("The root referral entry cannot shadow site routes: every top-level page is an explicit route", () => {
+  const app = path.join(import.meta.dirname, "../src/app");
+  const dynamic = fs.readdirSync(app, { withFileTypes: true }).filter(entry => entry.isDirectory() && entry.name.startsWith("["));
+  assert.deepEqual(dynamic.map(entry => entry.name), ["[slug]"], "only one dynamic root segment");
+  const page = fs.readFileSync(path.join(app, "[slug]/page.tsx"), "utf8");
+  assert.match(page, /notFound\(\)/, "unknown slugs use the normal Not Found page");
+  assert.match(page, /robots: \{ index: false, follow: false \}/, "never an indexable copy of Home");
+  for (const route of ["login", "register", "account", "book", "ubud", "south-kuta", "west-bali", "request-help", "reset-password", "forgot-password", "ref", "api"]) assert.ok(fs.existsSync(path.join(app, route)), route);
 });
 
 test("Account referral data is optional and strictly shaped", () => {

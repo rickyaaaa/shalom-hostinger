@@ -36,7 +36,7 @@ export function ShareSite({ referralSlug = null }: { referralSlug?: string | nul
   return <section className="account-block" aria-labelledby="share-title">
     <h2 id="share-title">Share Shalom Bali Tour</h2>
     <p>Share your personal link. Orders placed after someone visits through it are recorded as your referral.</p>
-    <p className="referral-link"><span>Referral Link</span><code suppressHydrationWarning>{typeof window === "undefined" ? `/ref/${referralSlug}` : referralUrl(window.location.host, referralSlug)}</code></p>
+    <p className="referral-link"><span>Referral Link</span><code suppressHydrationWarning>{typeof window === "undefined" ? referralUrl("", referralSlug) : referralUrl(window.location.host, referralSlug)}</code></p>
     <div className="referral-actions">
       <button type="button" className="button" onClick={() => void copy()}>Copy Link</button>
       <button type="button" className="button button-outline" onClick={() => void share()}>Share</button>

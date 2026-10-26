@@ -120,7 +120,8 @@ async function handle(request: Request, context: Context) {
     const referral = action === "inquiries" ? (await cookies()).get(REFERRAL_COOKIE)?.value : undefined;
     const {value} = await customerRequest(action, "POST", isReferralToken(referral) ? {...input, referral} : input, session);
     if (action === "booking-ticket") return reply(z.object({ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).parse(value));
-    if (action === "reviews") return reply(z.object({status:z.literal("pending"),message:z.string()}).parse(value),201);
+    // WordPress 1.26: an order-backed review is published at once ("approved"); any other review awaits moderation ("pending").
+    if (action === "reviews") return reply(z.object({status:z.enum(["pending","approved"]),message:z.string()}).parse(value),201);
     const result = z.object({whatsapp_url:z.url()}).parse(value);
     const url = new URL(result.whatsapp_url);
     if (url.origin !== "https://wa.me" || !/^\/[1-9][0-9]{6,14}$/.test(url.pathname) || url.username || url.password) throw new CustomerError(502,"The booking continuation could not be verified.");
