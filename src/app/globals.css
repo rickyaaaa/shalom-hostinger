@@ -99,7 +99,26 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .customized-copy li svg { width: 15px; height: 15px; color: var(--gold); stroke-width: 3; }
 .custom-note { margin: 34px 0 40px; color: #e5b750; font-size: 12px; line-height: 24px; letter-spacing: .5px; }
 .customized-copy .button { width: auto; font-weight: 500; }
-.customized-inner > img { width: 320px; height: auto; justify-self: center; border-radius: 24px; }
+/* Photo slider in the original image's box: same width, radius and 640:498 ratio, so nothing around it moves. */
+.custom-gallery { position: relative; width: 320px; min-width: 0; aspect-ratio: 640 / 498; justify-self: center; border-radius: 24px; overflow: hidden; background: var(--navy-dark); }
+.custom-gallery-track { display: flex; height: 100%; margin: 0; padding: 0; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.custom-gallery-track::-webkit-scrollbar { display: none; }
+.custom-gallery-track:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
+.custom-gallery-slide { position: relative; flex: 0 0 100%; scroll-snap-align: start; }
+.custom-gallery-slide img { object-fit: cover; }
+.custom-gallery-nav { position: absolute; top: 50%; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: rgba(13, 49, 91, .72); color: white; cursor: pointer; transform: translateY(-50%); }
+.custom-gallery-nav svg { width: 20px; height: 20px; }
+.custom-gallery-prev { left: 8px; }
+.custom-gallery-prev svg { transform: rotate(90deg); }
+.custom-gallery-next { right: 8px; }
+.custom-gallery-next svg { transform: rotate(-90deg); }
+.custom-gallery-nav:hover { background: var(--navy); }
+.custom-gallery-nav:disabled { opacity: 0; pointer-events: none; }
+.custom-gallery-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
+.custom-gallery-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .6); box-shadow: 0 0 0 1px rgba(13, 49, 91, .35); }
+.custom-gallery-dots .is-active { background: var(--gold); }
+/* Touch screens swipe; the arrows are for mouse and keyboard. */
+@media (pointer: coarse) { .custom-gallery-nav { display: none; } }
 .home-reviews { margin: 0 auto 104px; max-width: 1180px; background: #faf9f6; padding: 56px 40px; }
 .home-reviews-heading { text-align: center; margin-bottom: 36px; }
 .section-label { font-size: 13px; letter-spacing: 1.5px; line-height: 23px; margin-bottom: 24px; }
@@ -253,9 +272,9 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
   .area-panel h2 { font-size: 40px; line-height: 50px; }
   .area-panel p { font-size: 14px; line-height: 24px; }
   .customized-section { margin: 80px 0; padding: 0 16px; }
-  .customized-inner { grid-template-columns: 1fr; gap: 36px; padding: 36px 24px; border-radius: 20px; }
+  .customized-inner { grid-template-columns: minmax(0, 1fr); gap: 36px; padding: 36px 24px; border-radius: 20px; }
   .customized-copy h2 { font-size: 27px; line-height: 37px; }
-  .customized-inner > img { max-width: 100%; width: 280px; border-radius: 20px; }
+  .custom-gallery { max-width: 100%; width: 280px; border-radius: 20px; }
   .custom-note { margin: 24px 0; }
   .home-reviews { padding: 36px 20px; margin: 0 16px 64px; }
   .home-reviews-heading h2 { font-size: 32px; line-height: 42px; }

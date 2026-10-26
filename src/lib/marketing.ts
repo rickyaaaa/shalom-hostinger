@@ -6,6 +6,8 @@ export const areas = {
   "west-bali": {name:"West Bali",label:"EXPLORE WEST BALI",heading:"Are You Ready To Explore West Bali ?",image:"/images/west-bali.jpeg",alt:"A Balinese temple beside the water",description:"Choose one of our West Bali itineraries or tell us the places you want to visit. We’ll help arrange a flexible, personalized itinerary with a comfortable private driver."},
 };
 export type AreaSlug = keyof typeof areas;
+/** The official TikTok profile (client-confirmed). An external link, never a site route. */
+export const tiktokProfile = "https://www.tiktok.com/@shalombalitour";
 export const benefits = [
   {title:"Private Driver",text:"Travel comfortably with a dedicated driver throughout your Bali itinerary.",image:"7-24-1-AQVLJK4TH3.png"},
   {title:"Flexible Itinerary",text:"Follow one of our recommended routes or request your own mix of destinations.",image:"7-19-1-AQVLJK4TH3.png"},

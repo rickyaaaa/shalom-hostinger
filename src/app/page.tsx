@@ -6,6 +6,7 @@ import { siteLinks } from "@/lib/site";
 import { ReviewEntry } from "@/components/ReviewEntry";
 import { ServiceUnavailable } from "@/components/ServiceUnavailable";
 import { Icon } from "@/components/Icon";
+import { CustomGallery } from "@/components/CustomGallery";
 import { WhyChooseUs, FAQ, AboutSection } from "@/components/HomeInformation";
 import { publicMetadata } from "@/lib/seo";
 
@@ -40,7 +41,7 @@ export default function HomePage() {
         <ul>{["Choose Your Destinations", "Flexible Itinerary", "Private Driver"].map(item => <li key={item}><Icon name="check" />{item}</li>)}</ul>
         <p className="custom-note">NB: For special itinerary requests, there will be a price calculation, depending on the location and destination, so you will be directly connected to customer service for the price.</p>
         <a href={links.customBooking} className="button button-gold">Customized Itinerary</a>
-      </div><Image src="/images/custom-itinerary.webp" alt="Choosing your own itinerary" width={640} height={498} sizes="(max-width: 767px) 80vw, 320px" /></div>
+      </div><CustomGallery /></div>
     </section>
     <section className="home-reviews" id="review" aria-labelledby="home-reviews-title">
       <div className="home-reviews-heading"><p className="section-label">GUEST EXPERIENCES</p><h2 id="home-reviews-title">What Our Guests Say</h2><p>Real experiences from travelers who explored Bali with Shalom Bali Tour.</p></div>
