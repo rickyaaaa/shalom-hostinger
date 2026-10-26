@@ -14,7 +14,8 @@ async function preselectFor(tourId: number, requested_travel_date?: string): Pro
 }
 
 export default async function AccountPage({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}) {
-  const parsed = parseIntent(await searchParams);
-  const intent = parsed?.kind === "tour" ? parsed : null;
-  return <CustomerAccount intent={intent} preselect={intent ? await preselectFor(intent.tour_id, intent.requested_travel_date) : null} />;
+  const intent = parseIntent(await searchParams);
+  // A Customized Itinerary request has no fixed itinerary to resolve.
+  const preselect = !intent ? null : intent.kind === "custom" ? { tour_id: "custom" as const, ...(intent.requested_travel_date ? { requested_travel_date: intent.requested_travel_date } : {}) } : await preselectFor(intent.tour_id, intent.requested_travel_date);
+  return <CustomerAccount intent={intent} preselect={preselect} />;
 }

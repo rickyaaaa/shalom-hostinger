@@ -30,7 +30,7 @@ test("booking return intent permits only canonical Tour IDs or custom requests",
     assert.equal(intentQuery(intent),`?tour=${id}`);
     assert.equal(bookingInput.safeParse(intent).success,true);
   }
-  assert.equal(bookingPath(parseIntent({booking:"custom"})!),"/book/custom");
+  assert.equal(bookingPath(parseIntent({booking:"custom"})!),"/account?booking=custom#order-tour");
   for(const tour of ["0","-1","523x","https://evil.test",["523"]])assert.equal(parseIntent({tour}),null);
   assert.equal(bookingInput.safeParse({kind:"custom",tour_id:523}).success,false);
   assert.equal(bookingInput.safeParse({kind:"contact",tour_id:0,phone:"forged"}).success,false);
@@ -40,7 +40,7 @@ test("requested travel date stays in the booking intent and entitlement DTO is e
   const intent=parseIntent({tour:"523",requested_travel_date:"2026-12-24"})!;
   assert.deepEqual(intent,{kind:"tour",tour_id:523,requested_travel_date:"2026-12-24"});
   assert.equal(bookingPath(intent),"/account?tour=523&requested_travel_date=2026-12-24#order-tour");
-  assert.equal(bookingPath({kind:"custom",tour_id:0,requested_travel_date:"2026-12-24"}),"/book/custom?requested_travel_date=2026-12-24");
+  assert.equal(bookingPath({kind:"custom",tour_id:0,requested_travel_date:"2026-12-24"}),"/account?booking=custom&requested_travel_date=2026-12-24#order-tour");
   assert.equal(intentQuery(intent),"?tour=523&requested_travel_date=2026-12-24");
   assert.equal(bookingInput.safeParse(intent).success,true);
   assert.equal(bookingInput.safeParse({...intent,requested_travel_date:"24-12-2026"}).success,false);
@@ -64,14 +64,15 @@ test("session key tolerates CR/whitespace from hosting env imports but stays str
   delete process.env.SESSION_ENCRYPTION_KEY;
   assert.throws(() => sealSession(session));
 });
-test("order details are Tour-only, bounded and passed through the BFF schemas",()=>{
+test("order details are bounded and passed through the BFF schemas",()=>{
   const order={kind:"tour",tour_id:628,requested_travel_date:"2026-11-17",pickup_place:"Svara by Mazari, Uluwatu",pickup_time:"10:00"};
   assert.equal(bookingInput.safeParse(order).success,true);
   assert.equal(inquiryInput.safeParse({...order,ticket:"x".repeat(48)}).success,true);
   const trimmed=bookingInput.parse({...order,pickup_place:"  Hotel  "});
   assert.equal("pickup_place" in trimmed && trimmed.pickup_place,"Hotel");
   for(const bad of [{pickup_time:"24:00"},{pickup_time:"10:00 AM"},{pickup_place:""},{pickup_place:"x".repeat(201)},{requested_travel_date:"17.11.2026"},{user_id:1}])assert.equal(bookingInput.safeParse({...order,...bad}).success,false);
-  assert.equal(bookingInput.safeParse({kind:"custom",tour_id:0,requested_travel_date:"2026-11-17",pickup_place:"Hotel",pickup_time:"10:00"}).success,false);
+  // Customized Itinerary orders carry the same pickup details (client revision, WordPress 1.22).
+  assert.equal(bookingInput.safeParse({kind:"custom",tour_id:0,requested_travel_date:"2026-11-17",pickup_place:"Hotel",pickup_time:"10:00"}).success,true);
   assert.equal(bookingInput.safeParse({kind:"tour",tour_id:628,requested_travel_date:"2026-11-17"}).success,true);
 });
 test("1.16 auth contracts: one identifier, registration email, email reset, fragment key",()=>{

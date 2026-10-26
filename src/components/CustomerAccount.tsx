@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { accountSchema, previousTourResult, type CustomerAccount as AccountData } from "@/lib/customer-types";
 import { customerFetch } from "@/lib/customer-client";
 import { useCustomerSession } from "./CustomerSession";
@@ -9,6 +9,7 @@ import { ShareSite } from "./ShareSite";
 import { areas, BookingSearch, type Package } from "./BookingSearch";
 import { formatDate, orderStatus, tourDateLabel } from "@/lib/account-display";
 import { itineraryTitle } from "@/lib/format";
+import { scrollToAnchor } from "@/lib/anchor";
 
 function ReviewForm({onSubmitted,title,tourId,entitlementId,context}:{onSubmitted:()=>void;title:string;tourId:number;entitlementId?:string|number;context?:string}) {
   const [busy,setBusy] = useState(false);
@@ -55,8 +56,8 @@ export function AccountGate({ title, wide = false, intent = null, children }: { 
 export function supportHref(account: AccountData | null) { return account?.support_whatsapp_url ?? "/#contact"; }
 
 
-/** A predefined Tour resolved server-side from its canonical ID, to preselect in Order Your Bali Tour. */
-export type OrderPreselect = { tour_id: number; requested_travel_date?: string };
+/** What Order Your Bali Itinerary opens with: a fixed itinerary resolved server-side from its canonical ID, or a Customized Itinerary request. */
+export type OrderPreselect = { tour_id: number | "custom"; requested_travel_date?: string };
 
 export function CustomerAccount({ intent = null, preselect = null }: { intent?: BookingIntent | null; preselect?: OrderPreselect | null }) {
   return <AccountGate title="My Account" wide intent={intent}>{(account, reload) => <AccountDashboard account={account} reload={reload} preselect={preselect} />}</AccountGate>;
@@ -70,15 +71,15 @@ function AccountDashboard({ account, reload, preselect }: { account: AccountData
   const listed: Entitlement[] = account.review_entitlements ?? account.completed_tours.filter(tour => tour.can_review).map(tour => ({id:`legacy-${tour.id}`,tour_id:tour.id,title:tour.title}));
   const entitlements = bound && !listed.some(item => item.id === bound.id) && review === bound.id ? [...listed, bound] : listed;
   const submitted = () => {setReview(null);setBound(null);setNotice("Thank you. Your review is awaiting approval.");reload();};
-  const openReview = (id: string | number) => { setReview(id); requestAnimationFrame(() => document.getElementById("leave-review")?.scrollIntoView({behavior:"smooth",block:"start"})); };
+  const openReview = (id: string | number) => { setReview(id); requestAnimationFrame(() => scrollToAnchor(document.getElementById("leave-review"), "smooth")); };
   return <>
     <p className="customer-intro">Welcome, {account.customer.name}.</p>
     {notice && <p className="customer-notice" role="status">{notice}</p>}
-    <BookingSearch initialTourId={preselect?.tour_id} initialDate={preselect?.requested_travel_date} />
+    <BookingSearch initialSelection={preselect?.tour_id} initialDate={preselect?.requested_travel_date} />
     <OrderHistory key={account.customer.id} initial={account.inquiries} entitlements={entitlements} onReview={openReview} />
     {account.previous_tour_reviews?.eligible && <PreviousTourSection summary={account.previous_tour_reviews} onBound={row => {setBound(row);setNotice("");openReview(row.id);reload();}} />}
     <ReviewsSection account={account} entitlements={entitlements} review={review} setReview={setReview} onSubmitted={submitted} />
-    {account.customer.referral_enabled === true && <ShareSite />}
+    {account.customer.referral_enabled === true && <ShareSite referralSlug={account.referral?.slug ?? null} />}
   </>;
 }
 
@@ -188,28 +189,3 @@ function PreviousTourSection({summary,onBound}:{summary:PreviousTourReviews;onBo
 }
 
 export function ReviewStatus({status}:{status:"pending"|"approved"|"unavailable"}){return <p className="review-status">{status==="pending"?"Pending approval":status==="approved"?"Approved":"Unavailable"}</p>;}
-
-/** Customized Tour request page: the itinerary is not predefined, so the customer asks Shalom and continues on WhatsApp. */
-export function BookingFlow({title,intent,backHref}:{title:string;intent:Extract<BookingIntent,{kind:"custom"}>;backHref:string}) {
-  const {account,guest,error:sessionError,loading}=useCustomerSession();
-  const [ready,setReady] = useState(false);
-  const [error,setError] = useState("");
-  const [busy,setBusy] = useState(false);
-  const [whatsapp,setWhatsapp] = useState("");
-  const ticket = useRef("");
-  const loginUrl=`/login${intentQuery(intent)}`;
-  useEffect(()=>{if(loading)return;if(guest)window.location.replace(loginUrl);else if(account)setReady(true);else setError(sessionError);},[account,guest,loading,loginUrl,sessionError]);
-  async function book() {
-    if (busy) return; setBusy(true);setError("");
-    try {
-      if (!ticket.current) ticket.current = (await customerFetch("booking-ticket",intent)).ticket;
-      const result = await customerFetch("inquiries",{...intent,ticket:ticket.current});
-      setWhatsapp(result.whatsapp_url);
-    } catch(reason) {setError(reason instanceof Error ? reason.message : "Please try again.");} finally {setBusy(false);}
-  }
-  return <section className="customer-section"><div className="customer-panel"><h1>Book {title}</h1><p className="customer-intro">Ask Shalom Bali Tour about availability. Your inquiry stays linked to your account.</p>
-    {error && <p role="alert" className="customer-error">{error} {!ready && <Link href={loginUrl}>Sign in again</Link>}</p>}
-    {whatsapp ? <><p className="customer-notice" role="status">Your inquiry is ready. Continue on WhatsApp to discuss your itinerary.</p><a className="button" href={whatsapp} target="_blank" rel="noreferrer">Continue on WhatsApp</a></> : ready ? <button className="button" onClick={book} disabled={busy}>{busy ? "Preparing your inquiry…" : "Request Availability"}</button> : !error && <p role="status">Checking your account…</p>}
-    <p className="customer-footer"><Link href={backHref}>Back to Itineraries</Link> · <Link href="/account">My Account</Link></p>
-  </div></section>;
-}

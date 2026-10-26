@@ -67,7 +67,7 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
       password_reuse: "Choose a new password that is different from your current password.",
       duplicate: "You have already reviewed this itinerary.", ineligible: "This itinerary is not eligible for a review on your account.",
       ticket: "Your booking request has expired. Return to Itineraries and select Order Now again.",
-      travel_date: "Please choose a travel date from today onwards.",
+      travel_date: "This travel date is no longer available for online ordering. Next-day orders close at 20:00 Bali time.",
       pickup_place: "Please enter your pickup place or hotel (up to 200 characters).",
       pickup_time: "Please choose your pickup time.",
       // Comment on a Previous Tour (WordPress 1.20).

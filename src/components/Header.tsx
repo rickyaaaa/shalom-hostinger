@@ -8,6 +8,7 @@ import type { SiteLinks } from "@/lib/types";
 import { Icon } from "./Icon";
 import { AccountHeaderAction } from "./AccountHeaderAction";
 import { MobileMenu } from "./MobileMenu";
+import { stickyHeaderHeight } from "@/lib/anchor";
 
 export function Header({ links: _links }: { links: SiteLinks }) {
   const pathname = usePathname();
@@ -32,6 +33,18 @@ export function Header({ links: _links }: { links: SiteLinks }) {
     document.addEventListener("keydown", escape);
     return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
   }, [open, itinerary]);
+
+  // Publish the real sticky-header height (it changes with breakpoint, logo size and text zoom) for anchor offsets and the menu.
+  useEffect(() => {
+    const element = header.current;
+    if (!element) return;
+    const update = () => document.documentElement.style.setProperty("--site-header-height", `${Math.ceil(stickyHeaderHeight())}px`);
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    window.addEventListener("resize", update);
+    update();
+    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
+  }, []);
 
   const close = () => { setOpen(false); setItinerary(false); };
 

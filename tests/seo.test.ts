@@ -15,7 +15,7 @@ test("preview remains noindex; approved indexing exposes only public pages",()=>
   for(const path of ["/","/ubud","/south-kuta","/west-bali"]){const meta=publicMetadata("Title","Description",path);assert.deepEqual(meta.robots,{index:true,follow:true});assert.equal(meta.alternates?.canonical,path);}
   assert.deepEqual(privateRobots,{index:false,follow:false});
   const rules=robots().rules as {disallow:string[]};
-  for(const path of ["/account","/login","/register","/request-help","/book/","/api/"])assert.ok(rules.disallow.includes(path));
+  for(const path of ["/account","/login","/register","/request-help","/book/","/ref/","/api/"])assert.ok(rules.disallow.includes(path));
   assert.deepEqual(sitemap().map(row=>row.url),["https://shalombalitour.com/","https://shalombalitour.com/ubud","https://shalombalitour.com/south-kuta","https://shalombalitour.com/west-bali"]);
  }finally{
   if(saved.indexing===undefined)delete process.env.ALLOW_INDEXING;else process.env.ALLOW_INDEXING=saved.indexing;

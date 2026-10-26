@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { accountSchema, customerConfigSchema, customerSchema, profileNameInput, changePasswordInput, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput, previousTourInput, previousTourResult } from "@/lib/customer-types";
 import { appOrigin, clearSession, CustomerError, customerMultipartRequest, customerRequest, readSession, writeSession } from "@/lib/customer-server";
+import { cookies } from "next/headers";
+import { REFERRAL_COOKIE, isReferralToken } from "@/lib/referral";
 
 export const runtime = "nodejs";
 const headers = { "Cache-Control": "private, no-store, max-age=0", Vary: "Cookie", "X-Content-Type-Options": "nosniff" };
@@ -114,7 +116,9 @@ async function handle(request: Request, context: Context) {
       return reply(previousTourResult.parse(value));
     }
     const input = action === "reviews" ? reviewInput.parse(body) : action === "booking-ticket" ? bookingInput.parse(body) : inquiryInput.parse(body);
-    const {value} = await customerRequest(action, "POST", input, session);
+    // The referral click token comes only from the first-party cookie, never the request body; WordPress re-validates it.
+    const referral = action === "inquiries" ? (await cookies()).get(REFERRAL_COOKIE)?.value : undefined;
+    const {value} = await customerRequest(action, "POST", isReferralToken(referral) ? {...input, referral} : input, session);
     if (action === "booking-ticket") return reply(z.object({ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).parse(value));
     if (action === "reviews") return reply(z.object({status:z.literal("pending"),message:z.string()}).parse(value),201);
     const result = z.object({whatsapp_url:z.url()}).parse(value);

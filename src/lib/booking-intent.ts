@@ -1,6 +1,6 @@
 export type BookingIntent = { kind: "tour"; tour_id: number; requested_travel_date?: string } | { kind: "custom"; tour_id: 0; requested_travel_date?: string };
-// A predefined Tour is ordered from Order Your Bali Tour on /account; only Customized Tour keeps its own request page.
-export function bookingPath(intent: BookingIntent) { return intent.kind === "custom" ? `/book/custom${intent.requested_travel_date ? `?requested_travel_date=${encodeURIComponent(intent.requested_travel_date)}` : ""}` : `/account${intentQuery(intent)}#order-tour`; }
+// Fixed itineraries and Customized Itinerary requests are both ordered from Order Your Bali Itinerary on /account.
+export function bookingPath(intent: BookingIntent) { return `/account${intentQuery(intent)}#order-tour`; }
 export function intentQuery(intent: BookingIntent | null) {
   if (!intent) return "";
   const params = new URLSearchParams(intent.kind === "custom" ? { booking: "custom" } : { tour: String(intent.tour_id) });

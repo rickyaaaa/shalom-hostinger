@@ -30,6 +30,8 @@ export const accountSchema = z.object({
   review_entitlements: z.array(entitlementRow).optional(),
   // Optional so the account still renders on a 1.19 backend; the previous-tour section stays hidden.
   previous_tour_reviews: previousTourReviewsSchema.optional(),
+  // 1.21: the signed-in partner's own referral slug, only while an admin has referral enabled for them.
+  referral: z.object({ slug: z.string().min(2).max(40).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) }).nullable().optional(),
   reviews: z.array(z.object({ id: z.number().int().positive().optional(), tour_id: z.number().int(), title: z.string(), experience: z.string(), status: z.enum(["approved", "pending", "unavailable"]), submitted_at: z.string().optional(), ratings: z.object({driving_skill:z.number().int(),service:z.number().int(),car:z.number().int()}).optional(), price:z.string().optional(), recommend:z.boolean().optional() })),
 });
 export type CustomerConfig = z.infer<typeof customerConfigSchema>;
@@ -53,7 +55,7 @@ export const previousTourAreas = ["south-kuta","ubud","west-bali"] as const;
 export const previousTourInput = z.object({ area: z.enum(previousTourAreas), tour_id: z.number().int().positive().max(2147483647), tour_date: z.iso.date(), pickup_place: z.string().trim().min(1).max(200) }).strict();
 export const previousTourResult = z.object({ entitlement: entitlementRow, previous_tour_reviews: previousTourReviewsSchema });
 const requestedTravelDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional();
-// Pickup details are Tour-only; WordPress requires date, place and time together when either pickup field is sent.
+// Pickup details (fixed itinerary or Customized Itinerary); WordPress requires date, place and time together when either pickup field is sent.
 const pickup = {pickup_place:z.string().trim().min(1).max(200).optional(),pickup_time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).optional()};
-export const bookingInput = z.discriminatedUnion("kind", [z.object({kind:z.literal("tour"),tour_id:z.number().int().positive().max(2147483647),requested_travel_date:requestedTravelDate,...pickup}).strict(),z.object({kind:z.literal("custom"),tour_id:z.literal(0),requested_travel_date:requestedTravelDate}).strict()]);
-export const inquiryInput = z.discriminatedUnion("kind", [z.object({kind:z.literal("tour"),tour_id:z.number().int().positive().max(2147483647),requested_travel_date:requestedTravelDate,...pickup,ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).strict(),z.object({kind:z.literal("custom"),tour_id:z.literal(0),requested_travel_date:requestedTravelDate,ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).strict()]);
+export const bookingInput = z.discriminatedUnion("kind", [z.object({kind:z.literal("tour"),tour_id:z.number().int().positive().max(2147483647),requested_travel_date:requestedTravelDate,...pickup}).strict(),z.object({kind:z.literal("custom"),tour_id:z.literal(0),requested_travel_date:requestedTravelDate,...pickup}).strict()]);
+export const inquiryInput = z.discriminatedUnion("kind", [z.object({kind:z.literal("tour"),tour_id:z.number().int().positive().max(2147483647),requested_travel_date:requestedTravelDate,...pickup,ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).strict(),z.object({kind:z.literal("custom"),tour_id:z.literal(0),requested_travel_date:requestedTravelDate,...pickup,ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).strict()]);

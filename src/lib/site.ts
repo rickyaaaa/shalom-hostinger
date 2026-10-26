@@ -5,6 +5,6 @@ export function siteLinks(): SiteLinks {
   return {
     southKuta: "/south-kuta", westBali: "/west-bali",
     concerns: "/#answer", about: "/#about",
-    customBooking: "/book/custom",
+    customBooking: "/account?booking=custom#order-tour",
   };
 }
