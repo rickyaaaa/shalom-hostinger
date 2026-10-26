@@ -118,6 +118,10 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .photo-slider-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
 .photo-slider-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .6); box-shadow: 0 0 0 1px rgba(13, 49, 91, .35); }
 .photo-slider-dots .is-active { background: var(--gold); }
+/* Pause/Play for self-advancing sliders; shown on touch screens too, since it is the only way to stop the motion there. */
+.photo-slider-toggle { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: rgba(13, 49, 91, .72); color: white; cursor: pointer; }
+.photo-slider-toggle svg { width: 16px; height: 16px; }
+.photo-slider-toggle:hover { background: var(--navy); }
 /* Touch screens swipe; the arrows are for mouse and keyboard. */
 @media (pointer: coarse) { .photo-slider-nav { display: none; } }
 .home-reviews { margin: 0 auto 104px; max-width: 1180px; background: #faf9f6; padding: 56px 40px; }

@@ -26,7 +26,11 @@ test("Customized Itinerary gallery stays lightweight: native scroll-snap, no aut
   assert.doesNotMatch(deps, /swiper|slick|embla|keen-slider|splide|glide|flickity|carousel/i);
   assert.match(css, /\.photo-slider-track \{[^}]*scroll-snap-type: x mandatory/);
   assert.match(css, /\.custom-gallery \{[^}]*aspect-ratio: 640 \/ 498/);
-  assert.doesNotMatch(slider, /setInterval|setTimeout|\bautoplay\b|\bpriority\b|\bpreload\b|loading="eager"/i);
+  assert.doesNotMatch(slider, /\bpriority\b|\bpreload\b|loading="eager"/i);
+  assert.doesNotMatch(gallery, /autoplay/, "the Customized Itinerary gallery does not move on its own");
+  // Why Choose autoplays, politely: reduced motion, off screen, hidden tab, hover/touch/focus and a Pause button all stop it.
+  assert.match(src("components/HomeInformation.tsx"), /className="why-slider" autoplay=\{4000\}/);
+  for (const guard of [/prefers-reduced-motion: reduce/, /IntersectionObserver/, /document\.hidden/, /onPointerEnter/, /onTouchStart/, /onFocus/, /aria-label=\{paused \? "Play slideshow" : "Pause slideshow"\}/]) assert.match(slider, guard, String(guard));
   assert.match(slider, /i <= reached \+ 1 &&/, "a slide's image renders only once the slide before it is reached");
   const alts = [...gallery.matchAll(/alt: "([^"]+)"/g)].map(m => m[1]);
   assert.ok(alts.length >= 3 && alts.every(alt => alt.length > 10), "every photo has meaningful alt text");
