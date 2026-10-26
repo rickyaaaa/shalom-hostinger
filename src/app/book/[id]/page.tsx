@@ -25,5 +25,5 @@ export default async function BookingRoute({params,searchParams}:{params:Promise
   const area={slug,name:areas[slug as keyof typeof areas].name};
   // Same name the customer clicked on the card (West Bali cards use the client-approved titles).
   const title=itineraryTitle(slug==="west-bali"?westBaliCardTitle(tour):tour.title);
-  return <BookingPage selection={{kind:"tour",tourId:tour.id,title,area}} intent={{kind:"tour",tour_id:tour.id,...date}}/>;
+  return <BookingPage selection={{kind:"tour",tourId:tour.id,title,area,...(tour.booking_terms?{terms:tour.booking_terms}:{})}} intent={{kind:"tour",tour_id:tour.id,...date}}/>;
 }

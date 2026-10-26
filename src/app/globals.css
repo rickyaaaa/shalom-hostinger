@@ -453,3 +453,12 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 .booking-selected-change { justify-self: start; margin-top: 6px; color: var(--navy); font-size: 14px; font-weight: 600; }
 /* Order History groups: Not completed / Completed / Cancelled. */
 .order-group-count { color: var(--muted); font-size: 14px; font-weight: 400; }
+/* Booking page: Important Information (INCLUDE / NOT INCLUDING), compact and between the itinerary and the fields. */
+.booking-terms { margin: 0 0 24px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+.booking-terms h2 { margin: 0 0 10px; color: var(--navy); font-size: 16px; line-height: 1.4; }
+.booking-terms-lists { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px 20px; }
+.booking-terms h3 { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+.booking-terms-excluded h3 { color: #8c2b24; }
+.booking-terms-included h3 { color: #1c5d36; }
+.booking-terms ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; overflow-wrap: break-word; }
+.booking-terms li + li { margin-top: 2px; }

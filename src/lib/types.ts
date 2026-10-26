@@ -17,6 +17,8 @@ export const tourSchema = z.object({
   duration: z.string(),
   price_note: z.string(),
   rating,
+  // 1.23: effective INCLUDE / NOT INCLUDING terms (the Tour's own lists, else the site-wide terms). Absent on older plugins.
+  booking_terms: z.object({ not_included: z.array(z.string().max(300)).max(30), included: z.array(z.string().max(300)).max(30) }).optional(),
 });
 
 export const reviewSchema = z.object({

@@ -15,8 +15,11 @@ export type Package = { id: number; title: string };
  * What is being ordered, fixed by the page that renders the form: a canonical itinerary resolved
  * server-side from the /book/<id> route, or a Customized Itinerary request. It is never editable here.
  */
+/** INCLUDE / NOT INCLUDING terms from WordPress: the same source the WhatsApp reconfirmation uses. */
+export type BookingTerms = { not_included: string[]; included: string[] };
+
 export type BookingSelection =
-  | { kind: "tour"; tourId: number; title: string; area: { slug: string; name: string } }
+  | { kind: "tour"; tourId: number; title: string; area: { slug: string; name: string }; terms?: BookingTerms }
   | { kind: "custom" };
 
 export function BookingForm({ selection, initialDate }: { selection: BookingSelection; initialDate?: string }) {
@@ -75,6 +78,7 @@ export function BookingForm({ selection, initialDate }: { selection: BookingSele
         <p className="booking-selected-meta">Your own plan, arranged with our Customer Service.</p>
       </>}
     </div>
+    {selection.kind === "tour" && selection.terms && <BookingTermsBlock terms={selection.terms} />}
     <form className="booking-search-form" onSubmit={submit} noValidate>
       <div className="booking-search-fields">
         <label className="booking-search-field">Travel Date<input type="date" value={date} min={earliest} max={latest} onChange={event => setDate(event.target.value)} required aria-describedby="travel-date-note" /><span className="field-help" id="travel-date-note">{TRAVEL_DATE_NOTE}</span></label>
@@ -86,4 +90,18 @@ export function BookingForm({ selection, initialDate }: { selection: BookingSele
       {whatsapp && <p className="customer-notice" role="status">Your order is saved. If WhatsApp did not open, <a href={whatsapp} target="_blank" rel="noreferrer">continue on WhatsApp</a> and press Send.</p>}
     </form>
   </>;
+}
+
+/** What a fixed itinerary includes and excludes, shown before the customer orders. */
+function BookingTermsBlock({ terms }: { terms: BookingTerms }) {
+  // Headings follow the client's NB wording (rendered uppercase), matching the WhatsApp reconfirmation.
+  const lists = [{ key: "excluded", title: "Not including", items: terms.not_included }, { key: "included", title: "Include", items: terms.included }].filter(list => list.items.length);
+  if (!lists.length) return null;
+  return <section className="booking-terms" aria-labelledby="booking-terms-title">
+    <h2 id="booking-terms-title">Important Information</h2>
+    <div className="booking-terms-lists">{lists.map(list => <div key={list.key} className={`booking-terms-list booking-terms-${list.key}`}>
+      <h3>{list.title}</h3>
+      <ul>{list.items.map((item, i) => <li key={i}>{item}</li>)}</ul>
+    </div>)}</div>
+  </section>;
 }
