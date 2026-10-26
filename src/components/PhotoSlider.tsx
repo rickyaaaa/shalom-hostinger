@@ -13,8 +13,9 @@ export type Slide = { src: string; alt: string };
  *
  * With `autoplay` (ms) it advances on its own and loops, but only while it is on screen in a visible tab and nobody is
  * hovering, touching or focusing it; never for prefers-reduced-motion; and a Pause/Play button can stop it (WCAG 2.2.2).
+ * `controls={false}` leaves a pure photo slideshow: no arrows or dots (swipe still works).
  */
-export function PhotoSlider({ slides, label, sizes, className, autoplay }: { slides: Slide[]; label: string; sizes: string; className: string; autoplay?: number }) {
+export function PhotoSlider({ slides, label, sizes, className, autoplay, controls = true }: { slides: Slide[]; label: string; sizes: string; className: string; autoplay?: number; controls?: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLUListElement>(null);
   const [index, setIndex] = useState(0);
@@ -70,9 +71,11 @@ export function PhotoSlider({ slides, label, sizes, className, autoplay }: { sli
         {i <= reached + 1 && <Image src={slide.src} alt={slide.alt} fill sizes={sizes} />}
       </li>)}
     </ul>
-    <button type="button" className="photo-slider-nav photo-slider-prev" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Previous photo"><Icon name="chevron" /></button>
-    <button type="button" className="photo-slider-nav photo-slider-next" onClick={() => go(index + 1)} disabled={index === slides.length - 1} aria-label="Next photo"><Icon name="chevron" /></button>
+    {controls && <>
+      <button type="button" className="photo-slider-nav photo-slider-prev" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Previous photo"><Icon name="chevron" /></button>
+      <button type="button" className="photo-slider-nav photo-slider-next" onClick={() => go(index + 1)} disabled={index === slides.length - 1} aria-label="Next photo"><Icon name="chevron" /></button>
+    </>}
     {autoplay && !reducedMotion && <button type="button" className="photo-slider-toggle" onClick={() => setPaused(value => !value)} aria-pressed={paused} aria-label={paused ? "Play slideshow" : "Pause slideshow"}>{paused ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg> : <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg>}</button>}
-    <div className="photo-slider-dots" aria-hidden="true">{slides.map((slide, i) => <span key={slide.src} className={i === index ? "is-active" : undefined} />)}</div>
+    {controls && <div className="photo-slider-dots" aria-hidden="true">{slides.map((slide, i) => <span key={slide.src} className={i === index ? "is-active" : undefined} />)}</div>}
   </div>;
 }

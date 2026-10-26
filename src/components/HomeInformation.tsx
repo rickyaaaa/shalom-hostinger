@@ -14,7 +14,7 @@ const whySizes="(max-width:767px) 100vw, 42vw";
 async function WhyPhotos(){
   const photos=await getItineraries().then(tours=>pickItineraryPhotos(tours)).catch(()=>[]);
   if(photos.length<2)return <Image src="/images/west-bali.jpeg" alt="A waterside temple in Bali" width={800} height={600} sizes={whySizes}/>;
-  return <PhotoSlider slides={photos} label="Photos from our itineraries" sizes={whySizes} className="why-slider" autoplay={4000}/>;
+  return <PhotoSlider slides={photos} label="Photos from our itineraries" sizes={whySizes} className="why-slider" autoplay={4000} controls={false}/>;
 }
 export function FAQ(){return <section className="faq-section" id="answer"><div className="information-inner"><p className="section-label">FREQUENTLY ASKED</p><h2>Answers For Your Travel Concerns</h2><div className="faq-list">{faqs.map((faq,i)=><details key={faq.question} name="travel-faq" open={i===0}><summary>{faq.question}</summary>{"terms" in faq ? <Suspense fallback={<p>Loading…</p>}><BookingTermsAnswer/></Suspense> : faq.answer.split("\n\n").map((paragraph,j)=><p key={j}>{paragraph}</p>)}</details>)}</div></div></section>;}
 /** NOT INCLUDING / INCLUDE as WordPress defines them for the WhatsApp NB, so the FAQ never keeps its own copy. */
