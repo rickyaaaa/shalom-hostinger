@@ -32,6 +32,7 @@ test("Customized Itinerary gallery stays lightweight: native scroll-snap, no aut
   assert.match(src("components/HomeInformation.tsx"), /className="why-slider" autoplay=\{4000\} controls=\{false\}/, "Why Choose is a pure photo slideshow: no arrows or dots");
   assert.doesNotMatch(gallery, /controls=\{false\}/, "the Customized Itinerary slider keeps its arrows and dots");
   assert.match(slider, /\{controls && <>/);
+  assert.match(slider, /\{autoplay && controls && !reducedMotion && <button/, "with controls={false} there is no Pause button either");
   for (const guard of [/prefers-reduced-motion: reduce/, /IntersectionObserver/, /document\.hidden/, /onPointerEnter/, /onTouchStart/, /onFocus/, /aria-label=\{paused \? "Play slideshow" : "Pause slideshow"\}/]) assert.match(slider, guard, String(guard));
   assert.match(slider, /i <= reached \+ 1 &&/, "a slide's image renders only once the slide before it is reached");
   const alts = [...gallery.matchAll(/alt: "([^"]+)"/g)].map(m => m[1]);
