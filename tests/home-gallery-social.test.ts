@@ -17,26 +17,28 @@ test("TikTok links to the official external profile, safely, everywhere", () => 
   assert.equal(all.includes("tiktok.com/embed.js"), false, "no third-party TikTok embed script");
 });
 
-test("Customized Itinerary gallery stays lightweight: native scroll-snap, no autoplay, no carousel library, lazy later slides", () => {
+test("Customized Itinerary shows one photo, no slider; Why Choose stays a lightweight slideshow", () => {
   const slider = src("components/PhotoSlider.tsx");
   const gallery = src("components/CustomGallery.tsx");
   const css = src("app/globals.css");
   const pkg = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, "../package.json"), "utf8"));
   const deps = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies }).join(" ");
   assert.doesNotMatch(deps, /swiper|slick|embla|keen-slider|splide|glide|flickity|carousel/i);
-  assert.match(css, /\.photo-slider-track \{[^}]*scroll-snap-type: x mandatory/);
+  // Customized Itinerary: the single "choosing your own itinerary" image, in the box of the image it replaced.
+  assert.doesNotMatch(gallery, /PhotoSlider/, "no slider, arrows or dots");
+  assert.equal((gallery.match(/<Image /g) ?? []).length, 1);
+  assert.match(gallery, /src="\/images\/custom-itinerary\.webp" alt="Choosing your own itinerary"/);
+  assert.doesNotMatch(gallery, /\bpriority\b|\bpreload\b|loading="eager"/i, "below the fold, so it loads lazily");
   assert.match(css, /\.custom-gallery \{[^}]*aspect-ratio: 640 \/ 498/);
-  assert.doesNotMatch(slider, /\bpriority\b|\bpreload\b|loading="eager"/i);
-  assert.doesNotMatch(gallery, /autoplay/, "the Customized Itinerary gallery does not move on its own");
+  assert.match(css, /\.custom-gallery img \{ object-fit: cover; \}/);
   // Why Choose autoplays, politely: reduced motion, off screen, hidden tab, hover/touch/focus and a Pause button all stop it.
+  assert.match(css, /\.photo-slider-track \{[^}]*scroll-snap-type: x mandatory/);
+  assert.doesNotMatch(slider, /\bpriority\b|\bpreload\b|loading="eager"/i);
   assert.match(src("components/HomeInformation.tsx"), /className="why-slider" autoplay=\{4000\} controls=\{false\}/, "Why Choose is a pure photo slideshow: no arrows or dots");
-  assert.doesNotMatch(gallery, /controls=\{false\}/, "the Customized Itinerary slider keeps its arrows and dots");
   assert.match(slider, /\{controls && <>/);
   assert.match(slider, /\{autoplay && controls && !reducedMotion && <button/, "with controls={false} there is no Pause button either");
   for (const guard of [/prefers-reduced-motion: reduce/, /IntersectionObserver/, /document\.hidden/, /onPointerEnter/, /onTouchStart/, /onFocus/, /aria-label=\{paused \? "Play slideshow" : "Pause slideshow"\}/]) assert.match(slider, guard, String(guard));
   assert.match(slider, /i <= reached \+ 1 &&/, "a slide's image renders only once the slide before it is reached");
-  const alts = [...gallery.matchAll(/alt: "([^"]+)"/g)].map(m => m[1]);
-  assert.ok(alts.length >= 3 && alts.every(alt => alt.length > 10), "every photo has meaningful alt text");
 });
 
 test("Why Choose slider: 8 itinerary photos, areas taking turns, from WordPress, in the old photo's box", () => {
