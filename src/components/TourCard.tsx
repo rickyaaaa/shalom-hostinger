@@ -11,7 +11,8 @@ const imageFocus: Readonly<Record<string,string>> = {
   "/wp-content/uploads/2026/10/Ubud-D.webp": "center top",
 };
 
-export function TourCard({ tour, presentation, requestedTravelDate }: { tour: Tour; presentation?:CardPresentation; requestedTravelDate?: string }) {
+// `heading`: h3 when the page already has a section heading above the cards (an area guide), h2 otherwise.
+export function TourCard({ tour, presentation, requestedTravelDate, heading: Heading = "h2" }: { tour: Tour; presentation?:CardPresentation; requestedTravelDate?: string; heading?: "h2" | "h3" }) {
   const { regular, sale, currency } = tour.pricing;
   const current = sale ?? regular;
   const discounted = sale !== null && regular !== null && sale < regular;
@@ -21,7 +22,7 @@ export function TourCard({ tour, presentation, requestedTravelDate }: { tour: To
   return <article className="tour-card" aria-labelledby={`tour-${tour.id}-title`}>
     <div className="tour-image">{image ? <Image src={image.url} alt={image.alt || title} fill sizes="(max-width: 767px) calc(100vw - 72px), (max-width: 1024px) 44vw, 400px" style={focus ? { objectPosition: focus } : undefined} /> : <span>Itinerary image unavailable</span>}</div>
     <div className="tour-card-body">
-      <div className="tour-card-heading"><h2 id={`tour-${tour.id}-title`}>{title}</h2><ReviewScore rating={tour.rating} /></div>
+      <div className="tour-card-heading"><Heading id={`tour-${tour.id}-title`}>{title}</Heading><ReviewScore rating={tour.rating} /></div>
       {tour.destinations.length > 0 && <ul className="destinations">{tour.destinations.map((destination, i) => <li key={`${i}-${destination}`}>{destination}</li>)}</ul>}
       <div className="tour-pricing">
         {discounted && <del>{money(regular, currency)}</del>}

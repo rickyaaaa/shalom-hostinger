@@ -167,7 +167,7 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .ubud-hero::after { content: ""; position: absolute; inset: 0; background: #0008; z-index: -1; }
 .ubud-hero-copy { max-width: 1100px; }
 .ubud-hero h1 { font-size: 48px; line-height: 58px; margin-bottom: 24px; }
-.ubud-hero-copy > p:last-child { max-width: 682px; margin: auto; line-height: 26px; }
+.ubud-hero-copy > p:last-of-type { max-width: 682px; margin: auto; line-height: 26px; }
 .tour-section { background: white; padding: 96px 24px; min-height: 420px; }
 .tour-grid { max-width: 1280px; margin: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
 .tour-card { min-width: 0; border: 1px solid var(--border); background: white; padding: 12px; }
@@ -175,7 +175,7 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .tour-image img { object-fit: cover; }
 .tour-card-body { padding: 24px 12px 28px; }
 .tour-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-.tour-card h2 { font-size: 26px; line-height: 36px; text-wrap: initial; }
+.tour-card h2, .tour-card-heading h3 { font-size: 26px; line-height: 36px; text-wrap: initial; }
 .review-score { flex-shrink: 0; color: var(--navy); font-variant-numeric: lining-nums tabular-nums; }
 .score-value { display: flex; align-items: center; gap: 5px; font-size: 16px; font-weight: 700; line-height: 26px; }
 .score-value svg { width: 16px; height: 16px; fill: var(--gold); stroke: var(--gold); }
@@ -331,12 +331,12 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
   .section-label { font-size: 12px; margin-bottom: 20px; }
   .ubud-hero { min-height: 430px; padding: 60px 24px; }
   .ubud-hero h1 { font-size: 27px; line-height: 38px; margin-bottom: 28px; }
-  .ubud-hero-copy > p:last-child { font-size: 13px; line-height: 25px; }
+  .ubud-hero-copy > p:last-of-type { font-size: 13px; line-height: 25px; }
   .tour-section { padding: 72px 24px; }
   .tour-grid { grid-template-columns: 1fr; }
   .tour-card-body { padding-top: 24px; }
   .tour-card-heading { flex-wrap: nowrap; }
-  .tour-card h2 { font-size: 26px; line-height: 36px; }
+  .tour-card h2, .tour-card-heading h3 { font-size: 26px; line-height: 36px; }
   .destinations { min-height: auto; }
   .tour-actions { gap: 12px; }
   .tour-actions .button { min-height: 44px; padding: 13px 15px; font-size: 13px; }
@@ -358,7 +358,7 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
   .header-actions { gap: 6px; }
   .mobile-account span { font-size: 7px; }
   .primary-nav { right: 16px; width: 220px; }
-  .tour-card-heading h2 { min-width: 0; font-size: 23px; line-height: 1.35; }
+  .tour-card-heading :is(h2, h3) { min-width: 0; font-size: 23px; line-height: 1.35; }
 }
 
 .information-inner { max-width: 1280px; margin: auto; }
@@ -403,7 +403,7 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .about-facts .about-fact-title { display: block; color: var(--navy); font-weight: 600; }
 .tour-card { display: flex; flex-direction: column; }
 .tour-card-body { display: flex; flex-direction: column; flex: 1; }
-.tour-card-heading h2 { min-width: 0; overflow-wrap: break-word; }
+.tour-card-heading :is(h2, h3) { min-width: 0; overflow-wrap: break-word; }
 .tour-pricing { margin-top: auto; }
 .tour-card .price-note { margin-top: 20px; }
 @media(max-width:1024px) {
@@ -559,3 +559,28 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 .booking-terms-included h3 { color: #1c5d36; }
 .booking-terms ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; overflow-wrap: break-word; }
 .booking-terms li + li { margin-top: 2px; }
+/* Area guide (approved Ubud SEO brief): itinerary heading, tour terms, how ordering works, other tour areas. */
+.area-hero-cta { margin-top: 32px; }
+.area-tours-intro { max-width: 760px; margin: 0 auto 48px; text-align: center; }
+.area-tours-intro h2 { font-size: clamp(30px, 3.6vw, 44px); line-height: 1.2; margin-bottom: 16px; }
+.area-tours-intro p { color: var(--muted); }
+.area-guide { padding: 96px 24px; }
+.area-guide-intro { margin: -12px 0 24px; max-width: 75ch; color: var(--muted); }
+.area-terms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.area-terms-group { padding: 28px 32px; background: white; border-radius: 16px; box-shadow: 0 6px 8px #082b5514; }
+.area-terms-group h3 { margin-bottom: 12px; color: var(--navy); font-size: 21px; line-height: 1.4; }
+.area-terms-group ul { margin: 0; padding-left: 22px; color: var(--muted); }
+.area-terms-group li + li { margin-top: 6px; }
+.area-guide-note { max-width: 75ch; margin-top: 24px; color: var(--muted); }
+.area-guide-steps { padding-top: 0; }
+.how-steps-four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.area-guide-cta { margin-top: 32px; }
+.area-more { background: white; }
+.area-more-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0; list-style: none; }
+.area-more-list a { display: flex; flex-direction: column; height: 100%; padding: 28px 32px; border: 1px solid #dbe4ec; border-radius: 16px; background: var(--blue-light); color: var(--navy); text-decoration: none; transition: border-color .2s; }
+.area-more-list a:hover { border-color: var(--gold); }
+.area-more-list h3 { margin-bottom: 8px; font-size: 21px; line-height: 1.4; }
+.area-more-list p { flex: 1; color: var(--muted); }
+.area-more-list .area-panel-cta { align-self: flex-start; }
+@media (max-width: 1024px) { .how-steps-four { grid-template-columns: repeat(2, minmax(0, 1fr)); } .area-more-list { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 767px) { .area-hero-cta { margin-top: 24px; } .area-guide { padding: 64px 16px; } .area-guide-steps { padding-top: 0; } .area-tours-intro { margin-bottom: 32px; } .area-terms { grid-template-columns: minmax(0, 1fr); gap: 16px; } .area-terms-group, .area-more-list a { padding: 24px; } .how-steps-four { grid-template-columns: minmax(0, 1fr); } }
