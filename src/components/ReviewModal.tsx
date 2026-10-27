@@ -53,7 +53,8 @@ export function ReviewModal({ tourId, title }: { tourId: number; title: string }
       if(event.shiftKey && (active===first || !event.currentTarget.contains(active))){event.preventDefault();last!.focus();}
       else if(!event.shiftKey && (active===last || !event.currentTarget.contains(active))){event.preventDefault();first.focus();}
     }} onCancel={event => { event.preventDefault(); close(); }} onClick={event => { if (event.target === event.currentTarget) { const rect = event.currentTarget.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) close(); } }}>
-      <div className="modal-header"><h2 id={`reviews-${tourId}-title`}>{data?.title ? itineraryTitle(data.title) : title}</h2><button type="button" className="icon-button" aria-label="Close reviews" onClick={close} autoFocus><Icon name="close" /></button></div>
+      {/* Content only while open: a closed dialog would repeat every card's itinerary title as a hidden second heading. */}
+      {open && <><div className="modal-header"><h2 id={`reviews-${tourId}-title`}>{data?.title ? itineraryTitle(data.title) : title}</h2><button type="button" className="icon-button" aria-label="Close reviews" onClick={close} autoFocus><Icon name="close" /></button></div>
       <div className="modal-body">
         {data && <ReviewScore rating={data.summary} large />}
         {busy && <p className="status-message" role="status">Loading reviews…</p>}
@@ -61,7 +62,7 @@ export function ReviewModal({ tourId, title }: { tourId: number; title: string }
         {data && data.reviews.length === 0 && !busy && <p className="status-message">No reviews yet for this itinerary.</p>}
         {data && data.reviews.map((review, index) => <ReviewEntry key={`${review.published_at}-${review.name}-${index}`} review={review} />)}
         {data?.has_more && data.next_page && !error && <button type="button" className="button button-outline load-more" disabled={busy} onClick={() => setPage(data.next_page!)}>{busy ? "Loading…" : "Load more reviews"}</button>}
-      </div>
+      </div></>}
     </dialog>
   </>;
 }

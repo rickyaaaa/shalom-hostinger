@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { publicMetadata, privateRobots } from "../src/lib/seo";
 import robots from "../src/app/robots";
@@ -14,11 +15,35 @@ test("preview remains noindex; approved indexing exposes only public pages",()=>
   process.env.ALLOW_INDEXING="true";
   for(const path of ["/","/ubud","/south-kuta","/west-bali"]){const meta=publicMetadata("Title","Description",path);assert.deepEqual(meta.robots,{index:true,follow:true});assert.equal(meta.alternates?.canonical,path);}
   assert.deepEqual(privateRobots,{index:false,follow:false});
-  const rules=robots().rules as {disallow:string[]};
-  for(const path of ["/account","/login","/register","/request-help","/book/","/ref/","/api/"])assert.ok(rules.disallow.includes(path));
+  // Private pages stay crawlable so search engines can read their noindex; only the API is blocked.
+  assert.deepEqual(robots().rules,{userAgent:"*",allow:"/",disallow:["/api/"]});
   assert.deepEqual(sitemap().map(row=>row.url),["https://shalombalitour.com/","https://shalombalitour.com/ubud","https://shalombalitour.com/south-kuta","https://shalombalitour.com/west-bali"]);
  }finally{
   if(saved.indexing===undefined)delete process.env.ALLOW_INDEXING;else process.env.ALLOW_INDEXING=saved.indexing;
   if(saved.public===undefined)delete process.env.PUBLIC_SITE_URL;else process.env.PUBLIC_SITE_URL=saved.public;
  }
+});
+
+const source=(file:string)=>readFileSync(new URL(`../src/${file}`,import.meta.url),"utf8");
+test("every private page is noindex on its own, so unblocking it in robots.txt never exposes it",()=>{
+ for(const page of ["account/page.tsx","account/password/page.tsx","account/profile/page.tsx","book/[id]/page.tsx","login/page.tsx","register/page.tsx","request-help/page.tsx","reset-password/page.tsx","[slug]/page.tsx"])assert.match(source(`app/${page}`),/robots: ?\{ ?index: ?false, ?follow: ?false ?\}/,page);
+ assert.match(source("app/forgot-password/page.tsx"),/redirect\(/,"forgot-password only redirects");
+ assert.match(source("app/ref/[slug]/route.ts"),/X-Robots-Tag", "noindex, nofollow"/);
+});
+
+test("public pages share a real photo in link previews",()=>{
+ for(const [path,image] of [["/","/images/west-bali.jpeg"],["/ubud","/images/ubud.webp"],["/south-kuta","/images/south-kuta.webp"],["/west-bali","/images/west-bali.jpeg"]] as const){
+  const meta=publicMetadata("Title","Description",path);
+  const og=meta.openGraph as {images:{url:string;width:number;height:number;alt:string}[]};
+  assert.equal(og.images[0].url,image,path);
+  assert.ok(og.images[0].width>=550 && og.images[0].alt.length>10,path);
+  assert.ok(existsSync(new URL(`../public${image}`,import.meta.url)),image);
+  assert.equal((meta.twitter as {card:string}).card,"summary_large_image");
+ }
+});
+
+test("closed review dialogs add no hidden headings to itinerary pages",()=>{
+ const modal=source("components/ReviewModal.tsx");
+ assert.match(modal,/\{open && <><div className="modal-header"><h2/);
+ assert.equal((modal.match(/<h2/g)??[]).length,1);
 });
