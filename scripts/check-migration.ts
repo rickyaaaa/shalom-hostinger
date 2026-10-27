@@ -20,7 +20,7 @@ const home=await (await fetch(base)).text();
 const anchors=["customizedtour","review","answer","about","contact"];
 check(anchors.every(id=>home.includes(`id="${id}"`)),"All Home navigation anchors have real destinations");
 check(home.indexOf('class="why-section"')<home.indexOf('id="answer"')&&home.indexOf('id="answer"')<home.indexOf('id="about"'),"Approved Why → FAQ → About section order preserved");
-check(home.includes("Explore Bali Your Way")&&!home.includes('class="ubud-hero"'),"Home starts with package content and has no large hero");
+check(home.includes("Private Bali Tour with Driver")&&home.includes('id="itineraries"')&&!home.includes('class="ubud-hero"'),"Home opens with its own photographic hero leading to the itineraries");
 const latest=await (await fetch(`${api}/latest-reviews?limit=3`)).json();
 for(const review of latest.reviews)check(home.includes(review.name),"Home displays backend-approved masked guest identity");
 for(const route of ["login","register","request-help","account"]){const html=await(await fetch(`${base}/${route}`)).text();check(html.includes('name="robots" content="noindex, nofollow"'),`${route}: private surface excluded from indexing`);}

@@ -10,9 +10,15 @@ export type AreaSlug = keyof typeof areas;
 export const tiktokProfile = "https://www.tiktok.com/@shalombalitour";
 export const benefits = [
   {title:"Private Driver",text:"Travel comfortably with a dedicated driver throughout your Bali itinerary.",image:"7-24-1-AQVLJK4TH3.png"},
-  {title:"Flexible Itinerary",text:"Follow one of our recommended routes or request your own mix of destinations.",image:"7-19-1-AQVLJK4TH3.png"},
-  {title:"Comfortable Journey",text:"Enjoy private transportation with fuel and parking included in every itinerary.",image:"7-18-1-AQVLJK4TH3.png"},
-  {title:"Local Bali Experience",text:"Explore beaches, temples, waterfalls, rice terraces, and local attractions at your own pace.",image:"7-20-1-AQVLJK4TH3.png"},
+  {title:"Flexible Itinerary",text:"Follow one of our recommended routes or adjust your journey based on your travel plans.",image:"7-19-1-AQVLJK4TH3.png"},
+  {title:"Comfortable Journey",text:"Enjoy private transportation with fuel and parking included during your itinerary.",image:"7-18-1-AQVLJK4TH3.png"},
+  {title:"Local Bali Experience",text:"Explore Bali's beaches, temples, waterfalls, rice terraces, cultural attractions, and local destinations at your own pace.",image:"7-20-1-AQVLJK4TH3.png"},
+];
+/** The three ordering steps on Home; the list numbers them. */
+export const howItWorks = [
+  {title:"Choose Your Itinerary",text:"Explore our Ubud, Uluwatu & South Kuta, West Bali, or Customized Itinerary options."},
+  {title:"Select Your Travel Details",text:"Choose your travel date, pickup time, and provide the name of your hotel or resort."},
+  {title:"Confirm With Shalom Bali Tour",text:"Submit your order and continue to WhatsApp to reconfirm your itinerary and pickup details directly with our team."},
 ];
 /**
  * Client-approved FAQ copy. Paragraphs are separated by a blank line. The included / not included answer has no
