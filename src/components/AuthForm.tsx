@@ -5,13 +5,9 @@ import { customerConfigSchema, type CustomerConfig } from "@/lib/customer-types"
 import { customerFetch } from "@/lib/customer-client";
 import { PhoneInput } from "./PhoneInput";
 import { bookingPath,intentQuery,type BookingIntent } from "@/lib/booking-intent";
+import { browserRegion, cleanPhoneText, isLocalPhone, loadPhoneLibrary, normalizePhone, prepareLoginIdentifier } from "@/lib/phone-number";
 
-// Local numbers without "+" are read in the visitor's region; WordPress normalization stays authoritative.
-function regionHint() {
-  if (typeof navigator === "undefined") return "ID";
-  const region = navigator.language.split("-")[1]?.toUpperCase();
-  return region && /^[A-Z]{2}$/.test(region) ? region : "ID";
-}
+const IDENTIFIER_REQUIRED = "Please enter your phone number or email address.";
 
 export function AuthForm({register, intent, created}: {register?:boolean; intent:BookingIntent|null; created?:boolean}) {
   const [config,setConfig] = useState<CustomerConfig|null>(null);
@@ -19,15 +15,30 @@ export function AuthForm({register, intent, created}: {register?:boolean; intent
   const [error,setError] = useState("");
   const [busy,setBusy] = useState(false);
   const [show,setShow] = useState(false);
+  const [identifierError,setIdentifierError] = useState("");
   const alert = useRef<HTMLParagraphElement>(null);
+  const identifierInput = useRef<HTMLInputElement>(null);
   const load = () => { setConfigError(""); customerFetch("config").then(value => setConfig(customerConfigSchema.parse(value))).catch(() => setConfigError("We could not load the account service. Please try again.")); };
   useEffect(load,[]);
   async function submit(event:FormEvent<HTMLFormElement>) {
     event.preventDefault(); if (busy) return;
     const form = new FormData(event.currentTarget);
     const data = Object.fromEntries(form.entries());
+    if (!register) {
+      // Native `required` accepts spaces and invisible characters; check the cleaned value and keep the message beside the field.
+      if (!cleanPhoneText(String(data.identifier ?? ""))) { setIdentifierError(IDENTIFIER_REQUIRED); identifierInput.current?.focus(); return; }
+    }
     setBusy(true); setError("");
     try {
+      // WordPress normalizes again; a number this cannot resolve is sent cleaned, and WordPress gives its usual answer.
+      if (register) {
+        const phone = cleanPhoneText(String(data.phone ?? ""));
+        const library = await loadPhoneLibrary();
+        data.phone = (library && normalizePhone(phone, browserRegion(), library)) || phone;
+      } else {
+        const identifier = String(data.identifier);
+        data.identifier = prepareLoginIdentifier(identifier, String(data.phone_region_hint), isLocalPhone(identifier) ? await loadPhoneLibrary() : null);
+      }
       const value = await customerFetch(register ? "register" : "login",data);
       window.location.assign(value.signed_in ? (intent ? bookingPath(intent) : "/account") : `/login?created=1${intent ? `&${intentQuery(intent).slice(1)}` : ""}`);
     } catch (reason) { setError(reason instanceof Error ? reason.message : "Please try again."); setBusy(false); requestAnimationFrame(() => alert.current?.focus()); }
@@ -44,8 +55,8 @@ export function AuthForm({register, intent, created}: {register?:boolean; intent
         <PhoneInput />
         <label>Email Address<input name="email" type="email" autoComplete="email" inputMode="email" maxLength={100} required /><span className="field-help">Used to sign in and to reset your password.</span></label>
       </> : <>
-        <label>Email or Phone Number<input name="identifier" autoComplete="username" autoCapitalize="none" spellCheck={false} maxLength={254} required /><span className="field-help">Use your email address, or your phone number with country code (for example +62 812 3456 7890).</span></label>
-        <input type="hidden" name="phone_region_hint" value={regionHint()} />
+        <label>Phone Number or Email Address<input ref={identifierInput} name="identifier" autoComplete="username" autoCapitalize="none" spellCheck={false} maxLength={254} placeholder="Enter your phone number or email" required aria-invalid={identifierError ? true : undefined} aria-describedby={identifierError ? "identifier-help identifier-error" : "identifier-help"} onInvalid={event => { event.preventDefault(); setIdentifierError(IDENTIFIER_REQUIRED); event.currentTarget.focus(); }} onInput={() => { if (identifierError) setIdentifierError(""); }} /><span className="field-help" id="identifier-help">For phone numbers, include your country code without the + sign (e.g. 6281234567890).</span>{identifierError && <span className="field-error" id="identifier-error" role="alert">{identifierError}</span>}</label>
+        <input type="hidden" name="phone_region_hint" value={browserRegion()} />
       </>}
       <div className={register ? "customer-columns" : undefined}>
         <label>Password<input name="password" type={show ? "text" : "password"} autoComplete={register ? "new-password" : "current-password"} minLength={register ? 8 : undefined} maxLength={register ? 128 : 4096} required />{register && <span className="field-help">Use at least 8 characters.</span>}</label>

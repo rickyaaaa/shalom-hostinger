@@ -55,7 +55,8 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
   try { value = await response.json(); } catch { throw new CustomerError(502, "Shalom returned an unreadable response. Please try again."); }
   if (!response.ok) {
     const messages: Record<string, string> = {
-      login: "We could not sign you in. Check your sign-in details or contact Shalom Bali Tour.",
+      // One message whether the account is missing or the password is wrong, so it never reveals which.
+      login: "Incorrect phone number, email, or password.",
       phone: "Please check your phone number, or sign in with your existing account.",
       email: "Please check your email address, or sign in with your existing account.",
       reset_key: "This password reset link is invalid or has expired. Please request a new link.",
