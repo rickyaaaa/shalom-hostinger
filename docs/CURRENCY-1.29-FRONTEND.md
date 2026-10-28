@@ -36,7 +36,7 @@ No `/customer/orders` route or separate checkout exists.
 
 ## Quotes and rate consistency
 
-Since plugin **1.29.0-rc1**, USD/EUR quote creation and revalidation require an `ok` exchange rate
+Since plugin **1.29.0-rc2**, USD/EUR quote creation and revalidation require an `ok` exchange rate
 (≤4 days old). A stale (5–7 days), unavailable (>7 days) or missing rate returns HTTP **503** with the
 machine-readable code **`rate_unavailable`**; the BFF maps it to "The daily exchange rate is
 unavailable. Choose IDR or try again later." Nothing is booked and no zero price is produced. The Tour
@@ -56,9 +56,10 @@ Every monetary example generated for this integration uses one deterministic fix
 ## Release prerequisites
 
 1. Install the valid plugin release candidate on staging:
-   `shalom-customer-portal-1.29.0-rc1-99c30840.zip`
-   (SHA-256 `99c30840d01a482fb0c61e8990fa85b9144b79dc950dc685e83bd8b0658a59fc`).
-2. Keep the flag OFF, refresh the daily rate, and verify `ok`/`stale`.
+   `shalom-customer-portal-1.29.0-rc2-f1f95b00.zip`
+   (SHA-256 `f1f95b004d40a2eec867c3dd83a5db73b03cf4d9cf21265523e954a3e57858ce`).
+2. Keep the flag OFF, refresh the daily rate, and verify `ok`. USD/EUR booking requires a current
+   (`ok`) rate; a `stale` rate refuses new quotes with `503 rate_unavailable`.
 3. Enable the flag on staging only.
 4. Deploy this frontend against the v1.29.0 API.
 5. Re-run the existing backend, frontend, typecheck and build checks.

@@ -3,20 +3,21 @@
 Scope: isolate the completed multi-currency frontend on a private preview and prove it against the
 corrected WordPress 1.29.0 plugin. Nothing in this document authorizes a production change.
 
-Branch: `feature/shalom-multicurrency` (commit `3ea4a19`). Production `main` is untouched and the
+Branch: `feature/shalom-multicurrency` (branch tip at release time). Production `main` is untouched and the
 WordPress flag stays OFF.
 
 ---
 
 ## 1. Which plugin ZIP is the valid one
 
-The candidate was rebuilt after the per-Tour price and stale-rate changes, so the previous
-`54ddfde5…` archive is obsolete.
+The candidate was rebuilt after the per-Tour regular/sale price and stale-rate changes, so the earlier
+`54ddfde5…` and `99c30840…` archives are obsolete.
 
 | Build | Path | SHA-256 | Verdict |
 | --- | --- | --- | --- |
-| **Valid candidate** | `custom plugin/login arena shalom tour/portal-1.29/dist/shalom-customer-portal-1.29.0-rc1-99c30840.zip` | `99c30840d01a482fb0c61e8990fa85b9144b79dc950dc685e83bd8b0658a59fc` | **Use this for staging** |
-| Obsolete candidate | `…/portal-1.29/dist/obsolete/shalom-customer-portal-1.29.0-pre-rc1.zip` | `54ddfde5426114e2f7f36096e2483f5c3d451d7c871275de506304aa5ea787bd` | Superseded; do not install |
+| **Valid candidate** | `custom plugin/login arena shalom tour/portal-1.29/dist/shalom-customer-portal-1.29.0-rc2-f1f95b00.zip` | `f1f95b004d40a2eec867c3dd83a5db73b03cf4d9cf21265523e954a3e57858ce` | **Use this for staging** |
+| Obsolete (rc1) | `…/portal-1.29/dist/obsolete/shalom-customer-portal-1.29.0-rc1-99c30840.zip` | `99c30840d01a482fb0c61e8990fa85b9144b79dc950dc685e83bd8b0658a59fc` | Superseded; no sale-price support |
+| Obsolete (pre-rc1) | `…/portal-1.29/dist/obsolete/shalom-customer-portal-1.29.0-pre-rc1.zip` | `54ddfde5426114e2f7f36096e2483f5c3d451d7c871275de506304aa5ea787bd` | Superseded; no per-Tour price |
 | Stale/wrong lineage | `Wordpress/headless shalom/dist/_quarantine/DO-NOT-INSTALL-shalom-customer-portal-1.29.0-26651a49.zip` | `26651a49be2400f55ce83893223aa64626c74b796ceabe75f901333d308dfd36` | Quarantined; never install |
 
 Why the quarantined ZIP must not be installed: it is not a v1.28.1 descendant. It removes
@@ -27,10 +28,10 @@ different REST table (`preferences`, `/quote`, `/customer/orders`) that does not
 Verify before installing:
 
 ```powershell
-Get-FileHash "<path>\shalom-customer-portal-1.29.0-rc1-99c30840.zip" -Algorithm SHA256
+Get-FileHash "<path>\shalom-customer-portal-1.29.0-rc2-f1f95b00.zip" -Algorithm SHA256
 ```
 
-Expected: `99C30840D01A482FB0C61E8990FA85B9144B79DC950DC685E83BD8B0658A59FC`.
+Expected: `F1F95B004D40A2EEC867C3DD83A5DB73B03CF4D9CF21265523E954A3E57858CE`.
 
 ---
 
@@ -116,7 +117,10 @@ Record pass/fail per row; attach screenshots/network captures for failures.
 | 18 | Stale rate (5–7 days) | Tour shows "Estimated price · rate <date>", but "Review price" returns **503 `rate_unavailable`**; no quote, no order |
 | 19 | Rate unavailable (>7 days / provider down) | "Price unavailable in USD/EUR"; quote blocked with 503 `rate_unavailable`; IDR still books |
 | 19a | Per-Tour IDR override | Admin sets a South Kuta/Ubud tour to 1,000,000 → card/quote show the new price; clearing it restores the area price; West Bali has no field |
-| 19b | Editor role | Sees the price read-only; cannot change or clear it, but can still edit other Tour fields |
+| 19b | Per-Tour IDR sale | Sale 800,000 → card strikes 56 and shows 50; quote and WhatsApp use 50; clearing removes the discount |
+| 19c | Sale validation | Equal/greater than regular rejected; invalid input rejected; lowering an area price below a stored sale is refused with an admin notice |
+| 19d | Rounding collision | Sale 899,000 on a 900,000 base both convert to USD 56 → no strikethrough anywhere |
+| 19e | Editor role | Sees regular and sale read-only; cannot change or clear either, but can still edit other Tour fields |
 
 ### Booking and quotation
 
@@ -160,7 +164,7 @@ Record pass/fail per row; attach screenshots/network captures for failures.
 (invalid/future date also `unavailable`). A daily cron (`shalom_refresh_exchange_rates`) refreshes the
 cached document.
 
-**Does the backend allow booking with a stale rate? No (since 1.29.0-rc1).** `Currency::quote()` now
+**Does the backend allow booking with a stale rate? No (since 1.29.0-rc2).** `Currency::quote()` now
 requires `status: "ok"` for any USD/EUR quote converted from the IDR base; a `stale`, `unavailable` or
 missing rate returns **HTTP 503 with code `rate_unavailable`** and creates no quote and no Inquiry. The
 same check runs again in `validate_quote()`, so a quote issued while the rate was current cannot be
@@ -206,7 +210,7 @@ Consequences to test and to decide with the client:
 ## 8. Known issues / risks carried into staging
 
 - Version ambiguity: the intermediate `1.29.0` builds differ; always check the hash. The valid
-  candidate is `…-rc1-99c30840.zip` (`99c30840…a59fc`); older builds are in `obsolete/` or
+  candidate is `…-rc2-f1f95b00.zip` (`99c30840…a59fc`); older builds are in `obsolete/` or
   `_quarantine/` and must not be installed.
 - The XML ECB feed is parsed by the corrected plugin; an ECB format change or outage degrades to
   `stale` and then `unavailable`.

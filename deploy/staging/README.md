@@ -1,12 +1,12 @@
-# Staging kit — multi-currency v1.29.0-rc1
+# Staging kit — multi-currency v1.29.0-rc2
 
 Prepared locally; **nothing here has been applied to any host.**
 
 Approved artifact (verified 2026-10-29):
 
 ```
-shalom-customer-portal-1.29.0-rc1-99c30840.zip
-SHA-256 99c30840d01a482fb0c61e8990fa85b9144b79dc950dc685e83bd8b0658a59fc   (3,911,559 bytes, 1,656 entries)
+shalom-customer-portal-1.29.0-rc2-f1f95b00.zip
+SHA-256 f1f95b004d40a2eec867c3dd83a5db73b03cf4d9cf21265523e954a3e57858ce   (3,913,877 bytes, 1,656 entries)
 root folder  shalom-customer-portal/     version 1.29.0     tests/ excluded
 ```
 

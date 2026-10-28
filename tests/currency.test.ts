@@ -8,6 +8,7 @@ import { money } from "../src/lib/format";
 import { accountSchema, bookingInput, inquiryInput, quoteSchema, type Quote } from "../src/lib/customer-types";
 import { CurrencySelectorView } from "../src/components/CurrencySelector";
 import { QuoteCard } from "../src/components/QuoteCard";
+import { TourPriceView } from "../src/components/TourPrice";
 
 const legacyTour: Tour = {
   id: 599, title: "A. Uluwatu, Beach & Jimbaran Tour", slug: "a", area: { slug: "south-kuta", name: "South Kuta" },
@@ -157,3 +158,57 @@ test("quote card presents the backend amount, per-car basis, rate and confirmati
   assert.match(html, /Change details/);
 });
 
+
+const saleTour: Tour = {
+  ...convertedTour,
+  prices: {
+    ...convertedTour.prices!,
+    amounts: {
+      USD: { regular: 56, sale: 50, status: "ok" },
+      EUR: { regular: 52, sale: 47, status: "ok" },
+      IDR: { regular: 900000, sale: 800000, status: "ok" },
+    },
+  },
+};
+
+test("a per-Tour sale is selected in every currency and both amounts follow the switch", () => {
+  const usd = priceView(saleTour, "USD");
+  assert.equal(usd.kind === "available" && usd.current, 50);
+  assert.equal(usd.kind === "available" && usd.regular, 56);
+  assert.equal(usd.kind === "available" && usd.discounted, true);
+  const eur = priceView(saleTour, "EUR");
+  assert.equal(eur.kind === "available" && eur.current, 47);
+  assert.equal(eur.kind === "available" && eur.regular, 52);
+  const idr = priceView(saleTour, "IDR");
+  assert.equal(idr.kind === "available" && idr.current, 800000);
+  assert.equal(idr.kind === "available" && idr.regular, 900000);
+});
+
+test("rounding that makes regular and sale equal never renders a strikethrough", () => {
+  const collision: Tour = {
+    ...saleTour,
+    prices: { ...saleTour.prices!, amounts: { ...saleTour.prices!.amounts, USD: { regular: 56, sale: 56, status: "ok" } } },
+  };
+  const view = priceView(collision, "USD");
+  assert.equal(view.kind === "available" && view.discounted, false);
+  const html = renderToStaticMarkup(createElement(TourPriceView, { tour: collision, currency: "USD" }));
+  assert.doesNotMatch(html, /<del>/);
+  assert.match(html, /US\$56|56/);
+});
+
+test("the tour card strikes the regular price only when the backend sale is lower", () => {
+  const discounted = renderToStaticMarkup(createElement(TourPriceView, { tour: saleTour, currency: "USD" }));
+  assert.match(discounted, /<del>/);
+  assert.match(discounted, /per car/);
+  const plain = renderToStaticMarkup(createElement(TourPriceView, { tour: convertedTour, currency: "USD" }));
+  assert.doesNotMatch(plain, /<del>/);
+});
+
+test("the quote card shows the struck regular amount only for a real discount", () => {
+  const props = { title: "A. Ubud Tour", travelDate: "2026-11-02", pickupPlace: "Svara by Mazari", pickupTime: "10:00", busy: false, onConfirm: () => {}, onChange: () => {} };
+  const discounted = renderToStaticMarkup(createElement(QuoteCard, { ...props, quote: { ...quote, regular_amount: 56, amount: 50, currency: "USD" } }));
+  assert.match(discounted, /<del>\$56<\/del>/);
+  assert.match(discounted, /\$50/);
+  const plain = renderToStaticMarkup(createElement(QuoteCard, { ...props, quote: { ...quote, regular_amount: 50, amount: 50, currency: "USD" } }));
+  assert.doesNotMatch(plain, /<del>/);
+});

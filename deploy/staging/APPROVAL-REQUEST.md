@@ -26,14 +26,14 @@ Proposed resource names (adjust to the account's limits):
 3. WordPress 6.6+ install with a new admin user (no production users), permalinks `/%postname%/`.
 4. SSL (Let's Encrypt) + force HTTPS; `blog_public = 0`.
 5. `.htaccess`: Basic Auth for `wp-admin`/`wp-login.php` only, `X-Robots-Tag: noindex`, XML-RPC off
-   (`deploy/staging-rc1/htaccess-staging.txt`).
-6. `wp-config.php`: append the constants from `deploy/staging-rc1/wp-config-staging.snippet.php`
+   (`deploy/staging/htaccess-staging.txt`).
+6. `wp-config.php`: append the constants from `deploy/staging/wp-config-staging.snippet.php`
    with a freshly generated `SHALOM_HEADLESS_SIGNING_KEY` (never the production key).
    `SHALOM_HEADLESS_AUDIENCE` must equal the frontend's `WORDPRESS_API_URL` **exactly**
    (`https://<staging-host>/wp-json/shalom/v1`), because the adapter signs that string.
 7. MU-plugin `shalom-staging-mail-guard.php` (blocks all mail, logs metadata outside the web root).
 8. **Snapshot before install:** DB export + `wp-content` archive stored outside `public_html`.
-9. Upload `shalom-customer-portal-1.29.0-rc1-99c30840.zip` (hash verified before upload) and activate.
+9. Upload `shalom-customer-portal-1.29.0-rc2-f1f95b00.zip` (hash verified before upload) and activate.
 10. Seed content: 3 test tours (South Kuta, Ubud, West Bali) created manually. **No production data
     import** — no customers, inquiries, reviews or media.
 11. Set the plugin's WhatsApp numbers to the test recipients in Shalom Travel → Settings.
@@ -54,7 +54,7 @@ project fails the build by design, so there are two options:
   project ID/host, then create a new project. This is a frontend code change and requires re-running
   the 117 tests and the production build before use.
 
-Preview-scoped environment (7 vars, `deploy/staging-rc1/staging.env.example`):
+Preview-scoped environment (7 vars, `deploy/staging/staging.env.example`):
 `NODE_ENV=production`, `ALLOW_INDEXING=false`, `HEADLESS_RATE_LIMIT_MODE=signed`,
 `WORDPRESS_SITE_URL`, `WORDPRESS_API_URL`, `SESSION_ENCRYPTION_KEY`, `SHALOM_HEADLESS_SIGNING_KEY`.
 Secrets generated fresh; the signing key must equal the staging WordPress constant.

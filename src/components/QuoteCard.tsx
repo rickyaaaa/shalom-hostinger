@@ -29,7 +29,7 @@ export function QuoteCard({ quote, title, travelDate, pickupPlace, pickupTime, b
     <h2 id="quote-card-title">Confirm before WhatsApp</h2>
     <p className="quote-card-route">{title}{travel ? ` · ${travel}` : ""}</p>
     <dl className="quote-card-details">
-      <div><dt>Price</dt><dd><strong>{money(quote.amount, quote.currency)}</strong>{quote.per_car ? " per car" : ""}</dd></div>
+      <div><dt>Price</dt><dd>{quote.regular_amount > quote.amount && <del>{money(quote.regular_amount, quote.currency)}</del>}<strong>{money(quote.amount, quote.currency)}</strong>{quote.per_car ? " per car" : ""}</dd></div>
       {quote.cars > 1 && <div><dt>Cars</dt><dd>{quote.cars}</dd></div>}
       <div><dt>Pickup</dt><dd>{pickupPlace || "Not provided"}{pickupTime ? ` · ${pickupTime}` : ""}</dd></div>
       {quote.currency !== "IDR" && quote.base_idr !== null && <div><dt>Base</dt><dd>{money(quote.base_idr, "IDR")}{quote.per_car ? " per car" : ""}</dd></div>}

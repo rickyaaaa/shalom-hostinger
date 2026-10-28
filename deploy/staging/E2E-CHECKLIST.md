@@ -1,4 +1,4 @@
-# E2E checklist — multi-currency v1.29.0-rc1 staging
+# E2E checklist — multi-currency v1.29.0-rc2 staging
 
 Status legend: **LOCAL-PASS** = already proven on this workstation against the approved artifact
 (disposable harness, real REST dispatch or `php -S` HTTP). **PENDING** = requires the isolated staging
@@ -11,6 +11,9 @@ environment and/or a browser.
 | 3 | Admin area-level defaults | Browser + API | Settings shows South Kuta/Ubud = 900000; API `prices.base.regular = 900000` | LOCAL-PASS (API) | `03-settings.png`, `03-currencies.json` |
 | 4 | Admin per-tour override | Browser + API | Override 1,000,000 → card/quote IDR 1,000,000 (USD 62) | LOCAL-PASS (23 checks) | `04-tour-edit.png`, `04-quote.json` |
 | 5 | Clear override restores area default | Browser + API | Empty field → price back to 900,000 (USD 56) | LOCAL-PASS | `05-after-clear.json` |
+| 5a | Admin per-Tour sale | Browser + API | Sale 800,000 → card strikes $56, shows $50; quote/WhatsApp use 50 | LOCAL-PASS (34 checks) | `05a-sale.png`, `05a-quote.json` |
+| 5b | Sale validation | API | Equal/greater rejected; empty removes discount; area price lowered below a sale is refused | LOCAL-PASS | `05b-errors.json` |
+| 5c | Rounding collision | Browser + API | 899,000 on 900,000 → both USD 56 → no strikethrough | LOCAL-PASS | `05c-collision.png` |
 | 6 | Real-time quote + confirmation | Browser + API | "Review price" → quote card → confirm → WhatsApp URL | LOCAL-PASS (REST) | `06-quote.png`, `06-inquiries.json` |
 | 7 | `409 quote_changed` | API | Price/rate change invalidates the quote; new quote shown; no inquiry | LOCAL-PASS | `07-409.json` |
 | 8 | `410 quote_expired` | API | Expired quote → back to edit; no inquiry | LOCAL-PASS | `08-410.json` |
@@ -29,7 +32,7 @@ environment and/or a browser.
 
 ## Evidence rules
 
-- Store artefacts under `tests/results/staging-rc1/<date>/` (gitignored), never in source.
+- Store artefacts under `tests/results/staging/<date>/` (gitignored), never in source.
 - Capture the deployment URL, plugin hash, commit `d011f3c`, and the exact rate document per run.
 - A failed check is recorded as FAIL with the response body and the WordPress error log line.
 - No production host, customer or number may appear in any screenshot or log.
