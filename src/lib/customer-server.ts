@@ -20,7 +20,7 @@ export async function writeSession(session: CustomerSession) {
 export async function clearSession() { (await cookies()).delete(SESSION_COOKIE); }
 
 export class CustomerError extends Error {
-  constructor(public status: number, message: string) { super(message); }
+  constructor(public status: number, message: string, public code?: string, public data?: unknown) { super(message); }
 }
 export async function customerRequest(action: string, method: "GET" | "POST", data?: unknown, session?: CustomerSession | null, query?: Record<string,string>) {
   let response: Response;
@@ -82,11 +82,22 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
       previous_tour_area: "Please choose your previous itinerary area.",
       previous_tour_package: "Please choose an itinerary from the selected area.",
       previous_tour_date: "Please choose your previous travel date. It cannot be in the future.",
+      currency: "Choose USD, EUR or IDR.",
+      currency_unavailable: "This itinerary is not available in the selected currency. Choose another currency.",
+      currency_disabled: "Currency selection is not available.",
+      quote_changed: "The price for this itinerary has changed. Review the new price and confirm again.",
+      quote_expired: "This price has expired. Request a fresh price and confirm again.",
+      rate_unavailable: "The daily exchange rate is unavailable. Choose IDR or try again later.",
       disabled: "Online sign-up is currently unavailable. Please contact Shalom Bali Tour.",
       rate_limit: "Too many attempts. Please wait a little while and try again.",
       rest_no_route: "The customer service is awaiting its WordPress adapter update. Please try again later.",
     };
-    throw new CustomerError(response.status, messages[value?.code] || ([401,403].includes(response.status) ? "Your session has expired. Please sign in again." : "Please check the form details and try again."));
+    throw new CustomerError(
+      response.status,
+      messages[value?.code] || ([401,403].includes(response.status) ? "Your session has expired. Please sign in again." : "Please check the form details and try again."),
+      typeof value?.code === "string" ? value.code : undefined,
+      value?.data,
+    );
   }
   return { value, response };
 }

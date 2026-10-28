@@ -5,6 +5,8 @@ import { Footer } from "@/components/Footer";
 import { siteLinks } from "@/lib/site";
 import { wordpressConfig } from "@/lib/config";
 import { CustomerSession } from "@/components/CustomerSession";
+import { CurrencyProvider } from "@/components/CurrencyProvider";
+import { getCurrencies } from "@/lib/wordpress";
 import { indexingEnabled } from "@/lib/seo";
 import "./globals.css";
 
@@ -27,14 +29,16 @@ export const metadata: Metadata = {
   robots: { index: indexingEnabled(), follow: indexingEnabled() },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const localBackend = ["localhost", "127.0.0.1", "[::1]"].includes(new URL(wordpressConfig().site).hostname);
+  // v1.28.1 has no /currencies route: a 404 means feature-off, never a page failure.
+  const currencies = await getCurrencies().catch(() => null);
   return <html lang="en" className={raleway.variable}><body>
     <a className="skip-link" href="#main-content">Skip to content</a>
-    <CustomerSession><Header links={siteLinks()} />
+    <CustomerSession><CurrencyProvider initial={currencies}><Header links={siteLinks()} />
     {localBackend && <p className="local-data-notice" role="status">Local WordPress test data — not staging.</p>}
     <main id="main-content">{children}</main>
-    <Footer />
+    <Footer /></CurrencyProvider>
     </CustomerSession>
   </body></html>;
 }

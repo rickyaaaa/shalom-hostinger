@@ -531,7 +531,52 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .account-panel .booking-search { width: auto; max-width: none; margin: 32px 0 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; gap: 20px; }
 .account-panel .booking-search-copy h2 { font-size: 24px; }
 
-/* Mobile hardening. */
+.currency-switcher { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.currency-switcher-label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; white-space: nowrap; }
+.currency-switcher-select { width: 132px; max-width: 100%; min-height: 40px; padding: 0 32px 0 12px; border: 1px solid #b8c7d5; border-radius: var(--radius-pill); background: #fff; color: var(--navy); font-size: 13px; font-weight: 600; line-height: 1.2; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%230d315b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; background-size: 14px 14px; text-overflow: ellipsis; }
+.currency-switcher-select:disabled { cursor: wait; opacity: .7; }
+.currency-switcher-status { color: var(--muted); font-size: 11px; line-height: 1.3; }
+.currency-switcher-status.is-error { color: #8c2b24; font-weight: 600; }
+.currency-switcher-header { margin-right: 2px; }
+.currency-switcher-header .currency-switcher-label { display: none; }
+.currency-switcher-header .currency-switcher-select { width: 100px; }
+.currency-switcher-header .currency-switcher-status { max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.currency-switcher-menu { display: none; padding: 8px 24px 12px; border-bottom: 1px solid var(--border); }
+.currency-switcher-menu .currency-switcher-label { display: block; margin-bottom: 4px; }
+.currency-switcher-menu .currency-switcher-select { width: 100%; }
+.currency-switcher-menu .currency-switcher-status { display: block; margin-top: 4px; }
+.currency-switcher-inline { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px 10px; margin: 0 0 20px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: #f6f8fa; }
+.currency-switcher-inline .currency-switcher-select { width: 100%; }
+.currency-switcher-inline .currency-switcher-status { grid-column: 1 / -1; }
+.booking-selected-price { margin-top: 6px; color: var(--navy); font-size: 15px; }
+.booking-selected-price strong { font-size: 20px; }
+.price-unit { color: var(--muted); font-size: 13px; font-weight: 600; }
+.price-unavailable { display: grid; gap: 2px; }
+.price-unavailable strong { color: var(--navy); font-size: 18px; line-height: 1.35; }
+.price-unavailable .price-unit { font-weight: 500; }
+.currency-rate-note { display: block; margin-top: 4px; color: var(--gold-text); font-size: 11px; line-height: 1.45; }
+.quote-card { display: grid; gap: 14px; margin: 0; padding: 20px; border: 1px solid var(--border); border-left: 4px solid var(--gold); border-radius: 14px; background: #fffdf7; }
+.quote-card h2 { color: var(--navy); font-size: 24px; line-height: 1.25; }
+.quote-card-route { color: var(--muted); font-size: 14px; }
+.quote-card-details { display: grid; gap: 8px; margin: 0; }
+.quote-card-details > div { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 8px; border-bottom: 1px solid #eee8da; }
+.quote-card-details dt { color: var(--muted); font-size: 13px; }
+.quote-card-details dd { margin: 0; color: var(--navy); font-size: 14px; text-align: right; overflow-wrap: anywhere; }
+.quote-card-details strong { font-size: 22px; }
+.quote-card-note { color: var(--gold-text); font-size: 12px; line-height: 1.55; }
+.quote-card-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.quote-card-actions .button { flex: 1 1 190px; }
+@media (max-width: 1024px) {
+  .currency-switcher-header { display: none; }
+  .currency-switcher-menu { display: grid; }
+}
+@media (max-width: 767px) {
+  .quote-card { padding: 16px; }
+  .quote-card h2 { font-size: 21px; }
+  .quote-card-details > div { align-items: flex-start; }
+  .quote-card-actions .button { flex-basis: 100%; }
+}
+
 /* Anchors land below the sticky header: Header measures its real height into --site-header-height
    (120px is only the pre-hydration fallback); desktop's header is not sticky, so only the gap applies. */
 :root { --site-header-height: 0px; --anchor-gap: 24px; --control-height: 48px; }

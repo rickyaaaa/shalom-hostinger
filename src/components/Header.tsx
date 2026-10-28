@@ -8,6 +8,7 @@ import type { SiteLinks } from "@/lib/types";
 import { Icon } from "./Icon";
 import { AccountHeaderAction } from "./AccountHeaderAction";
 import { MobileMenu } from "./MobileMenu";
+import { CurrencySelector } from "./CurrencySelector";
 import { stickyHeaderHeight } from "@/lib/anchor";
 
 export function Header({ links: _links }: { links: SiteLinks }) {
@@ -55,6 +56,7 @@ export function Header({ links: _links }: { links: SiteLinks }) {
       </Link>
       <MobileMenu open={open} itinerary={itinerary} setItinerary={setItinerary} pathname={pathname} close={close} toggleRef={itineraryToggle}/>
       <div className="header-actions">
+        <CurrencySelector id="currency-header" variant="header" />
         <AccountHeaderAction/>
         <Link href="/#contact" className="button button-white header-contact">Contact Us</Link>
         <button ref={toggle} className="menu-toggle" type="button" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="primary-navigation" onClick={() => { setOpen(!open); setItinerary(false); }}><Icon name={open ? "close" : "menu"} /></button>

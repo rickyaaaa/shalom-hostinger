@@ -1,4 +1,35 @@
 import { z } from "zod";
+import { currencyCodeSchema } from "./types";
+
+export const currencyPreferenceSchema = z.object({
+  currency: currencyCodeSchema,
+  source: z.enum(["explicit", "recommended", "default"]),
+  updated_at: z.string().nullable(),
+  recommended: currencyCodeSchema,
+  options: z.array(currencyCodeSchema).min(1),
+});
+export const quoteSchema = z.object({
+  id: z.string().regex(/^shq_[a-f0-9]{32}$/),
+  fingerprint: z.string().min(16),
+  tour_id: z.number().int().positive().optional(),
+  currency: currencyCodeSchema,
+  amount: z.number().finite().nonnegative(),
+  regular_amount: z.number().finite().nonnegative(),
+  sale_amount: z.number().finite().nonnegative().nullable().optional(),
+  base_idr: z.number().finite().nonnegative().nullable(),
+  sale_base_idr: z.number().finite().nonnegative().nullable().optional(),
+  idr_per_unit: z.number().positive().nullable(),
+  rate_date: z.iso.date().nullable(),
+  rate_source: z.string().min(1),
+  status: z.enum(["ok", "stale", "unavailable"]),
+  per_car: z.boolean(),
+  cars: z.number().int().min(1).max(10),
+  version: z.number().int().positive(),
+  quoted_at: z.string().min(1),
+  expires_at: z.string().min(1),
+});
+export type Quote = z.infer<typeof quoteSchema>;
+export type CurrencyPreference = z.infer<typeof currencyPreferenceSchema>;
 
 export const customerConfigSchema = z.object({
   registration_enabled: z.boolean(), terms_url: z.url(), privacy_url: z.url(),
@@ -9,7 +40,7 @@ export const inquiryHistorySchema = z.object({
   // order_code (1.25): the permanent public order code, e.g. AU-10001; null for orders placed before codes existed.
   // order_number (1.32): the number the customer got on WhatsApp, "#10001" or "#rck10001" (a referral partner's initial).
   items: z.array(z.object({id:z.number().int().positive(),title:z.string(),order_code:z.string().regex(/^[A-Z]{2}-[1-9]\d{4,9}$/).nullable().optional(),order_number:z.string().regex(/^#(?:[a-z]{2,5})?[1-9]\d{4,9}$/).nullable().optional(),submitted_at:z.iso.datetime().nullable(),status:z.enum(["inquiry","confirmed","completed","cancelled","unavailable"]),
-    kind:z.enum(["tour","custom","contact"]).optional(),travel_date:z.iso.date().nullable().optional(),booking_date:z.iso.date().nullable().optional(),pickup_place:z.string().max(200).nullable().optional(),pickup_time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).nullable().optional()})),
+    kind:z.enum(["tour","custom","contact"]).optional(),travel_date:z.iso.date().nullable().optional(),booking_date:z.iso.date().nullable().optional(),pickup_place:z.string().max(200).nullable().optional(),pickup_time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).nullable().optional(),quote:quoteSchema.nullable().optional()})),
   page:z.number().int().min(1).max(9999), has_more:z.boolean(),
 });
 export const customerSchema = z.object({ id: z.number().int().positive().optional(), name: z.string(), country: z.string(), avatar_url: z.url().nullable().optional(), email: z.string().max(254).nullable().optional(), referral_enabled: z.boolean().optional() });
@@ -34,6 +65,8 @@ export const accountSchema = z.object({
   previous_tour_reviews: previousTourReviewsSchema.optional(),
   // 1.21: the signed-in partner's own referral slug, only while an admin has referral enabled for them.
   referral: z.object({ slug: z.string().min(2).max(40).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) }).nullable().optional(),
+  // 1.29: present only while the WordPress multi-currency flag is enabled.
+  currency_preference: currencyPreferenceSchema.optional(),
   reviews: z.array(z.object({ id: z.number().int().positive().optional(), tour_id: z.number().int(), title: z.string(), experience: z.string(), status: z.enum(["approved", "pending", "rejected", "unavailable"]), submitted_at: z.string().optional(), ratings: z.object({driving_skill:z.number().int(),service:z.number().int(),car:z.number().int()}).optional(), price:z.string().optional(), recommend:z.boolean().optional() })),
 });
 export type CustomerConfig = z.infer<typeof customerConfigSchema>;
@@ -57,9 +90,14 @@ export const previousTourAreas = ["south-kuta","ubud","west-bali"] as const;
 export const previousTourInput = z.object({ area: z.enum(previousTourAreas), tour_id: z.number().int().positive().max(2147483647), tour_date: z.iso.date(), pickup_place: z.string().trim().min(1).max(200) }).strict();
 export const previousTourResult = z.object({ entitlement: entitlementRow, previous_tour_reviews: previousTourReviewsSchema });
 const requestedTravelDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional();
+// Optional 1.29 currency fields; omitted by old clients and by the feature-OFF frontend.
+const currencyField = currencyCodeSchema.optional();
+const carCount = z.number().int().min(1).max(10).optional();
+const quoteId = z.string().regex(/^shq_[a-f0-9]{32}$/).optional();
 // Pickup details (fixed itinerary or Customized Itinerary); WordPress requires date, place and time together when either pickup field is sent.
 const pickup = {pickup_place:z.string().trim().min(1).max(200).optional(),pickup_time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).optional()};
 // 1.33 island packages: number of people and the hotel shuttle choice. WordPress validates them per Tour and calculates the total.
 const island = {persons:z.number().int().min(1).max(100).optional(),shuttle:z.boolean().optional()};
-export const bookingInput = z.discriminatedUnion("kind", [z.object({kind:z.literal("tour"),tour_id:z.number().int().positive().max(2147483647),requested_travel_date:requestedTravelDate,...pickup,...island}).strict(),z.object({kind:z.literal("custom"),tour_id:z.literal(0),requested_travel_date:requestedTravelDate,...pickup}).strict()]);
-export const inquiryInput = z.discriminatedUnion("kind", [z.object({kind:z.literal("tour"),tour_id:z.number().int().positive().max(2147483647),requested_travel_date:requestedTravelDate,...pickup,...island,ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).strict(),z.object({kind:z.literal("custom"),tour_id:z.literal(0),requested_travel_date:requestedTravelDate,...pickup,ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).strict()]);
+export const bookingInput = z.discriminatedUnion("kind", [z.object({kind:z.literal("tour"),tour_id:z.number().int().positive().max(2147483647),requested_travel_date:requestedTravelDate,...pickup,...island,currency:currencyField,cars:carCount}).strict(),z.object({kind:z.literal("custom"),tour_id:z.literal(0),requested_travel_date:requestedTravelDate,...pickup}).strict()]);
+export const inquiryInput = z.discriminatedUnion("kind", [z.object({kind:z.literal("tour"),tour_id:z.number().int().positive().max(2147483647),requested_travel_date:requestedTravelDate,...pickup,...island,currency:currencyField,cars:carCount,quote_id:quoteId,ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).strict(),z.object({kind:z.literal("custom"),tour_id:z.literal(0),requested_travel_date:requestedTravelDate,...pickup,ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).strict()]);
+export const currencyInput = z.object({ currency: currencyCodeSchema }).strict();
