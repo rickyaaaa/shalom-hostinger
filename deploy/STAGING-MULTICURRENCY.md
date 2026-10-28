@@ -8,28 +8,29 @@ WordPress flag stays OFF.
 
 ---
 
-## 1. Which plugin ZIP is the correct one
+## 1. Which plugin ZIP is the valid one
 
-There are **two different files named `shalom-customer-portal-1.29.0.zip`** in the workspace. Only one
-matches the frontend contract.
+The candidate was rebuilt after the per-Tour price and stale-rate changes, so the previous
+`54ddfde5…` archive is obsolete.
 
 | Build | Path | SHA-256 | Verdict |
 | --- | --- | --- | --- |
-| Corrected | `custom plugin/login arena shalom tour/portal-1.29/dist/shalom-customer-portal-1.29.0.zip` | `54ddfde5426114e2f7f36096e2483f5c3d451d7c871275de506304aa5ea787bd` | **Use this for staging** |
-| Stale | `Wordpress/headless shalom/dist/shalom-customer-portal-1.29.0.zip` | `26651a49be2400f55ce83893223aa64626c74b796ceabe75f901333d308dfd36` | Do **not** use; incompatible |
+| **Valid candidate** | `custom plugin/login arena shalom tour/portal-1.29/dist/shalom-customer-portal-1.29.0-rc1-99c30840.zip` | `99c30840d01a482fb0c61e8990fa85b9144b79dc950dc685e83bd8b0658a59fc` | **Use this for staging** |
+| Obsolete candidate | `…/portal-1.29/dist/obsolete/shalom-customer-portal-1.29.0-pre-rc1.zip` | `54ddfde5426114e2f7f36096e2483f5c3d451d7c871275de506304aa5ea787bd` | Superseded; do not install |
+| Stale/wrong lineage | `Wordpress/headless shalom/dist/_quarantine/DO-NOT-INSTALL-shalom-customer-portal-1.29.0-26651a49.zip` | `26651a49be2400f55ce83893223aa64626c74b796ceabe75f901333d308dfd36` | Quarantined; never install |
 
-Why the stale ZIP must not be installed: it exposes a different API (`base_currency`/`currencies[]`
-instead of `default`/`supported`/`rates`, no `prices`/`price_status` on Tours, `booking-ticket` without
-`quote`, `preference` without `source`/`recommended`/`options`, and its own `/quote` + `/customer/orders`
-flow). With it installed the frontend silently stays feature-OFF and the quote flow can never run.
+Why the quarantined ZIP must not be installed: it is not a v1.28.1 descendant. It removes
+`class-password-reset.php`, `class-referrals.php`, `class-review-entitlements.php`, `class-avatar.php`,
+`class-brevo-mailer.php`, `class-order-codes.php` and `class-phone-login-diagnostics.php`, and exposes a
+different REST table (`preferences`, `/quote`, `/customer/orders`) that does not match the frontend.
 
 Verify before installing:
 
 ```powershell
-Get-FileHash "<path>\shalom-customer-portal-1.29.0.zip" -Algorithm SHA256
+Get-FileHash "<path>\shalom-customer-portal-1.29.0-rc1-99c30840.zip" -Algorithm SHA256
 ```
 
-Expected: `54DDFDE5...A787BD`.
+Expected: `99C30840D01A482FB0C61E8990FA85B9144B79DC950DC685E83BD8B0658A59FC`.
 
 ---
 
@@ -55,20 +56,22 @@ Configuration template: `deploy/staging.env.example`. Production template
 ## 3. Staging bring-up order
 
 1. Back up and snapshot the staging DB (empty/staging data only).
-2. Install the **corrected** ZIP; activate.
+2. Install the **valid candidate**; activate.
 3. **Leave the flag OFF.** Visit Shalom → Settings → confirm the multi-currency option exists and
    `enabled` is unset.
 4. Smoke-test the legacy flow with the flag OFF: tour listing, booking, WhatsApp hand-off, login,
    account, reviews. This is the rollback baseline.
 5. Refresh the daily rate (Settings → "Refresh exchange rates", or wait for
-   `shalom_refresh_exchange_rates`). Confirm `shalom_fx_rates_v1` holds USD and EUR with an
-   `effective_date`.
+   `shalom_refresh_exchange_rates`). USD/EUR booking requires status **`ok`**; a `stale` rate still
+   renders but refuses new quotes.
 6. Check the public endpoint before enabling:
    `GET /wp-json/shalom/v1/currencies` → `{"enabled":false,"default":"USD","supported":["USD"]}`.
 7. Enable the flag on **staging only**. Re-check:
    - `enabled: true`, `default: "USD"`, `supported: ["USD","EUR","IDR"]`
    - each rate row has `idr_per_unit`, `effective_date`, `source`, `status`
    - Tour payload carries `price_status` and `prices.amounts` for USD/EUR/IDR
+8. Optional per-Tour override: **Tours → edit a South Kuta/Ubud tour → Shalom Tour Data →
+   "Tour override (IDR)"**. Only an Administrator sees the input; leave it empty to use the area price.
 8. Deploy the branch to the preview host with `deploy/staging.env.example` values. `WORDPRESS_*`
    feeds the image allowlist, so a backend hostname change requires a **rebuild**, not just a restart.
 9. Confirm `GET /api/tours` on the preview does not leak secrets and the page renders the selector.
@@ -110,8 +113,10 @@ Record pass/fail per row; attach screenshots/network captures for failures.
 | 15 | Tour without a price in EUR | "Price unavailable in EUR", never `0` |
 | 16 | Per-car semantics | Label `per car`; `cars` stays 1 in the current UI; a value of `2` must never silently double a price in the UI without the `Cars` row |
 | 17 | West Bali tour | Legacy USD display only, **no** per-car claim, no IDR/EUR availability |
-| 18 | Stale rate (5–7 days) | "Estimated price · rate <date>"; booking still allowed (see §5) |
-| 19 | Rate unavailable (>7 days / provider down) | "Price unavailable in USD/EUR"; IDR still books |
+| 18 | Stale rate (5–7 days) | Tour shows "Estimated price · rate <date>", but "Review price" returns **503 `rate_unavailable`**; no quote, no order |
+| 19 | Rate unavailable (>7 days / provider down) | "Price unavailable in USD/EUR"; quote blocked with 503 `rate_unavailable`; IDR still books |
+| 19a | Per-Tour IDR override | Admin sets a South Kuta/Ubud tour to 1,000,000 → card/quote show the new price; clearing it restores the area price; West Bali has no field |
+| 19b | Editor role | Sees the price read-only; cannot change or clear it, but can still edit other Tour fields |
 
 ### Booking and quotation
 
@@ -155,18 +160,22 @@ Record pass/fail per row; attach screenshots/network captures for failures.
 (invalid/future date also `unavailable`). A daily cron (`shalom_refresh_exchange_rates`) refreshes the
 cached document.
 
-**Does the backend allow booking with a stale rate? Yes.** `Currency::quote()` accepts a `stale`
-document, sets `status: "stale"`, and continues; `validate_quote()` only compares the fingerprint. The
-customer sees the stale amount and can confirm it. Only `unavailable` blocks booking (`503
-rate_unavailable`) and hides USD/EUR tour prices.
+**Does the backend allow booking with a stale rate? No (since 1.29.0-rc1).** `Currency::quote()` now
+requires `status: "ok"` for any USD/EUR quote converted from the IDR base; a `stale`, `unavailable` or
+missing rate returns **HTTP 503 with code `rate_unavailable`** and creates no quote and no Inquiry. The
+same check runs again in `validate_quote()`, so a quote issued while the rate was current cannot be
+confirmed after the rate goes stale. Confirmed orders keep their stored snapshot and retries keep
+returning it. IDR and legacy West Bali USD booking never depend on the rate.
 
 Consequences to test and to decide with the client:
 
-- A stale quote is still an accepted order; the only disclosure is the "Estimated price" label.
-- The fingerprint includes `idr_per_unit` and `rate_date`, so **any** daily refresh invalidates open
-  quotes with `409 quote_changed`, even when the rounded amount is identical.
+- A stale rate still renders labelled prices ("Estimated price") for transparency, but booking is
+  blocked until the next successful refresh.
+- The fingerprint includes `idr_per_unit` and `rate_date`, so **any** daily refresh still invalidates
+  open quotes with `409 quote_changed`, even when the rounded amount is identical.
 - Quote TTL is 30 minutes by default (`quote_ttl`, clamped 300–3600 s); `410` only applies before an
   order exists — retries of an existing order return the stored snapshot.
+- If the feed is down for more than 7 days, USD/EUR booking stops entirely until it recovers.
 
 ---
 
@@ -196,7 +205,9 @@ Consequences to test and to decide with the client:
 
 ## 8. Known issues / risks carried into staging
 
-- Version-number ambiguity: the two `1.29.0` ZIPs differ; always check the hash.
+- Version ambiguity: the intermediate `1.29.0` builds differ; always check the hash. The valid
+  candidate is `…-rc1-99c30840.zip` (`99c30840…a59fc`); older builds are in `obsolete/` or
+  `_quarantine/` and must not be installed.
 - The XML ECB feed is parsed by the corrected plugin; an ECB format change or outage degrades to
   `stale` and then `unavailable`.
 - Only South Kuta and Ubud have approved IDR bases; Customized Itinerary stays legacy and never shows

@@ -36,6 +36,13 @@ No `/customer/orders` route or separate checkout exists.
 
 ## Quotes and rate consistency
 
+Since plugin **1.29.0-rc1**, USD/EUR quote creation and revalidation require an `ok` exchange rate
+(≤4 days old). A stale (5–7 days), unavailable (>7 days) or missing rate returns HTTP **503** with the
+machine-readable code **`rate_unavailable`**; the BFF maps it to "The daily exchange rate is
+unavailable. Choose IDR or try again later." Nothing is booked and no zero price is produced. The Tour
+cards may still show a labelled "Estimated price", but the order cannot proceed. IDR and West Bali
+legacy USD booking are unaffected.
+
 Every monetary example generated for this integration uses one deterministic fixture: `1 USD = 16,285.50 IDR`, `1 EUR = 17,610.20 IDR`. The same rate document is used by `/currencies`, Tour `prices`, `booking-ticket` quotes and `inquiries` snapshots; the fixture produces USD 56 and EUR 52 for an IDR 900,000 per-car tour. The higher values quoted in an earlier review message (`18,138.60` / `20,224.54`) came from a separate live ECB sample and are not used by any page, quote or test. The frontend never derives one from another.
 
 ## UI behavior
@@ -48,7 +55,9 @@ Every monetary example generated for this integration uses one deterministic fix
 
 ## Release prerequisites
 
-1. Install the corrected WordPress v1.29.0 plugin on staging.
+1. Install the valid plugin release candidate on staging:
+   `shalom-customer-portal-1.29.0-rc1-99c30840.zip`
+   (SHA-256 `99c30840d01a482fb0c61e8990fa85b9144b79dc950dc685e83bd8b0658a59fc`).
 2. Keep the flag OFF, refresh the daily rate, and verify `ok`/`stale`.
 3. Enable the flag on staging only.
 4. Deploy this frontend against the v1.29.0 API.
