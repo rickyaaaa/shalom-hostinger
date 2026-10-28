@@ -2,14 +2,14 @@
 // Tour cards, prices and reviews are absent: those belong to WordPress APIs.
 export const areas = {
   ubud: {name:"Ubud",label:"DISCOVER UBUD",heading:"Private Ubud Tour with Driver",image:"/images/ubud.webp",alt:"Green rice terraces in Ubud",description:"Explore Ubud with your own private driver on a flexible 10-hour day tour. Discover rice terraces, temples, waterfalls, traditional arts, and family-friendly destinations through our selected itineraries."},
-  "south-kuta": {name:"South Kuta",label:"EXPLORE SOUTH KUTA",heading:"Ready for Your South Kuta Adventure?",image:"/images/south-kuta.webp",alt:"The coastal landscape of South Kuta",description:"Discover Uluwatu, beautiful beaches, watersports, ATV experiences, and sunset moments in Jimbaran. Choose one of our South Kuta itineraries or customize your own to suit your travel plans."},
+  "south-kuta": {name:"South Kuta",label:"EXPLORE SOUTH KUTA",heading:"Explore South Kuta Private Tours",image:"/images/south-kuta.webp",alt:"The coastal landscape of South Kuta",description:"Explore Bali's southern coast with a private driver on a 10-hour day tour. Choose from itineraries featuring Uluwatu Temple, scenic beaches, watersports, ATV adventures, spa experiences, and sunset dining in Jimbaran."},
   "west-bali": {name:"West Bali",label:"EXPLORE WEST BALI",heading:"Are You Ready To Explore West Bali ?",image:"/images/west-bali.jpeg",alt:"A Balinese temple beside the water",description:"Choose one of our West Bali itineraries or tell us the places you want to visit. We’ll help arrange a flexible, personalized itinerary with a comfortable private driver."},
 };
 export type AreaSlug = keyof typeof areas;
 /**
- * Area page guide (approved Ubud SEO brief, 27 October 2026): search title and description, the itinerary
- * section heading, How It Works in the real order flow, and links to the other tour areas. Prices, itineraries
- * and the included / not-included terms are never copied here: they come from WordPress.
+ * Area page guide (approved Ubud and South Kuta SEO briefs, 27 October 2026; client-approved headings): search title
+ * and description, the itinerary section heading, How It Works in the real order flow, and links to the other tour
+ * areas. Prices, itineraries and the included / not-included terms are never copied here: they come from WordPress.
  */
 export type AreaGuide = {
   title: string; metaDescription: string; heroCta: string;
@@ -17,31 +17,55 @@ export type AreaGuide = {
   stepsHeading: string; steps: { title: string; text: string }[]; stepsNote: string; stepsCta: string;
   moreHeading: string; more: { title: string; text: string; href: string }[];
 };
+// The real order flow: Order Now → sign in when needed → travel details → order and WhatsApp. The date rule is the
+// order form's own TRAVEL_DATE_NOTE, added where the steps render. Only the first step names the area.
+const orderSteps = (area: string, article: "a" | "an") => [
+  { title: `Choose ${article} ${area} itinerary`, text: `Pick one of the ${area} tours above and select Order Now.` },
+  { title: "Sign in or create an account", text: "If you are not signed in yet, log in or create an account to continue your order." },
+  { title: "Enter your travel details", text: "Choose your travel date and pickup time, and tell us your hotel or pickup place." },
+  { title: "Submit and reconfirm on WhatsApp", text: "Send your order, then reconfirm your itinerary and pickup details with our team on WhatsApp." },
+];
+const tourLength = "Your tour lasts 10 hours from the agreed pickup time. Extra time is charged as listed in the tour terms.";
+const westBaliLink = { title: "West Bali", text: "Temples, trekking and relaxing routes beyond Bali’s busiest areas.", href: "/west-bali" };
+const customLink = { title: "Customized Itinerary", text: "Tell us the places you would like to visit and we will help arrange your route.", href: "/#customizedtour" };
 export const areaGuides: Partial<Record<AreaSlug, AreaGuide>> = {
   ubud: {
     title: "Private Ubud Tour with Driver",
     metaDescription: "Private Ubud day tours with your own driver: rice terraces, temples, waterfalls, art workshops and family days out. 10 hours, fuel and parking included.",
     heroCta: "See Ubud Tour Itineraries",
-    toursHeading: "Choose Your Ubud Tour Itinerary",
+    toursHeading: "Explore Our Ubud Tour Itineraries",
     toursIntro: "Each Ubud tour is a 10-hour private day with your own driver. Choose the route that suits you, then pick your travel date and pickup time when you order.",
     termsHeading: "What’s Included in Your Private Ubud Tour",
     termsIntro: "Every Ubud itinerary uses the same tour terms:",
     stepsHeading: "How Your Ubud Day Tour Works",
-    // The real order flow: Order Now → sign in when needed → travel details → order and WhatsApp. The date rule is the
-    // order form's own TRAVEL_DATE_NOTE, added where the steps render.
-    steps: [
-      { title: "Choose an Ubud itinerary", text: "Pick one of the Ubud tours above and select Order Now." },
-      { title: "Sign in or create an account", text: "If you are not signed in yet, log in or create an account to continue your order." },
-      { title: "Enter your travel details", text: "Choose your travel date and pickup time, and tell us your hotel or pickup place." },
-      { title: "Submit and reconfirm on WhatsApp", text: "Send your order, then reconfirm your itinerary and pickup details with our team on WhatsApp." },
-    ],
-    stepsNote: "Your tour lasts 10 hours from the agreed pickup time. Extra time is charged as listed in the tour terms.",
+    steps: orderSteps("Ubud", "an"),
+    stepsNote: tourLength,
     stepsCta: "Choose Your Ubud Itinerary",
     moreHeading: "Plan Another Day in Bali",
     more: [
-      { title: "Uluwatu & South Kuta", text: "Clifftop temple views, beaches and Jimbaran sunsets.", href: "/south-kuta" },
-      { title: "West Bali", text: "Temples, trekking and relaxing routes beyond Bali’s busiest areas.", href: "/west-bali" },
-      { title: "Customized Itinerary", text: "Tell us the places you would like to visit and we will help arrange your route.", href: "/#customizedtour" },
+      { title: "Uluwatu & South Kuta", text: "Itineraries featuring Uluwatu Temple, southern beaches and Jimbaran sunset dining.", href: "/south-kuta" },
+      westBaliLink,
+      customLink,
+    ],
+  },
+  // Uluwatu Temple is client-confirmed, but only some routes visit it; no Kecak or Uluwatu sunset claims.
+  "south-kuta": {
+    title: "South Kuta Private Tours",
+    metaDescription: "Private South Kuta tours with your own driver: an Uluwatu tour with Uluwatu Temple and beaches, or watersports, ATV, spa and Jimbaran sunset dining.",
+    heroCta: "See South Kuta Tour Itineraries",
+    toursHeading: "Explore Our South Kuta Tour Itineraries",
+    toursIntro: "Each itinerary is a 10-hour private day in south Bali with your own driver. Choose an Uluwatu tour with Uluwatu Temple and the southern beaches, or a route built around watersports, ATV rides or spa time, then pick your travel date and pickup time when you order.",
+    termsHeading: "What’s Included in Your Private South Kuta Tour",
+    termsIntro: "Every South Kuta itinerary uses the same tour terms:",
+    stepsHeading: "How Your South Kuta Day Tour Works",
+    steps: orderSteps("South Kuta", "a"),
+    stepsNote: tourLength,
+    stepsCta: "Choose Your South Kuta Itinerary",
+    moreHeading: "Plan Another Day in Bali",
+    more: [
+      { title: "Ubud", text: "Rice terraces, temples, waterfalls and traditional arts.", href: "/ubud" },
+      westBaliLink,
+      customLink,
     ],
   },
 };

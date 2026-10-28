@@ -40,7 +40,7 @@ test("No price summary or unverified business claims; prices and terms stay Word
 });
 
 test("Heading hierarchy: one H1, section H2s, itinerary titles as H3 under the itinerary heading", () => {
-  assert.deepEqual([guide.toursHeading, guide.termsHeading, guide.stepsHeading, guide.moreHeading], ["Choose Your Ubud Tour Itinerary", "What’s Included in Your Private Ubud Tour", "How Your Ubud Day Tour Works", "Plan Another Day in Bali"]);
+  assert.deepEqual([guide.toursHeading, guide.termsHeading, guide.stepsHeading, guide.moreHeading], ["Explore Our Ubud Tour Itineraries", "What’s Included in Your Private Ubud Tour", "How Your Ubud Day Tour Works", "Plan Another Day in Bali"]);
   const page = src("components/AreaPage.tsx");
   assert.match(page, /cardHeading=\{guide \? "h3" : "h2"\}/);
   assert.match(src("components/TourCard.tsx"), /heading: Heading = "h2"/, "other areas keep H2 card titles");
@@ -56,11 +56,8 @@ test("Internal links: other tour areas and the customized itinerary, with descri
   assert.match(src("components/AreaPage.tsx"), /href="#tour-packages" className="button button-gold area-hero-cta"/);
 });
 
-test("South Kuta and West Bali are unchanged: no guide, original headings and descriptions", () => {
-  assert.equal(areaGuides["south-kuta"], undefined);
+test("West Bali is unchanged: no guide, original heading and metadata", () => {
   assert.equal(areaGuides["west-bali"], undefined);
-  assert.equal(areas["south-kuta"].heading, "Ready for Your South Kuta Adventure?");
   assert.equal(areas["west-bali"].heading, "Are You Ready To Explore West Bali ?");
-  assert.match(src("app/south-kuta/page.tsx"), /publicMetadata\("South Kuta Itineraries"/);
   assert.match(src("app/west-bali/page.tsx"), /publicMetadata\("West Bali Itineraries"/);
 });
