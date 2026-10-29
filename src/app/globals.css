@@ -584,3 +584,22 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 .area-more-list .area-panel-cta { align-self: flex-start; }
 @media (max-width: 1024px) { .how-steps-four { grid-template-columns: repeat(2, minmax(0, 1fr)); } .area-more-list { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 767px) { .area-hero-cta { margin-top: 24px; } .area-guide { padding: 64px 16px; } .area-guide-steps { padding-top: 0; } .area-tours-intro { margin-bottom: 32px; } .area-terms { grid-template-columns: minmax(0, 1fr); gap: 16px; } .area-terms-group, .area-more-list a { padding: 24px; } .how-steps-four { grid-template-columns: minmax(0, 1fr); } }
+/* Tour detail pages (/tours/<slug>): price strip, overview list, itinerary times, closing CTA, card link. */
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.tour-detail-booking { background: white; padding: 32px 24px; border-bottom: 1px solid var(--border); }
+.tour-detail-booking-inner { max-width: 1280px; margin: auto; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 380px); align-items: center; gap: 16px 40px; }
+.tour-detail-booking .tour-pricing, .tour-detail-cta .tour-pricing { margin-top: 0; padding-top: 0; border-top: 0; }
+.tour-detail-booking .tour-actions { margin-top: 0; }
+.tour-detail-booking .price-note { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
+.tour-detail-text { max-width: 75ch; margin-bottom: 16px; color: var(--muted); }
+.tour-detail-highlights { max-width: 75ch; margin: 24px 0 0; padding-left: 22px; }
+.tour-detail-highlights li + li { margin-top: 8px; }
+.how-steps .tour-detail-time { margin-bottom: 8px; color: var(--gold-text); font-weight: 700; font-variant-numeric: lining-nums tabular-nums; }
+.tour-detail-cta { text-align: center; }
+.tour-detail-cta h2 { max-width: 22ch; margin-inline: auto; }
+.tour-detail-cta .tour-pricing p { justify-content: center; }
+.tour-detail-cta .tour-actions { flex-wrap: wrap; max-width: 560px; margin-inline: auto; }
+.tour-detail-cta .tour-actions .button { flex: 1 1 220px; }
+.tour-detail-link { display: inline-flex; align-items: center; align-self: center; min-height: 44px; margin-top: 12px; color: var(--navy); font-weight: 600; text-underline-offset: 4px; }
+@media (max-width: 1024px) { .tour-detail-booking-inner { grid-template-columns: auto minmax(0, 1fr); } .tour-detail-booking .tour-actions { grid-column: 1 / -1; } }
+@media (max-width: 767px) { .tour-detail-booking { padding: 24px 16px; } .tour-detail-booking-inner { grid-template-columns: minmax(0, 1fr); } .tour-detail-booking .price-note { grid-row: auto; } }
