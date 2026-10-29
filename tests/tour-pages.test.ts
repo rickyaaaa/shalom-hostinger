@@ -86,7 +86,11 @@ test("Detail route reads WordPress live and reuses the existing booking and revi
   assert.match(route, /<BookingButton tourId=\{tour\.id\}/);
   assert.doesNotMatch(route, /ReviewModal/, "reviews are a section on the page, not a dialog");
   assert.match(route, /getTourReviews\(tour\.id, 1\)\.catch\(\(\) => null\)/, "the first review page is server-rendered");
-  assert.match(route, /href="#tour-reviews">Reviews<\/a>/);
+  assert.match(route, /<a className="tour-detail-rating" href="#tour-reviews"><ReviewScore rating=\{tour\.rating\} \/><\/a>/, "the sidebar rating jumps to the reviews");
+  assert.match(route, /<aside className="tour-detail-info"[^>]*>\s*<h2 id="tour-info-title">Travel Information<\/h2>/);
+  assert.match(route, /<div className="tour-detail-info-actions"><BookingButton tourId=\{tour\.id\} title=\{title\} \/><\/div>/, "one full-width Order Now with the card's sign-in flow");
+  assert.doesNotMatch(route, /Customize Your/);
+  for (const heading of ["Destination Highlights", "Included Facilities", "Why This Tour?", "How Your Day Flows", "Frequently Asked Questions"]) assert.ok(route.includes(`>${heading}</h2>`), heading);
   assert.match(route, /<section id="tour-reviews"[^>]*>[\s\S]*<TourReviews tourId=\{tour\.id\} initial=\{reviews\} \/>\s*<\/div><\/section>\s*<\/>;/, "reviews are the last section");
   assert.match(route, /money\(current, currency\)/);
   assert.match(route, /JSON\.stringify\(jsonLd\)\.replace\(\/<\/g, "\\\\u003c"\)/);
