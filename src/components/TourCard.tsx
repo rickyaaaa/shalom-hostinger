@@ -1,8 +1,9 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Tour } from "@/lib/types";
 import { itineraryTitle, money } from "@/lib/format";
+import { tourDetailPath } from "@/lib/tour-pages";
 import { ReviewScore } from "./ReviewScore";
-import { ReviewModal } from "./ReviewModal";
 import { BookingButton } from "./BookingButton";
 
 type CardPresentation = {title:string;priceNote:string;additionalNote?:string;image?:Tour["card_image"]};
@@ -32,7 +33,7 @@ export function TourCard({ tour, presentation, requestedTravelDate, heading: Hea
         {presentation.additionalNote && <p className="price-note price-note-extra">{presentation.additionalNote}</p>}
         <p className="price-note">{presentation.priceNote}</p>
       </>}
-      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} requestedTravelDate={requestedTravelDate} /><ReviewModal tourId={tour.id} title={title} /></div>
+      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} requestedTravelDate={requestedTravelDate} /><Link className="button button-outline" href={tourDetailPath(tour.id)}>Details<span className="visually-hidden">: {title}</span></Link></div>
       {!presentation && tour.price_note && <p className="price-note">{tour.price_note}</p>}
     </div>
   </article>;

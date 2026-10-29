@@ -34,7 +34,7 @@ test("West Bali preserves dynamic tours, terms, actions, and internal links", ()
   assert.match(src("components/AreaPage.tsx"), /await getAreaTours\(area\)/);
   assert.match(src("components/AreaPage.tsx"), /await getBookingTerms\(\)/);
   assert.match(src("components/TourCard.tsx"), /<BookingButton tourId=\{tour\.id\}/);
-  assert.match(src("components/TourCard.tsx"), /<ReviewModal tourId=\{tour\.id\}/);
+  assert.match(src("components/TourCard.tsx"), /href=\{tourDetailPath\(tour\.id\)\}>Details</);
   assert.deepEqual(guide.more.map(link => link.href), ["/ubud", "/south-kuta", "/#customizedtour"]);
   assert.deepEqual(guide.more.map(link => link.title), ["Ubud", "South Kuta", "Customized Itinerary"]);
   assert.equal(guide.termsIntro, "Before booking your West Bali tour, review the services included in your itinerary and any additional expenses. The information below follows our current tour terms so you can plan your trip with confidence.");
