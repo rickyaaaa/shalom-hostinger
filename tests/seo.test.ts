@@ -42,8 +42,3 @@ test("public pages share a real photo in link previews",()=>{
  }
 });
 
-test("closed review dialogs add no hidden headings to itinerary pages",()=>{
- const modal=source("components/ReviewModal.tsx");
- assert.match(modal,/\{open && <><div className="modal-header"><h2/);
- assert.equal((modal.match(/<h2/g)??[]).length,1);
-});

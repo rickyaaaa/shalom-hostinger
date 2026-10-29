@@ -2,9 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Tour } from "@/lib/types";
 import { itineraryTitle, money } from "@/lib/format";
-import { tourPagePath } from "@/lib/tour-pages";
+import { tourDetailPath } from "@/lib/tour-pages";
 import { ReviewScore } from "./ReviewScore";
-import { ReviewModal } from "./ReviewModal";
 import { BookingButton } from "./BookingButton";
 
 type CardPresentation = {title:string;priceNote:string;additionalNote?:string;image?:Tour["card_image"]};
@@ -21,7 +20,6 @@ export function TourCard({ tour, presentation, requestedTravelDate, heading: Hea
   const image = presentation?.image ?? tour.card_image;
   const focus = image ? imageFocus[new URL(image.url).pathname] : undefined;
   const title = itineraryTitle(presentation?.title ?? tour.title);
-  const detailPath = tourPagePath(tour.id); // null while the tour's detail page is a noindex pilot
   return <article className="tour-card" aria-labelledby={`tour-${tour.id}-title`}>
     <div className="tour-image">{image ? <Image src={image.url} alt={image.alt || title} fill sizes="(max-width: 767px) calc(100vw - 72px), (max-width: 1024px) 44vw, 400px" style={focus ? { objectPosition: focus } : undefined} /> : <span>Itinerary image unavailable</span>}</div>
     <div className="tour-card-body">
@@ -35,8 +33,7 @@ export function TourCard({ tour, presentation, requestedTravelDate, heading: Hea
         {presentation.additionalNote && <p className="price-note price-note-extra">{presentation.additionalNote}</p>}
         <p className="price-note">{presentation.priceNote}</p>
       </>}
-      {/* Reviews live on the detail page; cards without one keep the reviews dialog. */}
-      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} requestedTravelDate={requestedTravelDate} />{detailPath ? <Link className="button button-outline" href={detailPath}>Details<span className="visually-hidden">: {title}</span></Link> : <ReviewModal tourId={tour.id} title={title} />}</div>
+      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} requestedTravelDate={requestedTravelDate} /><Link className="button button-outline" href={tourDetailPath(tour.id)}>Details<span className="visually-hidden">: {title}</span></Link></div>
       {!presentation && tour.price_note && <p className="price-note">{tour.price_note}</p>}
     </div>
   </article>;

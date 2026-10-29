@@ -4,7 +4,8 @@ import type { AreaSlug } from "./marketing";
  * Public tour detail pages (/tours/<slug>): the URL, search copy and on-page story live here, in code, like the area
  * guides in marketing.ts. Title, prices, duration, photo, rating, reviews and the included / not-included terms come
  * live from WordPress (getTour), and Order Now is the existing /book/<id> flow. WordPress slugs are not used.
- * A page with indexable: false is a pilot: it opens, but is noindex, unlinked from the tour cards and not in the sitemap.
+ * A page with indexable: false is a pilot: it is linked from its card, but noindex and not in the sitemap.
+ * A tour without an entry still has a noindex detail page at /tours/<tour id>, built from WordPress data only.
  */
 export type TourPageContent = {
   tourId: number; area: AreaSlug; indexable: boolean;
@@ -59,10 +60,13 @@ export function tourPageBySlug(slug: string): TourPageContent | null {
   return Object.hasOwn(tourPages, slug) ? tourPages[slug as keyof typeof tourPages] : null;
 }
 
-/** The detail page a tour card links to, only once the page is indexable (a pilot stays unlinked). */
-export function tourPagePath(tourId: number): string | null {
-  const entry = entries.find(([, page]) => page.tourId === tourId && page.indexable);
-  return entry ? `/tours/${entry[0]}` : null;
+export function tourPageSlug(tourId: number): string | null {
+  return entries.find(([, page]) => page.tourId === tourId)?.[0] ?? null;
+}
+
+/** Every tour card links here: the written page when one exists, otherwise the WordPress-only page. */
+export function tourDetailPath(tourId: number): string {
+  return `/tours/${tourPageSlug(tourId) ?? tourId}`;
 }
 
 export function indexableTourPaths(): string[] {

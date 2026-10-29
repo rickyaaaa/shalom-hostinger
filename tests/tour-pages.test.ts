@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { areas } from "../src/lib/marketing";
-import { indexableTourPaths, tourPageBySlug, tourPagePath, tourPages, type TourPageContent } from "../src/lib/tour-pages";
+import { indexableTourPaths, tourDetailPath, tourPageBySlug, tourPages, type TourPageContent } from "../src/lib/tour-pages";
 import sitemap from "../src/app/sitemap";
 
 const src = (file: string) => readFileSync(new URL(`../src/${file}`, import.meta.url), "utf8");
@@ -53,17 +53,23 @@ test("Uluwatu pilot (tour 599) keeps the owner-confirmed facts and invents no ot
   assert.deepEqual(pilot.itinerary.filter(stop => "time" in stop).map(stop => stop.title), ["Jimbaran sunset dinner"]);
 });
 
-test("Pilot stays private: unlinked from the tour cards, out of the sitemap, noindex, and area-guarded", () => {
+test("Every card links to a detail page; pages stay out of the sitemap and noindex until approved", () => {
   assert.equal(pilot.indexable, false);
-  assert.equal(tourPagePath(599), null);
+  assert.equal(tourDetailPath(599), "/tours/uluwatu-beach-jimbaran-tour");
+  assert.equal(tourDetailPath(523), "/tours/523", "a tour without written copy gets the WordPress-only page");
   assert.deepEqual(indexableTourPaths(), []);
   assert.ok(sitemap().every(row => !row.url.includes("/tours/")));
   assert.equal(sitemap().length, 4);
   assert.match(src("app/sitemap.ts"), /\[\.\.\.\["\/","\/ubud","\/south-kuta","\/west-bali"\],\.\.\.indexableTourPaths\(\)\]/);
-  assert.match(src("components/TourCard.tsx"), /\{detailPath \? <Link className="button button-outline" href=\{detailPath\}>Details<span className="visually-hidden">: \{title\}<\/span><\/Link> : <ReviewModal tourId=\{tour\.id\} title=\{title\} \/>\}/, "Details replaces Reviews only on cards with a live detail page");
+  const card = src("components/TourCard.tsx");
+  assert.match(card, /<BookingButton [^>]*\/><Link className="button button-outline" href=\{tourDetailPath\(tour\.id\)\}>Details<span className="visually-hidden">: \{title\}<\/span><\/Link><\/div>/, "cards: Order Now + Details");
+  assert.doesNotMatch(card, /Review(Modal|s<)/, "cards no longer open reviews");
   const route = src("app/tours/[slug]/page.tsx");
-  assert.match(route, /\.\.\.\(page\.indexable \? \{\} : \{ robots: \{ index: false, follow: false \} \}\)/);
-  assert.match(route, /if \(tour\.area\?\.slug !== page\.area\) notFound\(\);/);
+  assert.match(route, /const noindex = \{ robots: \{ index: false, follow: false \} \};/);
+  assert.match(route, /\.\.\.\(page\.indexable \? \{\} : noindex\)/);
+  assert.match(route, /return \{ \.\.\.publicMetadata\([^;]*\), \.\.\.noindex \};/, "WordPress-only pages are always noindex");
+  assert.match(route, /if \(!area \|\| \(page && tour\.area\?\.slug !== page\.area\)\) notFound\(\);/);
+  assert.match(route, /if \(tourPageSlug\(tourId\)\) permanentRedirect\(tourDetailPath\(tourId\)\);/, "a tour ID with written copy redirects to its slug");
 });
 
 test("Slug lookup resolves own entries only: no CMS slug, no prototype keys", () => {
@@ -74,7 +80,7 @@ test("Slug lookup resolves own entries only: no CMS slug, no prototype keys", ()
 test("Detail route reads WordPress live and reuses the existing booking and review components", () => {
   const route = src("app/tours/[slug]/page.tsx");
   assert.match(route, /export const dynamic = "force-dynamic"/);
-  assert.match(route, /await getTour\(page\.tourId\)/);
+  assert.match(route, /await getTour\(tourId\)/);
   assert.match(route, /error instanceof WordPressApiError && error\.status === 404\) notFound\(\); return <ServiceUnavailable/);
   assert.match(route, /tour\.booking_terms \?\? await getBookingTerms\(\)/);
   assert.match(route, /<BookingButton tourId=\{tour\.id\}/);
@@ -84,6 +90,7 @@ test("Detail route reads WordPress live and reuses the existing booking and revi
   assert.match(route, /<section id="tour-reviews"[^>]*>[\s\S]*<TourReviews tourId=\{tour\.id\} initial=\{reviews\} \/>\s*<\/div><\/section>\s*<\/>;/, "reviews are the last section");
   assert.match(route, /money\(current, currency\)/);
   assert.match(route, /JSON\.stringify\(jsonLd\)\.replace\(\/<\/g, "\\\\u003c"\)/);
+  assert.match(route, /const jsonLd = page && \{/, "structured data only on written pages");
   assert.match(route, /"@type": "TouristTrip"/);
   assert.doesNotMatch(route, /tour\.slug/, "WordPress slugs are not used for the URL");
 });
