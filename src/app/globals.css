@@ -573,20 +573,37 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 @media (max-width: 767px) { .area-hero-cta { margin-top: 24px; } .area-guide { padding: 64px 16px; } .area-guide-steps { padding-top: 0; } .area-tours-intro { margin-bottom: 32px; } .area-terms { grid-template-columns: minmax(0, 1fr); gap: 16px; } .area-terms-group, .area-more-list a { padding: 24px; } .how-steps-four { grid-template-columns: minmax(0, 1fr); } }
 /* Tour detail pages (/tours/<slug>): price strip, overview list, itinerary times, closing CTA, card link. */
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.tour-detail-booking { background: white; padding: 32px 24px; border-bottom: 1px solid var(--border); }
-.tour-detail-booking-inner { max-width: 1280px; margin: auto; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 380px); align-items: center; gap: 16px 40px; }
-.tour-detail-booking .tour-pricing, .tour-detail-cta .tour-pricing { margin-top: 0; padding-top: 0; border-top: 0; }
-.tour-detail-booking .tour-actions { margin-top: 0; }
-.tour-detail-booking .price-note { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
+.tour-detail-banner { position: relative; height: clamp(220px, 28vw, 480px); background: var(--navy-dark); }
+.tour-detail-banner img { object-fit: cover; }
+.tour-detail-layout { max-width: 1328px; margin: auto; padding: 72px 24px 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); grid-template-areas: "header info" "body info"; gap: 0 64px; align-items: start; }
+.tour-detail-header { grid-area: header; }
+.tour-detail-header .section-label { margin-bottom: 12px; color: var(--gold-text); }
+.tour-detail-header h1 { color: var(--navy); font-size: 36px; line-height: 46px; margin-bottom: 16px; }
+.tour-detail-body { grid-area: body; min-width: 0; }
+.tour-detail-body > section { margin-top: 48px; }
+.tour-detail-body h2 { color: var(--navy); font-size: 26px; line-height: 36px; margin-bottom: 16px; }
 .tour-detail-text { max-width: 75ch; margin-bottom: 16px; color: var(--muted); }
-.tour-detail-highlights { max-width: 75ch; margin: 24px 0 0; padding-left: 22px; }
-.tour-detail-highlights li + li { margin-top: 8px; }
+.tour-detail-highlights { max-width: 75ch; margin: 0; padding-left: 22px; color: var(--muted); }
+.tour-detail-highlights li + li { margin-top: 6px; }
+.tour-detail-terms + .tour-detail-terms { margin-top: 20px; }
+.tour-detail-terms h3 { color: var(--navy); font-size: 17px; line-height: 26px; margin-bottom: 6px; }
+.tour-detail-body .area-guide-note { margin-top: 16px; }
+.tour-detail-body .how-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.tour-detail-body .how-steps li { padding: 24px; }
 .how-steps .tour-detail-time { margin-bottom: 8px; color: var(--gold-text); font-weight: 700; font-variant-numeric: lining-nums tabular-nums; }
-.tour-detail-cta { text-align: center; }
-.tour-detail-cta h2 { max-width: 22ch; margin-inline: auto; }
-.tour-detail-cta .tour-pricing p { justify-content: center; }
-.tour-detail-cta .tour-actions { flex-wrap: wrap; max-width: 560px; margin-inline: auto; }
-.tour-detail-cta .tour-actions .button { flex: 1 1 220px; }
+.tour-detail-body .faq-list { margin-top: 0; }
+.tour-detail-body .faq-list summary { font-size: 18px; }
+.tour-detail-info { grid-area: info; position: sticky; top: calc(var(--site-header-height) + 24px); padding: 28px; background: white; border: 1px solid var(--border); border-radius: 16px; }
+.tour-detail-info h2 { color: var(--navy); font-size: 24px; line-height: 34px; margin-bottom: 16px; }
+.tour-detail-rating { display: inline-block; margin-bottom: 12px; text-decoration: none; }
+.tour-detail-info .tour-pricing { border-top: 0; padding-top: 0; }
+.tour-detail-facts { margin: 16px 0 0; }
+.tour-detail-facts div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--border); font-size: 14px; }
+.tour-detail-facts dt { color: var(--muted); }
+.tour-detail-facts dd { margin: 0; color: var(--navy); font-weight: 600; text-align: right; }
+.tour-detail-info-actions { display: grid; gap: 12px; margin-top: 20px; }
+.tour-detail-info-actions .button { width: 100%; }
+.tour-detail-more { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; color: var(--navy); font-size: 14px; font-weight: 600; text-underline-offset: 4px; }
 .tour-detail-reviews .information-inner > :is(.review-entry, .review-error, .status-message) { max-width: 820px; }
-@media (max-width: 1024px) { .tour-detail-booking-inner { grid-template-columns: auto minmax(0, 1fr); } .tour-detail-booking .tour-actions { grid-column: 1 / -1; } }
-@media (max-width: 767px) { .tour-detail-booking { padding: 24px 16px; } .tour-detail-booking-inner { grid-template-columns: minmax(0, 1fr); } .tour-detail-booking .price-note { grid-row: auto; } }
+@media (max-width: 1024px) { .tour-detail-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "header" "info" "body"; } .tour-detail-info { position: static; margin-top: 32px; } }
+@media (max-width: 767px) { .tour-detail-layout { padding: 40px 16px 16px; } .tour-detail-header h1 { font-size: 28px; line-height: 38px; } .tour-detail-body > section { margin-top: 40px; } .tour-detail-body h2 { font-size: 22px; line-height: 32px; } .tour-detail-body .how-steps { grid-template-columns: minmax(0, 1fr); } .tour-detail-info { padding: 24px 20px; } }

@@ -110,50 +110,60 @@ export default async function TourDetailPage({ params }: Props) {
     ...(price !== null && tour.pricing.currency ? { offers: { "@type": "Offer", price, priceCurrency: tour.pricing.currency, url: `${site}/book/${tour.id}` } } : {}),
   };
 
+  const highlights = page?.highlights ?? tour.destinations;
+
   return <>
     {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />}
-    <section className="ubud-hero tour-detail-hero" aria-labelledby="tour-detail-title">
+    <div className="tour-detail-banner">
       <Image src={image?.url ?? area.image} alt={image?.alt || area.alt} fill preload fetchPriority="high" quality={60} sizes="100vw" />
-      <div className="ubud-hero-copy">
+    </div>
+    <div className="tour-detail-layout">
+      <header className="tour-detail-header">
         <p className="section-label">{page ? title : area.name}</p>
-        <h1 id="tour-detail-title">{heading}</h1><p>{lead}</p>
+        <h1 id="tour-detail-title">{heading}</h1>
+        <p className="tour-detail-text">{lead}</p>
+      </header>
+      <aside className="tour-detail-info" aria-labelledby="tour-info-title">
+        <h2 id="tour-info-title">Travel Information</h2>
+        <a className="tour-detail-rating" href="#tour-reviews"><ReviewScore rating={tour.rating} /></a>
+        <TourPrice tour={tour} />
+        <dl className="tour-detail-facts">
+          <div><dt>Area</dt><dd>{area.name}</dd></div>
+          {tour.duration && <div><dt>Duration</dt><dd>{tour.duration}</dd></div>}
+          <div><dt>Pickup Time</dt><dd>Your choice</dd></div>
+          <div><dt>Type</dt><dd>Private, with driver</dd></div>
+        </dl>
+        {notes.map(note => <p key={note} className="price-note">{note}</p>)}
+        <div className="tour-detail-info-actions"><BookingButton tourId={tour.id} title={title} /></div>
+        <Link className="tour-detail-more" href={`/${tour.area!.slug}`}>More {area.name} Itineraries</Link>
+      </aside>
+      <div className="tour-detail-body">
+        {highlights.length > 0 && <section aria-labelledby="tour-highlights-title">
+          <h2 id="tour-highlights-title">Destination Highlights</h2>
+          <ul className="tour-detail-highlights">{highlights.map((item, i) => <li key={`${i}-${item}`}>{item}</li>)}</ul>
+          {!page && flexibleOrder}
+        </section>}
+        <section aria-labelledby="tour-terms-title">
+          <h2 id="tour-terms-title">Included Facilities</h2>
+          {termGroups.length ? termGroups.map(([label, items]) => <div key={label} className="tour-detail-terms"><h3>{label}</h3><ul className="tour-detail-highlights">{items.map(item => <li key={item}>{item}</li>)}</ul></div>) : <p className="status-message">These details are temporarily unavailable. Please try again shortly.</p>}
+        </section>
+        {page && <>
+          {overview.length > 0 && <section aria-labelledby="tour-why-title">
+            <h2 id="tour-why-title">Why This Tour?</h2>
+            {overview.map(text => <p key={text} className="tour-detail-text">{text}</p>)}
+          </section>}
+          <section aria-labelledby="tour-itinerary-title">
+            <h2 id="tour-itinerary-title">How Your Day Flows</h2>
+            <ol className="how-steps">{page.itinerary.map(stop => <li key={stop.title}>{stop.time && <p className="tour-detail-time"><time>{stop.time}</time></p>}<h3>{stop.title}</h3><p>{stop.text}</p></li>)}</ol>
+            {flexibleOrder}
+          </section>
+          <section aria-labelledby="tour-faq-title">
+            <h2 id="tour-faq-title">Frequently Asked Questions</h2>
+            <div className="faq-list">{page.faq.map(item => <details key={item.question} name="tour-faq"><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+          </section>
+        </>}
       </div>
-    </section>
-    <section className="tour-detail-booking" aria-label="Price and booking"><div className="tour-detail-booking-inner">
-      <ReviewScore rating={tour.rating} />
-      <TourPrice tour={tour} />
-      {notes.map(note => <p key={note} className="price-note">{note}</p>)}
-      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} /><a className="button button-outline" href="#tour-reviews">Reviews</a></div>
-    </div></section>
-    {page ? <>
-      <section className="area-guide" aria-labelledby="tour-overview-title"><div className="information-inner">
-        <p className="section-label">OVERVIEW</p><h2 id="tour-overview-title">Tour Overview</h2>
-        {overview.map(text => <p key={text} className="tour-detail-text">{text}</p>)}
-        <ul className="tour-detail-highlights">{page.highlights.map(item => <li key={item}>{item}</li>)}</ul>
-      </div></section>
-      <section className="how-section area-guide-steps" aria-labelledby="tour-itinerary-title"><div className="information-inner">
-        <p className="section-label">ITINERARY</p><h2 id="tour-itinerary-title">How Your Day Flows</h2>
-        <ol className="how-steps">{page.itinerary.map(stop => <li key={stop.title}>{stop.time && <p className="tour-detail-time"><time>{stop.time}</time></p>}<h3>{stop.title}</h3><p>{stop.text}</p></li>)}</ol>
-        {flexibleOrder}
-      </div></section>
-    </> : tour.destinations.length > 0 && <section className="area-guide" aria-labelledby="tour-visit-title"><div className="information-inner">
-      <p className="section-label">DESTINATIONS</p><h2 id="tour-visit-title">What You’ll Visit</h2>
-      <ul className="tour-detail-highlights">{tour.destinations.map((stop, i) => <li key={`${i}-${stop}`}>{stop}</li>)}</ul>
-      {flexibleOrder}
-    </div></section>}
-    <section className="area-guide" aria-labelledby="tour-terms-title"><div className="information-inner">
-      <p className="section-label">WHAT’S INCLUDED</p><h2 id="tour-terms-title">What’s Included in This Tour</h2>
-      {termGroups.length ? <div className="area-terms">{termGroups.map(([label, items]) => <div key={label} className="area-terms-group"><h3>{label}</h3><ul>{items.map(item => <li key={item}>{item}</li>)}</ul></div>)}</div> : <p className="status-message">These details are temporarily unavailable. Please try again shortly.</p>}
-    </div></section>
-    {page && <section className="faq-section" aria-labelledby="tour-faq-title"><div className="information-inner">
-      <p className="section-label">FAQ</p><h2 id="tour-faq-title">Questions About This Tour</h2>
-      <div className="faq-list">{page.faq.map(item => <details key={item.question} name="tour-faq"><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
-    </div></section>}
-    <section className="area-guide area-more tour-detail-cta" aria-labelledby="tour-cta-title"><div className="information-inner">
-      <h2 id="tour-cta-title">Book {heading}</h2>
-      <TourPrice tour={tour} />
-      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} /><Link className="button button-outline" href={`/${tour.area!.slug}`}>More {area.name} Itineraries</Link></div>
-    </div></section>
+    </div>
     <section id="tour-reviews" className="area-guide tour-detail-reviews" aria-labelledby="tour-reviews-title"><div className="information-inner">
       <p className="section-label">REVIEWS</p><h2 id="tour-reviews-title">Guest Reviews</h2>
       <TourReviews tourId={tour.id} initial={reviews} />
