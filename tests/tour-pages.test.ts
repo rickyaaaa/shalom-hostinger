@@ -53,24 +53,29 @@ test("Uluwatu pilot (tour 599) keeps the owner-confirmed facts and invents no ot
   assert.deepEqual(pilot.itinerary.filter(stop => "time" in stop).map(stop => stop.title), ["Jimbaran sunset dinner"]);
 });
 
-test("South Kuta drafts: every card has written copy, no times, activities and dinner paid separately, noindex", () => {
-  const drafts = pages.filter(([, page]) => page.area === "south-kuta" && page.tourId !== 599);
-  assert.deepEqual(drafts.map(([, page]) => page.tourId).sort(), [611, 616, 620, 624, 628]);
+test("Drafts: every card has written copy, no times, tickets and activities paid separately, noindex", () => {
+  const drafts = pages.filter(([, page]) => page.tourId !== 599);
+  const byArea = (area: string) => drafts.filter(([, page]) => page.area === area).map(([, page]) => page.tourId).sort((a, b) => a - b);
+  assert.deepEqual(byArea("south-kuta"), [611, 616, 620, 624, 628]);
+  assert.deepEqual(byArea("ubud"), [523, 566, 571, 580, 586, 591, 592]);
+  assert.deepEqual(byArea("west-bali"), [633, 644, 651, 655]);
   for (const [slug, page] of drafts) {
     const text = copy(page);
     assert.equal(page.indexable, false, `${slug}: stays noindex until the owner approves`);
     assert.equal(tourDetailPath(page.tourId), `/tours/${slug}`);
     assert.doesNotMatch(text, /\b\d{1,2}[:.]\d{2}\b|\b\d{1,2}\s?(am|pm)\b/i, `${slug}: no times`);
     assert.ok(page.itinerary.every(stop => !("time" in stop)), slug);
-    assert.match(text, /Dinner is paid separately/, slug);
-    assert.match(text, /paid separately\. See the included and not-included list/, `${slug}: activities follow the WordPress terms`);
+    assert.match(text, /paid separately\. See the included and not-included list/, `${slug}: tickets and activities follow the WordPress terms`);
+    if (page.area === "south-kuta") assert.match(text, /Dinner is paid separately/, slug);
+    else assert.match(text, /Lunch is paid separately/, slug);
+    if (page.area === "west-bali") assert.doesNotMatch(text, /Menjangan|West Bali National Park|sunset is guaranteed|medical|healing benefits|guided trekking|lunch included/i, `${slug}: same limits as the West Bali guide`);
   }
 });
 
 test("Every card links to a detail page; pages stay out of the sitemap and noindex until approved", () => {
   assert.equal(pilot.indexable, false);
   assert.equal(tourDetailPath(599), "/tours/uluwatu-beach-jimbaran-tour");
-  assert.equal(tourDetailPath(523), "/tours/523", "a tour without written copy gets the WordPress-only page");
+  assert.equal(tourDetailPath(99999), "/tours/99999", "a tour without written copy gets the WordPress-only page");
   assert.deepEqual(indexableTourPaths(), []);
   assert.ok(sitemap().every(row => !row.url.includes("/tours/")));
   assert.equal(sitemap().length, 4);
