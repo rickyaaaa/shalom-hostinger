@@ -111,15 +111,27 @@ export default async function TourDetailPage({ params }: Props) {
   };
 
   const highlights = page?.highlights ?? tour.destinations;
+  const areaPath = `/${tour.area!.slug}`;
+  const crumbs = [{ name: "Home", path: "/" }, { name: area.name, path: areaPath }, { name: title, path: `/tours/${slug}` }];
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((crumb, i) => ({ "@type": "ListItem", position: i + 1, name: crumb.name, item: `${site}${crumb.path}` })),
+  };
 
   return <>
     {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />}
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, "\\u003c") }} />
+    {/* Every tour in an area shares that area page's hero photo. */}
     <div className="tour-detail-banner">
-      <Image src={image?.url ?? area.image} alt={image?.alt || area.alt} fill preload fetchPriority="high" quality={60} sizes="100vw" />
+      <Image src={area.image} alt={area.alt} fill preload fetchPriority="high" quality={60} sizes="100vw" />
     </div>
     <div className="tour-detail-layout">
       <header className="tour-detail-header">
-        <p className="section-label">{page ? title : area.name}</p>
+        <nav className="tour-breadcrumbs" aria-label="Breadcrumb"><ol>
+          {crumbs.slice(0, -1).map(crumb => <li key={crumb.path}><Link href={crumb.path}>{crumb.name}</Link></li>)}
+          <li aria-current="page">{title}</li>
+        </ol></nav>
         <h1 id="tour-detail-title">{heading}</h1>
         <p className="tour-detail-text">{lead}</p>
       </header>
@@ -135,7 +147,7 @@ export default async function TourDetailPage({ params }: Props) {
         </dl>
         {notes.map(note => <p key={note} className="price-note">{note}</p>)}
         <div className="tour-detail-info-actions"><BookingButton tourId={tour.id} title={title} /></div>
-        <Link className="tour-detail-more" href={`/${tour.area!.slug}`}>More {area.name} Itineraries</Link>
+        <Link className="tour-detail-more" href={areaPath}>More {area.name} Itineraries</Link>
       </aside>
       <div className="tour-detail-body">
         {highlights.length > 0 && <section aria-labelledby="tour-highlights-title">
