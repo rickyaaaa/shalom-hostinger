@@ -53,7 +53,7 @@ test("Uluwatu pilot (tour 599) keeps the owner-confirmed facts and invents no ot
   assert.deepEqual(pilot.itinerary.filter(stop => "time" in stop).map(stop => stop.title), ["Jimbaran sunset dinner"]);
 });
 
-test("Drafts: every card has written copy, no times, tickets and activities paid separately, noindex", () => {
+test("Owner-review pages: every card has written copy, no times, tickets and activities paid separately", () => {
   const drafts = pages.filter(([, page]) => page.tourId !== 599);
   const byArea = (area: string) => drafts.filter(([, page]) => page.area === area).map(([, page]) => page.tourId).sort((a, b) => a - b);
   assert.deepEqual(byArea("south-kuta"), [611, 616, 620, 624, 628]);
@@ -61,7 +61,6 @@ test("Drafts: every card has written copy, no times, tickets and activities paid
   assert.deepEqual(byArea("west-bali"), [633, 644, 651, 655]);
   for (const [slug, page] of drafts) {
     const text = copy(page);
-    assert.equal(page.indexable, false, `${slug}: stays noindex until the owner approves`);
     assert.equal(tourDetailPath(page.tourId), `/tours/${slug}`);
     assert.doesNotMatch(text, /\b\d{1,2}[:.]\d{2}\b|\b\d{1,2}\s?(am|pm)\b/i, `${slug}: no times`);
     assert.ok(page.itinerary.every(stop => !("time" in stop)), slug);
@@ -72,13 +71,14 @@ test("Drafts: every card has written copy, no times, tickets and activities paid
   }
 });
 
-test("Every card links to a detail page; pages stay out of the sitemap and noindex until approved", () => {
-  assert.equal(pilot.indexable, false);
+test("Every card links to an indexable detail page in the sitemap; WordPress-only pages stay noindex", () => {
+  assert.ok(pages.every(([, page]) => page.indexable), "all written pages are live for search");
   assert.equal(tourDetailPath(599), "/tours/uluwatu-beach-jimbaran-tour");
   assert.equal(tourDetailPath(99999), "/tours/99999", "a tour without written copy gets the WordPress-only page");
-  assert.deepEqual(indexableTourPaths(), []);
-  assert.ok(sitemap().every(row => !row.url.includes("/tours/")));
-  assert.equal(sitemap().length, 4);
+  assert.deepEqual(indexableTourPaths(), pages.map(([slug]) => `/tours/${slug}`));
+  assert.equal(indexableTourPaths().length, 17);
+  const urls = sitemap().map(row => new URL(row.url).pathname);
+  assert.deepEqual(urls, ["/", "/ubud", "/south-kuta", "/west-bali", ...indexableTourPaths()]);
   assert.match(src("app/sitemap.ts"), /\[\.\.\.\["\/","\/ubud","\/south-kuta","\/west-bali"\],\.\.\.indexableTourPaths\(\)\]/);
   const card = src("components/TourCard.tsx");
   assert.match(card, /<BookingButton [^>]*\/><Link className="button button-outline" href=\{tourDetailPath\(tour\.id\)\}>Details<span className="visually-hidden">: \{title\}<\/span><\/Link><\/div>/, "cards: Order Now + Details");
@@ -119,6 +119,8 @@ test("Detail route reads WordPress live and reuses the existing booking and revi
   assert.match(route, /money\(current, currency\)/);
   assert.match(route, /JSON\.stringify\(jsonLd\)\.replace\(\/<\/g, "\\\\u003c"\)/);
   assert.match(route, /const jsonLd = page && \{/, "structured data only on written pages");
+  assert.match(route, /const startTime = tour\.price_note\?\.match\(/, "a fixed start time from WordPress replaces “Your choice”");
+  assert.match(route, /<dd>\{startTime \? `Starts at \$\{startTime\}` : "Your choice"\}<\/dd>/);
   assert.match(route, /"@type": "TouristTrip"/);
   assert.doesNotMatch(route, /tour\.slug/, "WordPress slugs are not used for the URL");
 });

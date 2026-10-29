@@ -111,6 +111,8 @@ export default async function TourDetailPage({ params }: Props) {
   };
 
   const highlights = page?.highlights ?? tour.destinations;
+  // A fixed start set in the WordPress price note (e.g. "Start at 10.00" on West Bali Trekking) replaces "Your choice".
+  const startTime = tour.price_note?.match(/\bStart at (\d{1,2}[.:]\d{2})\b/i)?.[1];
   const areaPath = `/${tour.area!.slug}`;
   const crumbs = [{ name: "Home", path: "/" }, { name: area.name, path: areaPath }, { name: title, path: `/tours/${slug}` }];
   const breadcrumbLd = {
@@ -142,7 +144,7 @@ export default async function TourDetailPage({ params }: Props) {
         <dl className="tour-detail-facts">
           <div><dt>Area</dt><dd>{area.name}</dd></div>
           {tour.duration && <div><dt>Duration</dt><dd>{tour.duration}</dd></div>}
-          <div><dt>Pickup Time</dt><dd>Your choice</dd></div>
+          <div><dt>Pickup Time</dt><dd>{startTime ? `Starts at ${startTime}` : "Your choice"}</dd></div>
           <div><dt>Type</dt><dd>Private, with driver</dd></div>
         </dl>
         {notes.map(note => <p key={note} className="price-note">{note}</p>)}

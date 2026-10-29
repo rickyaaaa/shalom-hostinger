@@ -4,7 +4,8 @@ import type { AreaSlug } from "./marketing";
  * Public tour detail pages (/tours/<slug>): the URL, search copy and on-page story live here, in code, like the area
  * guides in marketing.ts. Title, prices, duration, photo, rating, reviews and the included / not-included terms come
  * live from WordPress (getTour), and Order Now is the existing /book/<id> flow. WordPress slugs are not used.
- * A page with indexable: false is a pilot: it is linked from its card, but noindex and not in the sitemap.
+ * indexable: true puts a page in the sitemap and lets search engines index it; false keeps it linked from its card
+ * but noindex and out of the sitemap.
  * A tour without an entry still has a noindex detail page at /tours/<tour id>, built from WordPress data only.
  */
 export type TourPageContent = {
@@ -20,7 +21,7 @@ export const tourPages = {
   "uluwatu-beach-jimbaran-tour": {
     tourId: 599,
     area: "south-kuta",
-    indexable: false,
+    indexable: true,
     title: "Uluwatu, Beach & Jimbaran Sunset Tour",
     metaDescription: "Private day tour from your hotel: Uluwatu Temple, a south Bali beach of your choice and a sunset seafood dinner in Jimbaran, with your own driver.",
     heading: "Uluwatu, Beach & Jimbaran Sunset Private Tour",
@@ -51,12 +52,12 @@ export const tourPages = {
       { question: "What time does the tour start?", answer: "You choose your pickup time when you order. The only fixed time is arriving in Jimbaran by 17:30, so our team plans the day around it." },
     ],
   },
-  // Drafts awaiting owner review (all tours below): written from the WordPress destinations and terms (activities,
-  // tickets and meals are paid separately) and public facts about each place. No times, prices, age limits or activity details.
+  // Live, owner review pending (all tours below): written from the WordPress destinations and terms (activities, tickets
+  // and meals are paid separately) and public facts about each place. No times, prices, age limits or activity details.
   "atv-uluwatu-jimbaran-sunset-tour": {
     tourId: 611,
     area: "south-kuta",
-    indexable: false,
+    indexable: true,
     title: "ATV, Uluwatu & Jimbaran Sunset Tour",
     metaDescription: "Private Bali day tour with your own driver: an ATV ride, a coffee plantation, Uluwatu Temple on the cliffs and a seafood dinner on Jimbaran Beach at sunset.",
     heading: "Bali ATV Ride, Uluwatu Temple & Jimbaran Sunset Private Tour",
@@ -89,7 +90,7 @@ export const tourPages = {
   "family-watersport-uluwatu-tour": {
     tourId: 616,
     area: "south-kuta",
-    indexable: false,
+    indexable: true,
     title: "Family Watersport & Uluwatu Day Tour",
     metaDescription: "Private family day in south Bali: watersports at Tanjung Benoa, a boat trip to Turtle Island, Uluwatu Temple and a sunset seafood dinner in Jimbaran.",
     heading: "Family Watersport, Turtle Island & Uluwatu Private Tour",
@@ -122,7 +123,7 @@ export const tourPages = {
   "watersport-atv-jimbaran-tour": {
     tourId: 620,
     area: "south-kuta",
-    indexable: false,
+    indexable: true,
     title: "Watersport, ATV & Jimbaran Sunset Tour",
     metaDescription: "Two adventures in one private Bali day: watersports and Turtle Island at Tanjung Benoa, an ATV ride, then a seafood dinner on Jimbaran Beach at sunset.",
     heading: "Bali Watersport, ATV Ride & Jimbaran Sunset Private Tour",
@@ -153,7 +154,7 @@ export const tourPages = {
   "watersport-spa-jimbaran-tour": {
     tourId: 624,
     area: "south-kuta",
-    indexable: false,
+    indexable: true,
     title: "Watersport, Spa & Jimbaran Sunset Tour",
     metaDescription: "Private Bali day with your own driver: watersports and Turtle Island at Tanjung Benoa, a relaxing spa treatment and a sunset seafood dinner in Jimbaran.",
     heading: "Bali Watersport, Spa & Jimbaran Sunset Private Tour",
@@ -184,7 +185,7 @@ export const tourPages = {
   "atv-spa-jimbaran-sunset-tour": {
     tourId: 628,
     area: "south-kuta",
-    indexable: false,
+    indexable: true,
     title: "ATV, Spa & Jimbaran Sunset Tour",
     metaDescription: "Private Bali day tour with your own driver: an off-road ATV ride, a spa treatment to relax afterwards and a seafood dinner on Jimbaran Beach at sunset.",
     heading: "Bali ATV Ride, Spa & Jimbaran Seafood Dinner Private Tour",
@@ -214,7 +215,7 @@ export const tourPages = {
   "ubud-rice-terrace-waterfall-tour": {
     tourId: 523,
     area: "ubud",
-    indexable: false,
+    indexable: true,
     title: "Ubud Rice Terraces & Waterfall Tour",
     metaDescription: "Private Ubud day tour with your own driver: rice terraces, a Luwak coffee plantation, Tirta Empul holy spring temple and Kanto Lampo Waterfall.",
     heading: "Ubud Rice Terrace, Tirta Empul & Kanto Lampo Waterfall Private Tour",
@@ -247,7 +248,7 @@ export const tourPages = {
   "ubud-monkey-forest-tirta-empul-tour": {
     tourId: 566,
     area: "ubud",
-    indexable: false,
+    indexable: true,
     title: "Ubud Monkey Forest & Tirta Empul Tour",
     metaDescription: "Private Ubud day tour with your own driver: the Sacred Monkey Forest, a Luwak coffee plantation, Tirta Empul holy spring temple and Ubud rice terraces.",
     heading: "Ubud Monkey Forest, Tirta Empul & Rice Terrace Private Tour",
@@ -280,7 +281,7 @@ export const tourPages = {
   "ubud-art-batik-silver-class-tour": {
     tourId: 571,
     area: "ubud",
-    indexable: false,
+    indexable: true,
     title: "Ubud Art Tour: Batik, Silver & Painting",
     metaDescription: "Private Ubud art day with your own driver: see how batik is made, try silversmithing in a silver class and browse Balinese paintings at an art gallery.",
     heading: "Ubud Art Tour with Batik, Silver Class & Painting Gallery",
@@ -310,7 +311,7 @@ export const tourPages = {
   "ubud-atv-rice-terrace-waterfall-tour": {
     tourId: 580,
     area: "ubud",
-    indexable: false,
+    indexable: true,
     title: "Ubud ATV, Rice Terrace & Waterfall Tour",
     metaDescription: "Private Ubud day with your own driver: an ATV quad bike ride through the countryside, Ubud rice terraces and a waterfall stop to cool off afterwards.",
     heading: "Ubud ATV Ride, Rice Terrace & Waterfall Private Tour",
@@ -340,7 +341,7 @@ export const tourPages = {
   "ubud-atv-rafting-tour": {
     tourId: 586,
     area: "ubud",
-    indexable: false,
+    indexable: true,
     title: "Ubud ATV & Rafting Day Tour",
     metaDescription: "Private Ubud adventure day with your own driver: an ATV quad bike ride, a river rafting trip near Ubud and time among the green Ubud rice terraces.",
     heading: "Ubud ATV Ride, River Rafting & Rice Terrace Private Tour",
@@ -371,7 +372,7 @@ export const tourPages = {
   "bali-safari-marine-park-tour": {
     tourId: 591,
     area: "ubud",
-    indexable: false,
+    indexable: true,
     title: "Bali Safari & Marine Park Private Tour",
     metaDescription: "Private family day trip from your hotel to Bali Safari & Marine Park with your own driver. Park tickets and activities are paid separately to the park.",
     heading: "Bali Safari & Marine Park Day Trip for Families",
@@ -399,7 +400,7 @@ export const tourPages = {
   "bali-bird-park-reptile-park-kids-tour": {
     tourId: 592,
     area: "ubud",
-    indexable: false,
+    indexable: true,
     title: "Bali Bird Park & Reptile Park Kids Tour",
     metaDescription: "Private family day with your own driver: Bali Bird Park, Bali Reptile Park and Bali Mini Zoo, at a relaxed pace that suits children. Tickets are extra.",
     heading: "Bali Bird Park, Reptile Park & Mini Zoo Family Day Tour",
@@ -429,7 +430,7 @@ export const tourPages = {
   "ulun-danu-taman-ayun-tanah-lot-tour": {
     tourId: 633,
     area: "west-bali",
-    indexable: false,
+    indexable: true,
     title: "Ulun Danu, Taman Ayun & Tanah Lot Tour",
     metaDescription: "Private West Bali temple tour with your own driver: Ulun Danu Beratan on the lake in Bedugul, Taman Ayun royal temple and Tanah Lot sea temple.",
     heading: "West Bali Temple Tour: Ulun Danu Beratan, Taman Ayun & Tanah Lot",
@@ -461,7 +462,7 @@ export const tourPages = {
   "jatiluwih-taman-ayun-tanah-lot-tour": {
     tourId: 644,
     area: "west-bali",
-    indexable: false,
+    indexable: true,
     title: "Jatiluwih, Taman Ayun & Tanah Lot Tour",
     metaDescription: "Private West Bali day with your own driver: walk the Jatiluwih rice terraces, visit Taman Ayun royal temple and see Tanah Lot sea temple on the coast.",
     heading: "West Bali Trekking Tour: Jatiluwih Rice Terraces & Tanah Lot",
@@ -493,7 +494,7 @@ export const tourPages = {
   "beji-purification-tanah-lot-tour": {
     tourId: 651,
     area: "west-bali",
-    indexable: false,
+    indexable: true,
     title: "Beji Purification & Tanah Lot Tour",
     metaDescription: "Private West Bali day with your own driver: a water purification ritual at Beji Purification Temple, Taman Ayun royal temple and Tanah Lot sea temple.",
     heading: "West Bali Healing Tour: Beji Purification Temple & Tanah Lot",
@@ -525,7 +526,7 @@ export const tourPages = {
   "taman-ayun-tanah-lot-tour": {
     tourId: 655,
     area: "west-bali",
-    indexable: false,
+    indexable: true,
     title: "Taman Ayun & Tanah Lot Relaxing Tour",
     metaDescription: "A relaxed private West Bali day with your own driver: Taman Ayun royal temple gardens, a pork ribs lunch stop and Tanah Lot sea temple on the coast.",
     heading: "West Bali Relaxing Tour: Taman Ayun Temple & Tanah Lot",
