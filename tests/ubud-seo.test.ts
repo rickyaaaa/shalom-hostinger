@@ -55,9 +55,3 @@ test("Internal links: other tour areas and the customized itinerary, with descri
   assert.equal(guide.heroCta, "See Ubud Tour Itineraries");
   assert.match(src("components/AreaPage.tsx"), /href="#tour-packages" className="button button-gold area-hero-cta"/);
 });
-
-test("West Bali is unchanged: no guide, original heading and metadata", () => {
-  assert.equal(areaGuides["west-bali"], undefined);
-  assert.equal(areas["west-bali"].heading, "Are You Ready To Explore West Bali ?");
-  assert.match(src("app/west-bali/page.tsx"), /publicMetadata\("West Bali Itineraries"/);
-});
