@@ -53,6 +53,20 @@ test("Uluwatu pilot (tour 599) keeps the owner-confirmed facts and invents no ot
   assert.deepEqual(pilot.itinerary.filter(stop => "time" in stop).map(stop => stop.title), ["Jimbaran sunset dinner"]);
 });
 
+test("South Kuta drafts: every card has written copy, no times, activities and dinner paid separately, noindex", () => {
+  const drafts = pages.filter(([, page]) => page.area === "south-kuta" && page.tourId !== 599);
+  assert.deepEqual(drafts.map(([, page]) => page.tourId).sort(), [611, 616, 620, 624, 628]);
+  for (const [slug, page] of drafts) {
+    const text = copy(page);
+    assert.equal(page.indexable, false, `${slug}: stays noindex until the owner approves`);
+    assert.equal(tourDetailPath(page.tourId), `/tours/${slug}`);
+    assert.doesNotMatch(text, /\b\d{1,2}[:.]\d{2}\b|\b\d{1,2}\s?(am|pm)\b/i, `${slug}: no times`);
+    assert.ok(page.itinerary.every(stop => !("time" in stop)), slug);
+    assert.match(text, /Dinner is paid separately/, slug);
+    assert.match(text, /paid separately\. See the included and not-included list/, `${slug}: activities follow the WordPress terms`);
+  }
+});
+
 test("Every card links to a detail page; pages stay out of the sitemap and noindex until approved", () => {
   assert.equal(pilot.indexable, false);
   assert.equal(tourDetailPath(599), "/tours/uluwatu-beach-jimbaran-tour");
