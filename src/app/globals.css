@@ -577,7 +577,10 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 .tour-detail-banner img { object-fit: cover; }
 .tour-detail-layout { max-width: 1328px; margin: auto; padding: 72px 24px 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); grid-template-areas: "header info" "body info"; gap: 0 64px; align-items: start; }
 .tour-detail-header { grid-area: header; }
-.tour-detail-header .section-label { margin-bottom: 12px; color: var(--gold-text); }
+.tour-breadcrumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 0 0 16px; padding: 0; list-style: none; color: var(--muted); font-size: 14px; line-height: 22px; }
+.tour-breadcrumbs li + li::before { content: "/"; margin-right: 8px; color: var(--muted); }
+.tour-breadcrumbs a { display: inline-block; padding: 4px 0; color: var(--navy); font-weight: 600; text-underline-offset: 4px; }
+.tour-breadcrumbs [aria-current] { color: var(--gold-text); }
 .tour-detail-header h1 { color: var(--navy); font-size: 36px; line-height: 46px; margin-bottom: 16px; }
 .tour-detail-body { grid-area: body; min-width: 0; }
 .tour-detail-body > section { margin-top: 48px; }

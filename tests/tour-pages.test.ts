@@ -90,6 +90,11 @@ test("Detail route reads WordPress live and reuses the existing booking and revi
   assert.match(route, /<aside className="tour-detail-info"[^>]*>\s*<h2 id="tour-info-title">Travel Information<\/h2>/);
   assert.match(route, /<div className="tour-detail-info-actions"><BookingButton tourId=\{tour\.id\} title=\{title\} \/><\/div>/, "one full-width Order Now with the card's sign-in flow");
   assert.doesNotMatch(route, /Customize Your/);
+  assert.match(route, /<Image src=\{area\.image\} alt=\{area\.alt\}/, "the banner is the area page's hero photo");
+  assert.match(route, /const crumbs = \[\{ name: "Home", path: "\/" \}, \{ name: area\.name, path: areaPath \}, \{ name: title, path: `\/tours\/\$\{slug\}` \}\];/);
+  assert.match(route, /<nav className="tour-breadcrumbs" aria-label="Breadcrumb">[\s\S]*<li aria-current="page">\{title\}<\/li>/);
+  assert.match(route, /"@type": "BreadcrumbList"/);
+  assert.match(route, /JSON\.stringify\(breadcrumbLd\)\.replace\(\/<\/g, "\\\\u003c"\)/);
   for (const heading of ["Destination Highlights", "Included Facilities", "Why This Tour?", "How Your Day Flows", "Frequently Asked Questions"]) assert.ok(route.includes(`>${heading}</h2>`), heading);
   assert.match(route, /<section id="tour-reviews"[^>]*>[\s\S]*<TourReviews tourId=\{tour\.id\} initial=\{reviews\} \/>\s*<\/div><\/section>\s*<\/>;/, "reviews are the last section");
   assert.match(route, /money\(current, currency\)/);
