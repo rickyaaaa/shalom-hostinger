@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBookingTerms, getTour, WordPressApiError } from "@/lib/wordpress";
+import { getBookingTerms, getTour, getTourReviews, WordPressApiError } from "@/lib/wordpress";
 import { itineraryTitle, money } from "@/lib/format";
 import { areas } from "@/lib/marketing";
 import { publicMetadata } from "@/lib/seo";
@@ -10,9 +10,9 @@ import { serverEnv } from "@/lib/server-env";
 import { tourPageBySlug } from "@/lib/tour-pages";
 import type { Tour } from "@/lib/types";
 import { BookingButton } from "@/components/BookingButton";
-import { ReviewModal } from "@/components/ReviewModal";
 import { ReviewScore } from "@/components/ReviewScore";
 import { ServiceUnavailable } from "@/components/ServiceUnavailable";
+import { TourReviews } from "@/components/TourReviews";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
@@ -55,7 +55,9 @@ export default async function TourDetailPage({ params }: Props) {
 
   const area = areas[page.area];
   const title = itineraryTitle(tour.title);
+  const reviewsRequest = getTourReviews(tour.id, 1).catch(() => null);
   const terms = tour.booking_terms ?? await getBookingTerms().catch(() => null);
+  const reviews = await reviewsRequest;
   const termGroups = terms ? ([["Included", terms.included], ["Not included", terms.not_included]] as const).filter(([, items]) => items.length) : [];
   const [lead, ...overview] = page.intro;
 
@@ -86,7 +88,7 @@ export default async function TourDetailPage({ params }: Props) {
       <ReviewScore rating={tour.rating} />
       <TourPrice tour={tour} />
       {tour.price_note && <p className="price-note">{tour.price_note}</p>}
-      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} /><ReviewModal tourId={tour.id} title={title} /></div>
+      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} /><a className="button button-outline" href="#tour-reviews">Reviews</a></div>
     </div></section>
     <section className="area-guide" aria-labelledby="tour-overview-title"><div className="information-inner">
       <p className="section-label">OVERVIEW</p><h2 id="tour-overview-title">Tour Overview</h2>
@@ -110,6 +112,10 @@ export default async function TourDetailPage({ params }: Props) {
       <h2 id="tour-cta-title">Book {page.heading}</h2>
       <TourPrice tour={tour} />
       <div className="tour-actions"><BookingButton tourId={tour.id} title={title} /><Link className="button button-outline" href={`/${page.area}`}>More {area.name} Itineraries</Link></div>
+    </div></section>
+    <section id="tour-reviews" className="area-guide tour-detail-reviews" aria-labelledby="tour-reviews-title"><div className="information-inner">
+      <p className="section-label">REVIEWS</p><h2 id="tour-reviews-title">Guest Reviews</h2>
+      <TourReviews tourId={tour.id} initial={reviews} />
     </div></section>
   </>;
 }

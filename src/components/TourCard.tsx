@@ -35,8 +35,8 @@ export function TourCard({ tour, presentation, requestedTravelDate, heading: Hea
         {presentation.additionalNote && <p className="price-note price-note-extra">{presentation.additionalNote}</p>}
         <p className="price-note">{presentation.priceNote}</p>
       </>}
-      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} requestedTravelDate={requestedTravelDate} /><ReviewModal tourId={tour.id} title={title} /></div>
-      {detailPath && <Link className="tour-detail-link" href={detailPath}>View itinerary details<span className="visually-hidden">: {title}</span></Link>}
+      {/* Reviews live on the detail page; cards without one keep the reviews dialog. */}
+      <div className="tour-actions"><BookingButton tourId={tour.id} title={title} requestedTravelDate={requestedTravelDate} />{detailPath ? <Link className="button button-outline" href={detailPath}>Details<span className="visually-hidden">: {title}</span></Link> : <ReviewModal tourId={tour.id} title={title} />}</div>
       {!presentation && tour.price_note && <p className="price-note">{tour.price_note}</p>}
     </div>
   </article>;

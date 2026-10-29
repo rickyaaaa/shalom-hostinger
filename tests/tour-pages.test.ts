@@ -60,7 +60,7 @@ test("Pilot stays private: unlinked from the tour cards, out of the sitemap, noi
   assert.ok(sitemap().every(row => !row.url.includes("/tours/")));
   assert.equal(sitemap().length, 4);
   assert.match(src("app/sitemap.ts"), /\[\.\.\.\["\/","\/ubud","\/south-kuta","\/west-bali"\],\.\.\.indexableTourPaths\(\)\]/);
-  assert.match(src("components/TourCard.tsx"), /\{detailPath && <Link className="tour-detail-link" href=\{detailPath\}>View itinerary details<span className="visually-hidden">/);
+  assert.match(src("components/TourCard.tsx"), /\{detailPath \? <Link className="button button-outline" href=\{detailPath\}>Details<span className="visually-hidden">: \{title\}<\/span><\/Link> : <ReviewModal tourId=\{tour\.id\} title=\{title\} \/>\}/, "Details replaces Reviews only on cards with a live detail page");
   const route = src("app/tours/[slug]/page.tsx");
   assert.match(route, /\.\.\.\(page\.indexable \? \{\} : \{ robots: \{ index: false, follow: false \} \}\)/);
   assert.match(route, /if \(tour\.area\?\.slug !== page\.area\) notFound\(\);/);
@@ -78,7 +78,10 @@ test("Detail route reads WordPress live and reuses the existing booking and revi
   assert.match(route, /error instanceof WordPressApiError && error\.status === 404\) notFound\(\); return <ServiceUnavailable/);
   assert.match(route, /tour\.booking_terms \?\? await getBookingTerms\(\)/);
   assert.match(route, /<BookingButton tourId=\{tour\.id\}/);
-  assert.match(route, /<ReviewModal tourId=\{tour\.id\}/);
+  assert.doesNotMatch(route, /ReviewModal/, "reviews are a section on the page, not a dialog");
+  assert.match(route, /getTourReviews\(tour\.id, 1\)\.catch\(\(\) => null\)/, "the first review page is server-rendered");
+  assert.match(route, /href="#tour-reviews">Reviews<\/a>/);
+  assert.match(route, /<section id="tour-reviews"[^>]*>[\s\S]*<TourReviews tourId=\{tour\.id\} initial=\{reviews\} \/>\s*<\/div><\/section>\s*<\/>;/, "reviews are the last section");
   assert.match(route, /money\(current, currency\)/);
   assert.match(route, /JSON\.stringify\(jsonLd\)\.replace\(\/<\/g, "\\\\u003c"\)/);
   assert.match(route, /"@type": "TouristTrip"/);
