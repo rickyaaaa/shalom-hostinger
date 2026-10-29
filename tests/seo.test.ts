@@ -33,6 +33,16 @@ test("every private page is noindex on its own, so unblocking it in robots.txt n
  assert.match(source("app/ref/[slug]/route.ts"),/X-Robots-Tag", "noindex, nofollow"/);
 });
 
+test("home title carries the brand and fits search results; the description fits the snippet",()=>{
+ const home=source("app/page.tsx").match(/export const metadata = publicMetadata\("([^"]+)", "([^"]+)", "\/"\);/);
+ assert.ok(home,"home metadata stays a single publicMetadata call");
+ const [,title,description]=home;
+ assert.equal(title,"Private Bali Tour with Driver | Shalom Bali Tour","the root page gets no layout template, so the brand is written out");
+ assert.ok(title.length>=40 && title.length<=60,`${title.length}`);
+ assert.ok(description.length>=120 && description.length<=160,`${description.length}`);
+ assert.match(source("app/page.tsx"),/<h1 id="home-title">Private Bali Tour with Driver<\/h1>/,"the H1 is unchanged");
+});
+
 test("public pages share a real photo in link previews",()=>{
  for(const [path,image] of [["/","/images/west-bali.jpeg"],["/ubud","/images/ubud.webp"],["/south-kuta","/images/south-kuta.webp"],["/west-bali","/images/west-bali.jpeg"]] as const){
   const meta=publicMetadata("Title","Description",path);

@@ -11,7 +11,8 @@ import { WhyChooseUs, HowItWorks, FAQ, AboutSection } from "@/components/HomeInf
 import { publicMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = publicMetadata("Private Bali Tour with Driver", "Explore Bali your way with a private driver and a flexible 10-hour itinerary. Choose a recommended tour in Uluwatu & South Kuta, Ubud or West Bali, or customize your own.", "/");
+// The layout's "%s | Shalom Bali Tour" template does not apply to the root page, so the brand is part of the title here.
+export const metadata = publicMetadata("Private Bali Tour with Driver | Shalom Bali Tour", "Private Bali day tours with your own driver for 10 hours. Choose an Ubud, Uluwatu & South Kuta or West Bali itinerary, or customize your own.", "/");
 
 // Only the reviews wait for WordPress, so the hero and area images ship in the first HTML chunk.
 async function LatestReviews() {
