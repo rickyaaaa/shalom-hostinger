@@ -12,7 +12,7 @@
   text-wrap: balance;
   overflow-wrap: break-word;
 }
-.page .hero :global(.ubud-hero-copy) > p:last-child {
+.page .hero :global(.ubud-hero-copy) > p:last-of-type {
   max-width: 66ch;
   font-size: clamp(16px, 1.4vw, 18px);
   line-height: 1.7;
