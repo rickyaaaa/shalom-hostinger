@@ -9,6 +9,11 @@ export const areas = {
 };
 export type AreaSlug = keyof typeof areas;
 /**
+ * The island day trips page (/nusa-penida-lembongan) is hidden until the client is ready to sell the packages:
+ * no menu link, not in the sitemap, and the page answers 404. Set to true to publish it again.
+ */
+export const islandPackagesLive = false;
+/**
  * Area page guide (approved Ubud and South Kuta SEO briefs, 27 October 2026; client-approved headings): search title
  * and description, the itinerary section heading, How It Works in the real order flow, and links to the other tour
  * areas. Prices, itineraries and the included / not-included terms are never copied here: they come from WordPress.

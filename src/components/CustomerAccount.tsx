@@ -8,7 +8,7 @@ import { intentQuery,type BookingIntent } from "@/lib/booking-intent";
 import { ShareSite } from "./ShareSite";
 import { areas, type Package } from "./BookingForm";
 import { formatDate, orderNumber, orderStatus, tourDateLabel } from "@/lib/account-display";
-import { itineraryTitle } from "@/lib/format";
+import { itineraryTitle, money } from "@/lib/format";
 import { scrollToAnchor } from "@/lib/anchor";
 
 function ReviewForm({onSubmitted,title,tourId,entitlementId,context,publishes=false}:{onSubmitted:(published:boolean)=>void;title:string;tourId:number;entitlementId?:string|number;context?:string;publishes?:boolean}) {
@@ -112,6 +112,7 @@ function OrderHistory({initial,entitlements,onReview}:{initial:AccountData["inqu
         <dl className="order-details">
           <dt>Travel date</dt><dd>{tourDateLabel(item)}</dd>
           {item.pickup_place && <><dt>Pickup</dt><dd>{item.pickup_place}{item.pickup_time ? ` · ${item.pickup_time}` : ""}</dd></>}
+          {item.quote && <><dt>Quoted price</dt><dd>{money(item.quote.amount, item.quote.currency)}{item.quote.per_car ? " per car" : ""}{item.quote.currency !== "IDR" && item.quote.rate_date ? ` · indicative rate ${formatDate(item.quote.rate_date)}` : ""}</dd></>}
           <dt>Ordered</dt><dd>{item.submitted_at ? <time dateTime={item.submitted_at}>{formatDate(item.submitted_at, true)}</time> : "Date unavailable"}</dd>
         </dl>
         {entitlement && <button type="button" className="button button-outline" onClick={() => onReview(entitlement.id)}>Leave a Review</button>}

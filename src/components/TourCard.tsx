@@ -5,6 +5,7 @@ import { itineraryTitle, money } from "@/lib/format";
 import { tourDetailPath } from "@/lib/tour-pages";
 import { ReviewScore } from "./ReviewScore";
 import { BookingButton } from "./BookingButton";
+import { TourPrice } from "./TourPrice";
 
 type CardPresentation = {title:string;priceNote:string;additionalNote?:string;image?:Tour["card_image"]};
 // Portrait uploads whose subject sits near the top; the default centred cover crop cuts the rider's head.
@@ -14,9 +15,6 @@ const imageFocus: Readonly<Record<string,string>> = {
 
 // `heading`: h3 when the page already has a section heading above the cards (an area guide), h2 otherwise.
 export function TourCard({ tour, presentation, requestedTravelDate, heading: Heading = "h2" }: { tour: Tour; presentation?:CardPresentation; requestedTravelDate?: string; heading?: "h2" | "h3" }) {
-  const { regular, sale, currency } = tour.pricing;
-  const current = sale ?? regular;
-  const discounted = sale !== null && regular !== null && sale < regular;
   const image = presentation?.image ?? tour.card_image;
   const focus = image ? imageFocus[new URL(image.url).pathname] : undefined;
   const title = itineraryTitle(presentation?.title ?? tour.title);
@@ -31,10 +29,7 @@ export function TourCard({ tour, presentation, requestedTravelDate, heading: Hea
       {island ? <div className="tour-pricing">
         <p><strong>{island.person_price === null ? "Price coming soon" : money(island.person_price, "IDR")}</strong>{island.person_price !== null && <span className="tour-duration">/ person</span>}</p>
         {island.shuttle && <p className="package-shuttle">Optional hotel shuttle: {money(island.shuttle.price, "IDR")} per car, round trip (up to {island.shuttle.capacity} people per car)</p>}
-      </div> : <div className="tour-pricing">
-        {discounted && <del>{money(regular, currency)}</del>}
-        <p><strong>{current === null ? "Contact for price" : money(current, currency)}</strong>{current !== null && !currency && <span className="currency-missing">Currency not specified</span>}{tour.duration && <span className="tour-duration">/ {tour.duration}</span>}</p>
-      </div>}
+      </div> : <div className="tour-pricing"><TourPrice tour={tour} /></div>}
       {terms.map(([label, items]) => <p className="package-terms" key={label}><strong>{label}:</strong> {items.join(", ")}</p>)}
       {presentation && <>
         {presentation.additionalNote && <p className="price-note price-note-extra">{presentation.additionalNote}</p>}

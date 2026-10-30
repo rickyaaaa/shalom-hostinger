@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { accountSchema, customerConfigSchema, customerSchema, profileNameInput, changePasswordInput, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput, previousTourInput, previousTourResult } from "@/lib/customer-types";
+import { accountSchema, customerConfigSchema, customerSchema, profileNameInput, changePasswordInput, forgotInput, loginInput, registerInput, resetInput, reviewInput, bookingInput, inquiryInput, previousTourInput, previousTourResult, currencyInput, currencyPreferenceSchema, quoteSchema } from "@/lib/customer-types";
 import { appOrigin, clearSession, CustomerError, customerMultipartRequest, customerRequest, readSession, writeSession } from "@/lib/customer-server";
 import { cookies } from "next/headers";
 import { REFERRAL_COOKIE, isReferralToken } from "@/lib/referral";
@@ -101,6 +101,13 @@ async function handle(request: Request, context: Context) {
       if (signedIn) await writeSession({...session, cookie: cookie!, nonce: result.nonce!}); else await clearSession();
       return reply({changed:true, signed_in:signedIn, message:result.message});
     }
+    if (action === "currency") {
+      const session = await readSession();
+      if (!session) return reply({message:"Please sign in to continue."},401);
+      const input = currencyInput.parse(body);
+      const {value} = await customerRequest("currency", "POST", input, session);
+      return reply(currencyPreferenceSchema.parse(value));
+    }
     if (!["logout","booking-ticket","inquiries","reviews","previous-tour"].includes(action)) return reply({message:"Not found."},404);
     const session = await readSession();
     if (!session) return reply({message:"Please sign in to continue."},401);
@@ -119,10 +126,10 @@ async function handle(request: Request, context: Context) {
     // The referral click token comes only from the first-party cookie, never the request body; WordPress re-validates it.
     const referral = action === "inquiries" ? (await cookies()).get(REFERRAL_COOKIE)?.value : undefined;
     const {value} = await customerRequest(action, "POST", isReferralToken(referral) ? {...input, referral} : input, session);
-    if (action === "booking-ticket") return reply(z.object({ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/)}).parse(value));
+    if (action === "booking-ticket") return reply(z.object({ticket:z.string().regex(/^[a-zA-Z0-9]{48}$/), quote:quoteSchema.optional()}).parse(value));
     // WordPress 1.26: an order-backed review is published at once ("approved"); any other review awaits moderation ("pending").
     if (action === "reviews") return reply(z.object({status:z.enum(["pending","approved"]),message:z.string()}).parse(value),201);
-    const result = z.object({whatsapp_url:z.url()}).parse(value);
+    const result = z.object({whatsapp_url:z.url(), quote:quoteSchema.optional()}).parse(value);
     const url = new URL(result.whatsapp_url);
     if (url.origin !== "https://wa.me" || !/^\/[1-9][0-9]{6,14}$/.test(url.pathname) || url.username || url.password) throw new CustomerError(502,"The booking continuation could not be verified.");
     return reply(result);
@@ -130,7 +137,8 @@ async function handle(request: Request, context: Context) {
     if (error instanceof CustomerError) {
       if (error.status >= 500) logFailure(action, stage, error.status, error);
       if ([401,403].includes(error.status)) await clearSession();
-      return reply({message:error.message},error.status === 404 ? 503 : error.status);
+      const status = error.status === 404 && error.code !== "currency_disabled" ? 503 : error.status;
+      return reply({message:error.message, ...(error.code ? {code:error.code} : {}), ...(error.data ? {data:error.data} : {})}, status);
     }
     if (error instanceof z.ZodError || error instanceof SyntaxError) return reply({message:"Please check the form details and try again."},400);
     logFailure(action, stage, 503, error);

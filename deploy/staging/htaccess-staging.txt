@@ -1,0 +1,43 @@
+# Staging WordPress hardening (Apache / LiteSpeed on Hostinger).
+# Two files: this block goes in public_html/.htaccess; the second block goes in
+# public_html/wp-admin/.htaccess so only the admin area asks for credentials.
+#
+# Do NOT password-protect the whole site: the Next.js server calls
+# /wp-json/shalom/v1/* server-to-server and cannot send Basic Auth with the
+# current adapter. Public reads stay open (noindexed); every write is
+# signature-checked, and the frontend preview is protected by Vercel Auth.
+
+# ---------- public_html/.htaccess ----------
+
+# Login form is protected; the REST API is not.
+<Files "wp-login.php">
+    AuthType Basic
+    AuthName "Shalom multi-currency staging"
+    AuthUserFile /home/USERNAME/.htpasswd-shalom-staging
+    Require valid-user
+</Files>
+
+# Never indexable, even if a crawler ignores robots.txt.
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Disable XML-RPC.
+<Files xmlrpc.php>
+    Require all denied
+</Files>
+
+# Keep debug logs, snapshots and archives out of the web root.
+<FilesMatch "\.(log|sql|zip|sha256|bak)$">
+    Require all denied
+</FilesMatch>
+
+# ---------- public_html/wp-admin/.htaccess ----------
+#
+# AuthType Basic
+# AuthName "Shalom multi-currency staging"
+# AuthUserFile /home/USERNAME/.htpasswd-shalom-staging
+# Require valid-user

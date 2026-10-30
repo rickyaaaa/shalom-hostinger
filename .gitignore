@@ -13,4 +13,9 @@ test-results/
 
 # Local-only QA fixtures contain disposable credentials and data.
 scripts/check-customer-local.ts
+scripts/check-currency-local.ts
+scripts/currency-browser-qa.mjs
 tests/customer-browser-setup.php
+
+# Generated browser-QA screenshots.
+tests/results/

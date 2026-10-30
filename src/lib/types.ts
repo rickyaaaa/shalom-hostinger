@@ -6,6 +6,31 @@ const rating = z.object({
   review_count: z.number().int().nonnegative(),
 });
 
+export const currencyCodeSchema = z.enum(["USD", "EUR", "IDR"]);
+export type CurrencyCode = z.infer<typeof currencyCodeSchema>;
+const currencyStatus = z.enum(["ok", "stale", "unavailable"]);
+const currencyAmount = z.object({ regular: price, sale: price, status: currencyStatus });
+export const tourPricesSchema = z.object({
+  base: z.object({ currency: z.literal("IDR"), regular: price, sale: price }).nullable(),
+  rate_date: z.iso.date().nullable(),
+  amounts: z.record(currencyCodeSchema, currencyAmount),
+});
+export const priceStatusSchema = z.enum(["converted", "legacy", "none"]);
+export const currencyCapabilitySchema = z.object({
+  enabled: z.boolean(),
+  default: currencyCodeSchema,
+  supported: z.array(currencyCodeSchema).min(1),
+  base: currencyCodeSchema.optional(),
+  rates: z.record(currencyCodeSchema, z.object({
+    idr_per_unit: z.number().positive().nullable(),
+    effective_date: z.iso.date().nullable(),
+    source: z.string(),
+    status: currencyStatus,
+  })).optional(),
+  display: z.record(currencyCodeSchema, z.object({ symbol: z.string(), decimals: z.number().int().min(0).max(2) })).optional(),
+});
+export type CurrencyCapability = z.infer<typeof currencyCapabilitySchema>;
+
 /** INCLUDE / NOT INCLUDING lists from WordPress: per itinerary (booking page) or site-wide (/booking-terms, FAQ). */
 export const bookingTermsSchema = z.object({ not_included: z.array(z.string().max(300)).max(30), included: z.array(z.string().max(300)).max(30) });
 
@@ -17,6 +42,9 @@ export const tourSchema = z.object({
   card_image: z.object({ id: z.number().int().positive(), url: z.url(), alt: z.string() }).nullable(),
   destinations: z.array(z.string()).max(50),
   pricing: z.object({ regular: price, sale: price, currency: z.string().regex(/^[A-Z]{3}$/).nullable() }),
+  // 1.29 additive multi-currency fields. Absent on v1.28.1 and on the feature-OFF backend.
+  price_status: priceStatusSchema.optional(),
+  prices: tourPricesSchema.optional(),
   duration: z.string(),
   price_note: z.string(),
   rating,

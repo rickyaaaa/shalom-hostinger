@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { tourSchema } from "../src/lib/types";
 import { bookingInput, inquiryInput } from "../src/lib/customer-types";
-import { areaGuides, areas } from "../src/lib/marketing";
+import { areaGuides, areas, islandPackagesLive } from "../src/lib/marketing";
 import { islandTotal } from "../src/components/BookingForm";
 import sitemap from "../src/app/sitemap";
 
@@ -54,11 +54,18 @@ test("Island day trips page: SEO copy within limits, no stock photo, in the site
   assert.equal(guide.perTourTerms, true, "car-tour terms are never shown for island trips");
   assert.doesNotMatch(JSON.stringify(guide) + areas["nusa-penida-lembongan"].description, /\b10[- ]hours?\b|private driver|fuel|IDR [0-9]|\$[0-9]/i, "no car-tour promises and no invented prices");
   assert.equal(areas["nusa-penida-lembongan"].image, null);
-  assert.ok(sitemap().some(row => row.url.endsWith("/nusa-penida-lembongan")));
-  assert.match(src("components/MobileMenu.tsx"), /\["Nusa Penida & Lembongan","\/nusa-penida-lembongan"\]/);
+  assert.match(src("components/MobileMenu.tsx"), /\["Nusa Penida & Lembongan","\/nusa-penida-lembongan"\]\]\.filter\(\(\[,url\]\)=>islandPackagesLive\|\|url!=="\/nusa-penida-lembongan"\)/);
   assert.match(src("app/api/tours/route.ts"), /"nusa-penida-lembongan"/);
   assert.match(src("lib/wordpress.ts"), /"nusa-penida-lembongan"/);
   assert.match(src("app/nusa-penida-lembongan/page.tsx"), /area="nusa-penida-lembongan"/);
+});
+
+test("Hidden for now (client decision, 31 Oct 2026): no menu link, no sitemap entry, the page is a noindex 404", () => {
+  assert.equal(islandPackagesLive, false);
+  assert.ok(!sitemap().some(row => row.url.endsWith("/nusa-penida-lembongan")));
+  const page = src("app/nusa-penida-lembongan/page.tsx");
+  assert.match(page, /if\(!islandPackagesLive\)notFound\(\);/);
+  assert.match(page, /!islandPackagesLive\?\{robots:privateRobots\}/);
 });
 
 test("Cards: per-person price, shuttle note, the package's own terms; no detail page for packages", () => {

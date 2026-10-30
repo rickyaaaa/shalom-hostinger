@@ -1,8 +1,15 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { customerFetch } from "@/lib/customer-client";
+import { availableCurrencies, currencyOption, priceView } from "@/lib/currency";
+import { money } from "@/lib/format";
+import { quoteSchema, type Quote } from "@/lib/customer-types";
+import type { CurrencyCode, Tour } from "@/lib/types";
 import { earliestTravelDate, isOrderableTravelDate, latestTravelDate, TRAVEL_DATE_CLOSED, TRAVEL_DATE_NOTE } from "@/lib/booking-date";
+import { useCurrency } from "./CurrencyProvider";
+import { CurrencySelector } from "./CurrencySelector";
+import { QuoteCard } from "./QuoteCard";
 
 export const areas = [
   { label: "South Kuta", slug: "south-kuta" },
@@ -15,15 +22,21 @@ export type Package = { id: number; title: string };
  * What is being ordered, fixed by the page that renders the form: a canonical itinerary resolved
  * server-side from the /book/<id> route, or a Customized Itinerary request. It is never editable here.
  */
-/** INCLUDE / NOT INCLUDING terms from WordPress: the same source the WhatsApp reconfirmation uses. */
+/** INCLUDE / NOT INCLUDING terms from WordPress: the same source as the WhatsApp reconfirmation. */
 export type BookingTerms = { not_included: string[]; included: string[] };
 
 /** 1.33 island package: price per person and the optional per-car round-trip shuttle, both in whole IDR from WordPress. */
 export type IslandPackage = { personPrice: number; shuttle: { price: number; capacity: number } | null; maxPersons: number };
 
 export type BookingSelection =
-  | { kind: "tour"; tourId: number; title: string; area: { slug: string; name: string }; terms?: BookingTerms; island?: IslandPackage }
+  | { kind: "tour"; tourId: number; title: string; area: { slug: string; name: string }; terms?: BookingTerms; pricing: Tour["pricing"]; prices?: Tour["prices"]; price_status?: Tour["price_status"]; island?: IslandPackage }
   | { kind: "custom" };
+
+type TourOrder = { kind: "tour"; tour_id: number; requested_travel_date: string; pickup_place: string; pickup_time: string; currency?: CurrencyCode; cars?: number; persons?: number; shuttle?: boolean };
+type CustomOrder = { kind: "custom"; tour_id: 0; requested_travel_date: string; pickup_place: string; pickup_time: string };
+type Order = TourOrder | CustomOrder;
+
+type RequestError = Error & { status?: number; code?: string; data?: { quote?: unknown; available?: unknown; status?: number } };
 
 const idr = (amount: number) => `IDR ${amount.toLocaleString("en-US")}`;
 
@@ -36,12 +49,15 @@ export function islandTotal(island: IslandPackage, persons: number, shuttle: boo
 }
 
 export function BookingForm({ selection, initialDate }: { selection: BookingSelection; initialDate?: string }) {
+  const { currency, multicurrency, error: currencyError } = useCurrency();
   const [date, setDate] = useState(() => initialDate && isOrderableTravelDate(initialDate) ? initialDate : "");
   const [pickupPlace, setPickupPlace] = useState("");
   const [pickupTime, setPickupTime] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [whatsapp, setWhatsapp] = useState("");
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [stage, setStage] = useState<"edit" | "confirm">("edit");
   const island = selection.kind === "tour" ? selection.island : undefined;
   const [persons, setPersons] = useState("2");
   const [shuttle, setShuttle] = useState(Boolean(island?.shuttle));
@@ -53,37 +69,156 @@ export function BookingForm({ selection, initialDate }: { selection: BookingSele
   const earliest = earliestTravelDate();
   const latest = latestTravelDate();
 
+  const available = selection.kind === "tour" ? availableCurrencies(selection) : [];
+  // An island package is always quoted in IDR by WordPress, whatever currency the visitor picked.
+  const currencyAvailable = selection.kind === "custom" || !multicurrency || Boolean(island) || available.includes(currency);
+  const selectedView = selection.kind === "tour" ? priceView(selection, currency) : null;
+
+  // Editing any bound detail invalidates the quote and the ticket. A currency change does the same.
+  const bindKey = `${selection.kind === "tour" ? selection.tourId : "custom"}|${currency}|${date}|${pickupPlace}|${pickupTime}|${persons}|${shuttle}`;
+  useEffect(() => {
+    ticket.current = null;
+    setQuote(null);
+    setStage("edit");
+    setError("");
+    setWhatsapp("");
+  }, [bindKey]);
+
+  function buildOrder(): Order {
+    const details = { requested_travel_date: date, pickup_place: pickupPlace.trim(), pickup_time: pickupTime };
+    if (selection.kind === "custom") return { kind: "custom", tour_id: 0, ...details };
+    if (island) return { kind: "tour", tour_id: selection.tourId, ...details, persons: Number(persons), shuttle: shuttle && Boolean(island.shuttle) };
+    return { kind: "tour", tour_id: selection.tourId, ...details, ...(multicurrency ? { currency, cars: 1 } : {}) };
+  }
+
+  function validationError() {
+    if (!date) return "Choose the date you want to travel.";
+    if (date < earliestTravelDate()) return TRAVEL_DATE_CLOSED;
+    if (date > latestTravelDate()) return "Choose a travel date within the next two years.";
+    if (!pickupTime) return "Choose your pickup time.";
+    if (!pickupPlace.trim()) return "Enter your pickup place or hotel.";
+    const people = Number(persons);
+    if (island && (!Number.isInteger(people) || people < 1 || people > island.maxPersons)) return `Enter the number of people (1–${island.maxPersons}).`;
+    return "";
+  }
+
+  function unavailableMessage() {
+    if (available.length === 0) return `A ${currency} price is not available for this itinerary. Choose another currency.`;
+    const names = available.map(code => currencyOption(code).label).join(" or ");
+    return `A ${currency} price is not available for this itinerary. Choose ${names} to continue.`;
+  }
+
+  function handleError(reason: unknown) {
+    const value = reason as RequestError;
+    const code = value.code;
+    if (code === "quote_changed") {
+      const next = quoteSchema.safeParse(value.data?.quote);
+      ticket.current = null;
+      // An island package has no quote card: back to the form, whose total shows the price after a reload.
+      if (!next.success) { setQuote(null); setStage("edit"); setError(value.message || "The price of this package has changed. Review the new total and order again."); return; }
+      setQuote(next.data);
+      setStage("confirm");
+      setError("The price for this itinerary changed. Review the new price and confirm again.");
+      return;
+    }
+    if (code === "quote_expired") {
+      ticket.current = null;
+      setQuote(null);
+      setStage("edit");
+      setError("This price expired. Review the current price and confirm again.");
+      return;
+    }
+    if (code === "currency_unavailable") {
+      const offered = Array.isArray(value.data?.available) ? value.data.available.filter((item): item is string => typeof item === "string") : [];
+      setError(`${value.message || "This itinerary is not available in the selected currency."}${offered.length ? ` Available: ${offered.join(", ")}.` : ""}`);
+      return;
+    }
+    setError(value.message || "Please try again.");
+  }
+
+  async function requestTicket(order: Order) {
+    const key = JSON.stringify(order);
+    if (ticket.current?.key === key) return Boolean(quote);
+    const response = await customerFetch("booking-ticket", order);
+    ticket.current = { key, value: response.ticket };
+    if (response.quote !== undefined) {
+      const parsed = quoteSchema.safeParse(response.quote);
+      if (!parsed.success) throw new Error("The price could not be read. Please try again.");
+      setQuote(parsed.data);
+      setStage("confirm");
+      return true;
+    }
+    return false;
+  }
+
+  async function submitInquiry(order: Order, ticketValue: string, quoteId?: string) {
+    const result = await customerFetch("inquiries", { ...order, ticket: ticketValue, ...(quoteId ? { quote_id: quoteId } : {}) });
+    setWhatsapp(result.whatsapp_url);
+    // The inquiry is saved; hand over to WhatsApp, where the customer presses Send themselves.
+    window.location.assign(result.whatsapp_url);
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy) return;
-    if (!date) { setError("Choose the date you want to travel."); return; }
-    // WordPress re-checks this rule; the early message just saves a round trip.
-    if (date < earliestTravelDate()) { setError(TRAVEL_DATE_CLOSED); return; }
-    if (date > latestTravelDate()) { setError("Choose a travel date within the next two years."); return; }
-    if (!pickupTime) { setError("Choose your pickup time."); return; }
-    if (!pickupPlace.trim()) { setError("Enter your pickup place or hotel."); return; }
-    const people = Number(persons);
-    if (island && (!Number.isInteger(people) || people < 1 || people > island.maxPersons)) { setError(`Enter the number of people (1–${island.maxPersons}).`); return; }
-    const details = { requested_travel_date: date, pickup_place: pickupPlace.trim(), pickup_time: pickupTime, ...(island ? { persons: people, shuttle: shuttle && Boolean(island.shuttle) } : {}) };
-    // Fixed itinerary → Marketing WhatsApp; Customized Itinerary → Customer Service. WordPress picks the number
-    // and resolves title, area and price from the canonical Tour ID.
-    const order = selection.kind === "custom" ? { kind: "custom" as const, tour_id: 0 as const, ...details } : { kind: "tour" as const, tour_id: selection.tourId, ...details };
-    const key = JSON.stringify(order);
-    if (submitting.current) return;
+    if (busy || submitting.current || stage === "confirm") return;
+    if (!currencyAvailable) { setError(unavailableMessage()); return; }
+    const invalid = validationError();
+    if (invalid) { setError(invalid); return; }
     submitting.current = true;
-    setBusy(true); setError(""); setWhatsapp("");
+    setBusy(true);
+    setError("");
+    setWhatsapp("");
+    const order = buildOrder();
     try {
-      if (ticket.current?.key !== key) ticket.current = { key, value: (await customerFetch("booking-ticket", order)).ticket };
-      const result = await customerFetch("inquiries", { ...order, ticket: ticket.current.value });
-      setWhatsapp(result.whatsapp_url);
-      // The inquiry is saved; hand over to WhatsApp, where the customer presses Send themselves.
-      window.location.assign(result.whatsapp_url);
+      const hasQuote = await requestTicket(order);
+      if (!hasQuote) {
+        if (!ticket.current) throw new Error("The booking ticket could not be created. Please try again.");
+        await submitInquiry(order, ticket.current.value);
+      }
     } catch (reason) {
-      // A changed package price (409) needs a fresh ticket with the new total; any other failure keeps the ticket for a safe retry.
-      if ((reason as { status?: number })?.status === 409 && reason instanceof Error && /price/i.test(reason.message)) ticket.current = null;
-      setError(reason instanceof Error ? reason.message : "Please try again.");
-    } finally { submitting.current = false; setBusy(false); }
+      handleError(reason);
+    } finally {
+      submitting.current = false;
+      setBusy(false);
+    }
   }
+
+  async function confirm() {
+    if (busy || submitting.current || !quote) return;
+    if (!currencyAvailable) { setError(unavailableMessage()); return; }
+    submitting.current = true;
+    setBusy(true);
+    setError("");
+    const order = buildOrder();
+    try {
+      const key = JSON.stringify(order);
+      if (!ticket.current || ticket.current.key !== key) {
+        const refreshed = await requestTicket(order);
+        if (refreshed) {
+          setError("The price was refreshed. Review it and confirm again.");
+          return;
+        }
+        if (!ticket.current) throw new Error("The booking ticket could not be created. Please try again.");
+      }
+      await submitInquiry(order, ticket.current.value, quote.id);
+    } catch (reason) {
+      handleError(reason);
+    } finally {
+      submitting.current = false;
+      setBusy(false);
+    }
+  }
+
+  function changeDetails() {
+    ticket.current = null;
+    setQuote(null);
+    setStage("edit");
+    setError("");
+  }
+
+  const disabled = busy || stage === "confirm";
+  const selectedCurrencyName = currencyOption(currency).label;
+  const submitLabel = multicurrency && selection.kind === "tour" ? "Review price" : "Order Now";
 
   return <>
     <p className="customer-intro">Choose your travel date and pickup details. We&apos;ll save your order and open WhatsApp with a message for you to send.</p>
@@ -92,25 +227,31 @@ export function BookingForm({ selection, initialDate }: { selection: BookingSele
       {selection.kind === "tour" ? <>
         <p className="booking-selected-title">{selection.title}</p>
         <p className="booking-selected-meta">{selection.area.name}</p>
+        {multicurrency && selectedView?.kind === "available" && currencyAvailable && <p className="booking-selected-price"><strong>{money(selectedView.current, selectedView.currency)}</strong>{selectedView.perCar ? " per car" : ""} · {selectedCurrencyName}</p>}
         <a className="booking-selected-change" href={`/${selection.area.slug}#tour-packages`}>Choose a different itinerary</a>
       </> : <>
         <p className="booking-selected-title">Customized Itinerary</p>
         <p className="booking-selected-meta">Your own plan, arranged with our Customer Service.</p>
       </>}
     </div>
+    {selection.kind === "tour" && multicurrency && <div className="booking-currency"><CurrencySelector id="currency-booking" variant="inline" /></div>}
     {selection.kind === "tour" && selection.terms && <BookingTermsBlock terms={selection.terms} />}
     <form className="booking-search-form" onSubmit={submit} noValidate>
       <div className="booking-search-fields">
-        <label className="booking-search-field">Travel Date<input type="date" value={date} min={earliest} max={latest} onChange={event => setDate(event.target.value)} required aria-describedby="travel-date-note" /><span className="field-help" id="travel-date-note">{TRAVEL_DATE_NOTE}</span></label>
-        <label className="booking-search-field">Pickup Time<input type="time" value={pickupTime} step={900} onChange={event => setPickupTime(event.target.value)} required /><span className="field-help">Local Bali time.</span></label>
-        <label className="booking-search-field booking-search-field-wide">Pickup Place / Hotel<input type="text" value={pickupPlace} maxLength={200} autoComplete="off" placeholder="e.g. Svara by Mazari, Uluwatu" onChange={event => setPickupPlace(event.target.value)} required /></label>
+        <label className="booking-search-field">Travel Date<input type="date" value={date} min={earliest} max={latest} onChange={event => setDate(event.target.value)} required aria-describedby="travel-date-note" disabled={disabled} /><span className="field-help" id="travel-date-note">{TRAVEL_DATE_NOTE}</span></label>
+        <label className="booking-search-field">Pickup Time<input type="time" value={pickupTime} step={900} onChange={event => setPickupTime(event.target.value)} required disabled={disabled} /><span className="field-help">Local Bali time.</span></label>
+        <label className="booking-search-field booking-search-field-wide">Pickup Place / Hotel<input type="text" value={pickupPlace} maxLength={200} autoComplete="off" placeholder="e.g. Svara by Mazari, Uluwatu" onChange={event => setPickupPlace(event.target.value)} required disabled={disabled} /></label>
         {island && <>
-          <label className="booking-search-field">Number of People<input type="number" inputMode="numeric" min={1} max={island.maxPersons} step={1} value={persons} onChange={event => setPersons(event.target.value)} required /><span className="field-help">{idr(island.personPrice)} per person.</span></label>
-          {island.shuttle && <label className="booking-search-field booking-shuttle"><span><input type="checkbox" checked={shuttle} onChange={event => setShuttle(event.target.checked)} /> Hotel shuttle (round trip)</span><span className="field-help">{idr(island.shuttle.price)} per car, up to {island.shuttle.capacity} people per car.</span></label>}
+          <label className="booking-search-field">Number of People<input type="number" inputMode="numeric" min={1} max={island.maxPersons} step={1} value={persons} onChange={event => setPersons(event.target.value)} required disabled={disabled} /><span className="field-help">{idr(island.personPrice)} per person.</span></label>
+          {island.shuttle && <label className="booking-search-field booking-shuttle"><span><input type="checkbox" checked={shuttle} onChange={event => setShuttle(event.target.checked)} disabled={disabled} /> Hotel shuttle (round trip)</span><span className="field-help">{idr(island.shuttle.price)} per car, up to {island.shuttle.capacity} people per car.</span></label>}
         </>}
       </div>
       {island && <IslandTotal island={island} persons={Number(persons)} shuttle={shuttle} />}
-      <button className="button booking-search-submit" type="submit" disabled={busy}>{busy ? "Saving your order…" : <>Order Now <span aria-hidden="true">→</span></>}</button>
+      {!currencyAvailable && <p className="customer-error booking-search-error" role="alert">{unavailableMessage()}</p>}
+      {currencyError && <p className="customer-error booking-search-error" role="alert">{currencyError}</p>}
+      {quote && stage === "confirm"
+        ? <QuoteCard quote={quote} title={selection.kind === "tour" ? selection.title : "Customized Itinerary"} travelDate={date} pickupPlace={pickupPlace.trim()} pickupTime={pickupTime} busy={busy} onConfirm={() => { void confirm(); }} onChange={changeDetails} />
+        : <button className="button booking-search-submit" type="submit" disabled={busy || !currencyAvailable}>{busy ? "Saving your order…" : <>{submitLabel} <span aria-hidden="true">→</span></>}</button>}
       {error && <p className="customer-error booking-search-error" role="alert">{error}</p>}
       {whatsapp && <p className="customer-notice" role="status">Your order is saved. If WhatsApp did not open, <a href={whatsapp} target="_blank" rel="noreferrer">continue on WhatsApp</a> and press Send.</p>}
     </form>
