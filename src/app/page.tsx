@@ -14,7 +14,7 @@ import { tiktokProfile } from "@/lib/marketing";
 
 export const dynamic = "force-dynamic";
 // The layout's "%s | Shalom Bali Tour" template does not apply to the root page, so the brand is part of the title here.
-export const metadata = publicMetadata("Bali Private Tour & Private Driver | Shalom Bali Tour", "Book a Bali private driver for a 10-hour private tour. Choose from Ubud, Uluwatu & South Kuta and West Bali & North Bali itineraries, or customize your own.", "/");
+export const metadata = publicMetadata("Bali Private Tour & Private Driver | Shalom Bali Tour", "Hire a Bali private driver for a 10-hour private tour. Choose from Ubud, Uluwatu & South Kuta and West Bali & North Bali itineraries, or customize your own.", "/");
 
 // Only the reviews wait for WordPress, so the hero and area images ship in the first HTML chunk.
 async function LatestReviews() {
