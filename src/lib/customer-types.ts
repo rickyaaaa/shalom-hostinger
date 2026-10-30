@@ -7,7 +7,8 @@ export const customerConfigSchema = z.object({
 export const inquiryHistorySchema = z.object({
   // kind/dates/pickup arrive from WordPress 1.18; optional so a 1.17 backend still renders.
   // order_code (1.25): the permanent public order code, e.g. AU-10001; null for orders placed before codes existed.
-  items: z.array(z.object({id:z.number().int().positive(),title:z.string(),order_code:z.string().regex(/^[A-Z]{2}-[1-9]\d{4,9}$/).nullable().optional(),submitted_at:z.iso.datetime().nullable(),status:z.enum(["inquiry","confirmed","completed","cancelled","unavailable"]),
+  // order_number (1.32): the number the customer got on WhatsApp, "#10001" or "#rck10001" (a referral partner's initial).
+  items: z.array(z.object({id:z.number().int().positive(),title:z.string(),order_code:z.string().regex(/^[A-Z]{2}-[1-9]\d{4,9}$/).nullable().optional(),order_number:z.string().regex(/^#(?:[a-z]{2,5})?[1-9]\d{4,9}$/).nullable().optional(),submitted_at:z.iso.datetime().nullable(),status:z.enum(["inquiry","confirmed","completed","cancelled","unavailable"]),
     kind:z.enum(["tour","custom","contact"]).optional(),travel_date:z.iso.date().nullable().optional(),booking_date:z.iso.date().nullable().optional(),pickup_place:z.string().max(200).nullable().optional(),pickup_time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).nullable().optional()})),
   page:z.number().int().min(1).max(9999), has_more:z.boolean(),
 });
