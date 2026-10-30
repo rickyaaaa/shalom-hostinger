@@ -3,7 +3,7 @@
 export const areas = {
   ubud: {name:"Ubud",label:"DISCOVER UBUD",heading:"Private Ubud Tour with Driver",image:"/images/ubud.webp",alt:"Green rice terraces in Ubud",description:"Explore Ubud with your own private driver on a flexible 10-hour day tour. Discover rice terraces, temples, waterfalls, traditional arts, and family-friendly destinations through our selected itineraries."},
   "south-kuta": {name:"South Kuta",label:"EXPLORE SOUTH KUTA",heading:"Explore South Kuta Private Tours",image:"/images/south-kuta.webp",alt:"The coastal landscape of South Kuta",description:"Explore Bali's southern coast with a private driver on a 10-hour day tour. Choose from itineraries featuring Uluwatu Temple, scenic beaches, watersports, ATV adventures, spa experiences, and sunset dining in Jimbaran."},
-  "west-bali": {name:"West Bali",label:"EXPLORE WEST BALI",heading:"Explore West Bali Tours with a Private Driver",image:"/images/west-bali.jpeg",alt:"A Balinese temple beside the water",description:"Discover Bali’s temples and countryside on a private 10-hour day tour. Choose from itineraries featuring Ulun Danu Beratan, Jatiluwih Rice Terraces, Taman Ayun and Tanah Lot, or a Beji purification experience on selected routes."},
+  "west-bali": {name:"West Bali & North Bali",label:"EXPLORE WEST BALI & NORTH BALI",heading:"Explore West Bali & North Bali Tours with a Private Driver",image:"/images/west-bali.jpeg",alt:"A Balinese temple beside the water",description:"Discover Bali’s temples and countryside on a private 10-hour day tour. Choose from itineraries featuring Ulun Danu Beratan, Jatiluwih Rice Terraces, Taman Ayun and Tanah Lot, or a Beji purification experience on selected routes."},
 };
 export type AreaSlug = keyof typeof areas;
 /**
@@ -26,7 +26,7 @@ const orderSteps = (area: string, article: "a" | "an") => [
   { title: "Submit and reconfirm on WhatsApp", text: "Send your order, then reconfirm your itinerary and pickup details with our team on WhatsApp." },
 ];
 const tourLength = "Your tour lasts 10 hours from the agreed pickup time. Extra time is charged as listed in the tour terms.";
-const westBaliLink = { title: "West Bali", text: "Temples, trekking and relaxing routes beyond Bali’s busiest areas.", href: "/west-bali" };
+const westBaliLink = { title: "West Bali & North Bali", text: "Temples, trekking and relaxing routes beyond Bali’s busiest areas.", href: "/west-bali" };
 const customLink = { title: "Customized Itinerary", text: "Tell us the places you would like to visit and we will help arrange your route.", href: "/#customizedtour" };
 export const areaGuides: Partial<Record<AreaSlug, AreaGuide>> = {
   ubud: {
@@ -69,17 +69,17 @@ export const areaGuides: Partial<Record<AreaSlug, AreaGuide>> = {
     ],
   },
   "west-bali": {
-    title: "West Bali Tours | Bedugul & Tanah Lot",
-    metaDescription: "Explore private West Bali tours with your own driver. Choose itineraries to Bedugul, Jatiluwih Rice Terraces, Taman Ayun, and Tanah Lot.",
-    heroCta: "See West Bali Tour Itineraries",
-    toursHeading: "Explore Our West Bali Tour Itineraries",
-    toursIntro: "Choose from four private West Bali day tour itineraries featuring scenic temples, countryside landscapes, rice terraces and cultural experiences. Each route offers a different way to explore Bali, from the lakeside beauty of Ulun Danu Beratan to the coastal landmark of Tanah Lot. Compare the destinations below and choose the itinerary that suits your travel plans.",
-    termsHeading: "What’s Included in Your West Bali Tour",
-    termsIntro: "Before booking your West Bali tour, review the services included in your itinerary and any additional expenses. The information below follows our current tour terms so you can plan your trip with confidence.",
-    stepsHeading: "How Your West Bali Day Tour Works",
-    steps: orderSteps("West Bali", "a"),
+    title: "West Bali & North Bali Tours | Bedugul & Tanah Lot",
+    metaDescription: "Explore private West Bali & North Bali tours with your own driver. Choose itineraries to Bedugul, Jatiluwih Rice Terraces, Taman Ayun, and Tanah Lot.",
+    heroCta: "See West Bali & North Bali Tour Itineraries",
+    toursHeading: "Explore Our West Bali & North Bali Tour Itineraries",
+    toursIntro: "Choose from four private West Bali & North Bali day tour itineraries featuring scenic temples, countryside landscapes, rice terraces and cultural experiences. Each route offers a different way to explore Bali, from the lakeside beauty of Ulun Danu Beratan to the coastal landmark of Tanah Lot. Compare the destinations below and choose the itinerary that suits your travel plans.",
+    termsHeading: "What’s Included in Your West Bali & North Bali Tour",
+    termsIntro: "Before booking your West Bali & North Bali tour, review the services included in your itinerary and any additional expenses. The information below follows our current tour terms so you can plan your trip with confidence.",
+    stepsHeading: "How Your West Bali & North Bali Day Tour Works",
+    steps: orderSteps("West Bali & North Bali", "a"),
     stepsNote: tourLength,
-    stepsCta: "Choose Your West Bali Itinerary",
+    stepsCta: "Choose Your West Bali & North Bali Itinerary",
     moreHeading: "Plan Another Day in Bali",
     more: [
       { title: "Ubud", text: "Explore rice terraces, temples, waterfalls and traditional arts in Bali’s cultural heartland.", href: "/ubud" },
@@ -98,7 +98,7 @@ export const benefits = [
 ];
 /** The three ordering steps on Home; the list numbers them. */
 export const howItWorks = [
-  {title:"Choose Your Itinerary",text:"Explore our Ubud, Uluwatu & South Kuta, West Bali, or Customized Itinerary options."},
+  {title:"Choose Your Itinerary",text:"Explore our Ubud, Uluwatu & South Kuta, West Bali & North Bali, or Customized Itinerary options."},
   {title:"Select Your Travel Details",text:"Choose your travel date, pickup time, and provide the name of your hotel or resort."},
   {title:"Confirm With Shalom Bali Tour",text:"Submit your order and continue to WhatsApp to reconfirm your itinerary and pickup details directly with our team."},
 ];
