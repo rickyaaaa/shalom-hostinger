@@ -37,10 +37,22 @@ test("home title carries the brand and fits search results; the description fits
  const home=source("app/page.tsx").match(/export const metadata = publicMetadata\("([^"]+)", "([^"]+)", "\/"\);/);
  assert.ok(home,"home metadata stays a single publicMetadata call");
  const [,title,description]=home;
- assert.equal(title,"Private Bali Tour with Driver | Shalom Bali Tour","the root page gets no layout template, so the brand is written out");
+ assert.equal(title,"Bali Private Tour & Private Driver | Shalom Bali Tour","the root page gets no layout template, so the brand is written out");
  assert.ok(title.length>=40 && title.length<=60,`${title.length}`);
  assert.ok(description.length>=120 && description.length<=160,`${description.length}`);
+ assert.match(description,/Bali private driver/);
  assert.match(source("app/page.tsx"),/<h1 id="home-title">Private Bali Tour with Driver<\/h1>/,"the H1 is unchanged");
+});
+
+test("home targets the private driver searches with published facts and describes the business as JSON-LD",()=>{
+ const home=source("app/page.tsx"), info=source("components/HomeInformation.tsx");
+ assert.match(home,/<HowItWorks\/>\s*<DriverSection\/>/,"the driver section follows How It Works");
+ assert.match(info,/<h2 id="driver-title">Your Bali Private Driver for the Day<\/h2>/);
+ for(const phrase of ["Bali private tour","driver in Bali","10 hours","fuel and parking included"]) assert.ok(info.toLowerCase().includes(phrase.toLowerCase()),phrase);
+ assert.doesNotMatch(info.match(/export function DriverSection[\s\S]*?\n/)![0],/\$|USD|IDR|\bbest\b|guarantee|English-speaking|licensed/i,"no prices or claims the site does not already make");
+ assert.match(home,/"@type": "TravelAgency"/);
+ assert.match(home,/JSON\.stringify\(agencyLd\)\.replace\(\/<\/g, "\\\\u003c"\)/,"JSON-LD escapes < like the tour pages");
+ assert.match(home,/foundingDate: "2016"/);
 });
 
 test("public pages share a real photo in link previews",()=>{

@@ -7,12 +7,14 @@ import { ReviewEntry } from "@/components/ReviewEntry";
 import { ServiceUnavailable } from "@/components/ServiceUnavailable";
 import { Icon } from "@/components/Icon";
 import { CustomGallery } from "@/components/CustomGallery";
-import { WhyChooseUs, HowItWorks, FAQ, AboutSection } from "@/components/HomeInformation";
+import { WhyChooseUs, HowItWorks, DriverSection, FAQ, AboutSection } from "@/components/HomeInformation";
 import { publicMetadata } from "@/lib/seo";
+import { serverEnv } from "@/lib/server-env";
+import { tiktokProfile } from "@/lib/marketing";
 
 export const dynamic = "force-dynamic";
 // The layout's "%s | Shalom Bali Tour" template does not apply to the root page, so the brand is part of the title here.
-export const metadata = publicMetadata("Private Bali Tour with Driver | Shalom Bali Tour", "Private Bali day tours with your own driver for 10 hours. Choose an Ubud, Uluwatu & South Kuta or West Bali itinerary, or customize your own.", "/");
+export const metadata = publicMetadata("Bali Private Tour & Private Driver | Shalom Bali Tour", "Book a Bali private driver for a 10-hour private tour. Choose an Ubud, Uluwatu & South Kuta or West Bali itinerary, or customize your own.", "/");
 
 // Only the reviews wait for WordPress, so the hero and area images ship in the first HTML chunk.
 async function LatestReviews() {
@@ -24,6 +26,9 @@ async function LatestReviews() {
 
 export default function HomePage() {
   const links = siteLinks();
+  const site = (serverEnv("PUBLIC_SITE_URL") || serverEnv("APP_URL") || "http://127.0.0.1:3000").replace(/\/$/, "");
+  // The business behind the site, for search engines and AI answers; only facts the page itself states.
+  const agencyLd = { "@context": "https://schema.org", "@type": "TravelAgency", name: "Shalom Bali Tour", url: `${site}/`, logo: `${site}/images/shalom-logo.webp`, image: `${site}/images/west-bali.jpeg`, description: "Bali private tours with your own private driver for 10 hours, with Ubud, Uluwatu & South Kuta and West Bali itineraries or a customized route.", foundingDate: "2016", areaServed: { "@type": "Place", name: "Bali, Indonesia" }, sameAs: [tiktokProfile] };
   const areas = [
     { title: "South Kuta & Uluwatu", image: "/images/south-kuta.webp", href: links.southKuta, cta: "Explore Uluwatu Tours", text: "Explore the southern coast of Bali with routes featuring Uluwatu, beautiful beaches, cultural attractions, and sunset experiences around Jimbaran." },
     { title: "Ubud", image: "/images/ubud.webp", href: "/ubud", cta: "Explore Ubud Tours", text: "Discover Bali's cultural and natural side through Ubud's temples, waterfalls, rice terraces, traditional villages, and surrounding countryside." },
@@ -31,6 +36,7 @@ export default function HomePage() {
   ];
   // The hero photograph is the LCP element, so it alone is preloaded; the area panels below load at low priority.
   return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(agencyLd).replace(/</g, "\\u003c") }} />
     <section className="home-hero" aria-labelledby="home-title">
       <div className="home-hero-media"><Image src="/images/west-bali.jpeg" alt="" fill preload fetchPriority="high" quality={60} sizes="100vw" /></div>
       <div className="home-hero-inner"><div className="home-hero-content">
@@ -61,6 +67,7 @@ export default function HomePage() {
       </div><CustomGallery /></div>
     </section>
     <HowItWorks/>
+    <DriverSection/>
     <section className="home-reviews" id="review" aria-labelledby="home-reviews-title">
       <div className="home-reviews-heading"><p className="section-label">GUEST EXPERIENCES</p><h2 id="home-reviews-title">What Our Guests Say</h2><p>Read experiences from travelers who have explored Bali with Shalom Bali Tour.</p></div>
       <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading guest reviews…</p>}><LatestReviews /></Suspense>
