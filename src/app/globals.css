@@ -165,6 +165,9 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .ubud-hero { min-height: 600px; position: relative; isolation: isolate; display: grid; place-items: center; color: white; text-align: center; padding: 72px 24px; }
 .ubud-hero > img { object-fit: cover; z-index: -2; }
 .ubud-hero::after { content: ""; position: absolute; inset: 0; background: #0008; z-index: -1; }
+/* An area without a hero photo (island day trips): the brand navy instead of a darkened image. */
+.ubud-hero-plain { min-height: 420px; background: var(--navy); }
+.ubud-hero-plain::after { content: none; }
 .ubud-hero-copy { max-width: 1100px; }
 .ubud-hero h1 { font-size: 48px; line-height: 58px; margin-bottom: 24px; }
 .ubud-hero-copy > p:last-of-type { max-width: 682px; margin: auto; line-height: 26px; }
@@ -187,6 +190,14 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .tour-pricing p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; color: var(--navy); }
 .tour-pricing strong { font-size: 28px; line-height: 36px; font-weight: 700; font-variant-numeric: lining-nums tabular-nums; }
 .tour-duration, .currency-missing { color: #485566; font-size: 12px; }
+.booking-shuttle > span:first-child { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.booking-shuttle input[type="checkbox"] { width: 20px; height: 20px; }
+.booking-island-total { margin: 16px 0 0; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--blue-light); }
+.booking-island-total div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; }
+.booking-island-total dd { margin: 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.booking-island-sum { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 8px; font-weight: 700; color: var(--navy); }
+.package-shuttle, .package-terms { margin-top: 8px; color: var(--ink); font-size: 14px; line-height: 22px; }
+.package-terms strong { color: var(--navy); }
 .price-note { margin-top: 12px; color: var(--gold-text); font-size: 11px; line-height: 24px; white-space: pre-line; }
 .tour-actions { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 24px; }
 .tour-actions .button { padding: 13px 20px; white-space: nowrap; flex: 1; }

@@ -25,5 +25,7 @@ export default async function BookingRoute({params,searchParams}:{params:Promise
   const area={slug,name:areas[slug as keyof typeof areas].name};
   // Same name the customer clicked on the card (West Bali cards use the client-approved titles).
   const title=itineraryTitle(slug==="west-bali"?westBaliCardTitle(tour):tour.title);
-  return <BookingPage selection={{kind:"tour",tourId:tour.id,title,area,...(tour.booking_terms?{terms:tour.booking_terms}:{})}} intent={{kind:"tour",tour_id:tour.id,...date}}/>;
+  // 1.33: an island package asks for the number of people and the shuttle; WordPress prices it.
+  const island=tour.package&&tour.package.bookable&&tour.package.person_price!==null?{personPrice:tour.package.person_price,shuttle:tour.package.shuttle,maxPersons:tour.package.max_persons}:undefined;
+  return <BookingPage selection={{kind:"tour",tourId:tour.id,title,area,...(tour.booking_terms?{terms:tour.booking_terms}:{}),...(island?{island}:{})}} intent={{kind:"tour",tour_id:tour.id,...date}}/>;
 }

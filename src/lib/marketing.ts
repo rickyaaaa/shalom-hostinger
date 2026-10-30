@@ -3,6 +3,8 @@
 export const areas = {
   ubud: {name:"Ubud",label:"DISCOVER UBUD",heading:"Private Ubud Tour with Driver",image:"/images/ubud.webp",alt:"Green rice terraces in Ubud",description:"Explore Ubud with your own private driver on a flexible 10-hour day tour. Discover rice terraces, temples, waterfalls, traditional arts, and family-friendly destinations through our selected itineraries."},
   "south-kuta": {name:"South Kuta",label:"EXPLORE SOUTH KUTA",heading:"Explore South Kuta Private Tours",image:"/images/south-kuta.webp",alt:"The coastal landscape of South Kuta",description:"Explore Bali's southern coast with a private driver on a 10-hour day tour. Choose from itineraries featuring Uluwatu Temple, scenic beaches, watersports, ATV adventures, spa experiences, and sunset dining in Jimbaran."},
+  // 1.33 island day trips, priced per person. No stock photo of the islands exists yet, so the hero has none (image: null).
+  "nusa-penida-lembongan": {name:"Nusa Penida & Lembongan",label:"ISLAND DAY TRIPS",heading:"Nusa Penida & Lembongan Day Trips from Bali",image:null,alt:"",description:"Spend a day on the islands off Bali’s east coast. Our Nusa Penida and Nusa Lembongan day trips are priced per person, with an optional hotel shuttle to and from the harbour."},
   "west-bali": {name:"West Bali & North Bali",label:"EXPLORE WEST BALI & NORTH BALI",heading:"Explore West Bali & North Bali Tours with a Private Driver",image:"/images/west-bali.jpeg",alt:"A Balinese temple beside the water",description:"Discover Bali’s temples and countryside on a private 10-hour day tour. Choose from itineraries featuring Ulun Danu Beratan, Jatiluwih Rice Terraces, Taman Ayun and Tanah Lot, or a Beji purification experience on selected routes."},
 };
 export type AreaSlug = keyof typeof areas;
@@ -16,6 +18,8 @@ export type AreaGuide = {
   toursHeading: string; toursIntro: string; termsHeading: string; termsIntro: string;
   stepsHeading: string; steps: { title: string; text: string }[]; stepsNote: string; stepsCta: string;
   moreHeading: string; more: { title: string; text: string; href: string }[];
+  // Island packages carry their own Included / Not Included lists (shown on each card), never the car-tour terms.
+  perTourTerms?: true;
 };
 // The real order flow: Order Now → sign in when needed → travel details → order and WhatsApp. The date rule is the
 // order form's own TRAVEL_DATE_NOTE, added where the steps render. Only the first step names the area.
@@ -29,6 +33,33 @@ const tourLength = "Your tour lasts 10 hours from the agreed pickup time. Extra 
 const westBaliLink = { title: "West Bali & North Bali", text: "Temples, trekking and relaxing routes beyond Bali’s busiest areas.", href: "/west-bali" };
 const customLink = { title: "Customized Itinerary", text: "Tell us the places you would like to visit and we will help arrange your route.", href: "/#customizedtour" };
 export const areaGuides: Partial<Record<AreaSlug, AreaGuide>> = {
+  // Ubersuggest, 30 Oct 2026 (Google Indonesia, English): "nusa penida tour" 2,900/month, "nusa penida day trip" 1,900,
+  // "nusa lembongan day trip" 260. Prices, routes and inclusions come only from WordPress.
+  "nusa-penida-lembongan": {
+    title: "Nusa Penida & Lembongan Day Trips",
+    metaDescription: "Nusa Penida tour and Nusa Lembongan day trip from Bali, priced per person, with an optional round-trip hotel shuttle. Order online, reconfirm on WhatsApp.",
+    heroCta: "See Island Day Trips",
+    toursHeading: "Choose Your Nusa Penida or Lembongan Day Trip",
+    toursIntro: "Each island day trip is priced per person. Add the hotel shuttle if you want us to take you to the harbour and back; the shuttle is charged per car. What each trip includes is listed on its card.",
+    termsHeading: "What’s Included in Your Island Day Trip",
+    termsIntro: "Each island day trip lists what is included on its card above, because the boat, island tour and meals differ from our private car tours.",
+    stepsHeading: "How Your Island Day Trip Works",
+    steps: [
+      { title: "Choose Nusa Penida or Lembongan", text: "Pick one of the island day trips above and select Order Now." },
+      { title: "Sign in or create an account", text: "If you are not signed in yet, log in or create an account to continue your order." },
+      { title: "Enter your travel details", text: "Choose your travel date, the number of people and whether you need the hotel shuttle, and tell us your hotel or pickup place." },
+      { title: "Submit and reconfirm on WhatsApp", text: "Send your order to see the total, then reconfirm the trip and pickup details with our team on WhatsApp." },
+    ],
+    stepsNote: "The total is the price per person times the number of people, plus the shuttle per car when you choose it.",
+    stepsCta: "Choose Your Island Day Trip",
+    moreHeading: "Plan Another Day in Bali",
+    more: [
+      { title: "Uluwatu & South Kuta", text: "Itineraries featuring Uluwatu Temple, southern beaches and Jimbaran sunset dining.", href: "/south-kuta" },
+      { title: "Ubud", text: "Rice terraces, temples, waterfalls and traditional arts.", href: "/ubud" },
+      westBaliLink,
+    ],
+    perTourTerms: true,
+  },
   ubud: {
     title: "Private Ubud Tour with Driver",
     metaDescription: "Private Ubud day tours with your own driver: rice terraces, temples, waterfalls, art workshops and family days out. 10 hours, fuel and parking included.",

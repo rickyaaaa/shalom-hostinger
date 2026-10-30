@@ -33,7 +33,7 @@ function AreaGuideSections({guide}:{guide:AreaGuide}) {
     <section className="area-guide" aria-labelledby="area-terms-title"><div className="information-inner">
       <p className="section-label">WHAT’S INCLUDED</p><h2 id="area-terms-title">{guide.termsHeading}</h2>
       <p className="area-guide-intro">{guide.termsIntro}</p>
-      <Suspense fallback={<p className="status-message" role="status">Loading tour terms…</p>}><AreaTerms/></Suspense>
+      {!guide.perTourTerms && <Suspense fallback={<p className="status-message" role="status">Loading tour terms…</p>}><AreaTerms/></Suspense>}
     </div></section>
     <section className="how-section area-guide-steps" aria-labelledby="area-steps-title"><div className="information-inner">
       <p className="section-label">HOW IT WORKS</p><h2 id="area-steps-title">{guide.stepsHeading}</h2>
@@ -53,8 +53,8 @@ export function AreaPage({area, requestedTravelDate}:{area:AreaSlug; requestedTr
   const guide=areaGuides[area];
   const isWestBali=area==="west-bali";
   const body=<>
-    <section className={isWestBali ? `ubud-hero ${westBaliStyles.hero}` : "ubud-hero"} aria-labelledby="area-title">
-      <Image src={content.image} alt={content.alt} fill preload fetchPriority="high" quality={60} sizes="100vw"/>
+    <section className={isWestBali ? `ubud-hero ${westBaliStyles.hero}` : content.image ? "ubud-hero" : "ubud-hero ubud-hero-plain"} aria-labelledby="area-title">
+      {content.image && <Image src={content.image} alt={content.alt} fill preload fetchPriority="high" quality={60} sizes="100vw"/>}
       <div className="ubud-hero-copy">
         {!isWestBali && <p className="section-label">{content.label}</p>}
         <h1 id="area-title">{content.heading}</h1><p>{content.description}</p>

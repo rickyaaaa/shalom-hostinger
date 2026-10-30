@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { getBookingTerms, getTour, getTourReviews, WordPressApiError } from "@/lib/wordpress";
 import { itineraryTitle, money } from "@/lib/format";
 import { areas, type AreaSlug } from "@/lib/marketing";
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // From the code only (no WordPress request); the layout template adds "| Shalom Bali Tour".
     const area = areas[page.area];
     const base = publicMetadata(page.title, page.metaDescription, `/tours/${slug}`);
-    const images = [{ url: area.image, alt: area.alt }];
+    const images = area.image ? [{ url: area.image, alt: area.alt }] : undefined;
     return {
       ...base,
       ...(page.indexable ? {} : noindex),
@@ -86,6 +86,8 @@ export default async function TourDetailPage({ params }: Props) {
   const area = areaOf(tour);
   // A tour moved to another area in WordPress no longer matches its written page.
   if (!area || (page && tour.area?.slug !== page.area)) notFound();
+  // An island package is priced per person and has no written page: its area page shows the price, terms and order button.
+  if (tour.package) redirect(`/${tour.area!.slug}#tour-packages`);
 
   const { title, image, notes } = cardView(tour);
   const heading = page?.heading ?? title;
@@ -126,7 +128,7 @@ export default async function TourDetailPage({ params }: Props) {
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, "\\u003c") }} />
     {/* Every tour in an area shares that area page's hero photo. */}
     <div className="tour-detail-banner">
-      <Image src={area.image} alt={area.alt} fill preload fetchPriority="high" quality={60} sizes="100vw" />
+      {area.image && <Image src={area.image} alt={area.alt} fill preload fetchPriority="high" quality={60} sizes="100vw" />}
     </div>
     <div className="tour-detail-layout">
       <header className="tour-detail-header">

@@ -46,7 +46,7 @@ export const getTour = cache(async (id: number) => {
 });
 export const getPocTour = () => getTour(523);
 export const getAreaTours = cache(async (area: string) => {
-  if (!["ubud", "south-kuta", "west-bali"].includes(area)) throw new WordPressApiError("http", 404);
+  if (!["ubud", "south-kuta", "west-bali", "nusa-penida-lembongan"].includes(area)) throw new WordPressApiError("http", 404);
   const first = await get(`/tours?area=${area}&per_page=50&page=1`, tourCollectionSchema);
   const rest = await Promise.all(Array.from({length: Math.max(0, first.total_pages - 1)}, (_, i) => get(`/tours?area=${area}&per_page=50&page=${i + 2}`, tourCollectionSchema)));
   const items = [first, ...rest].flatMap(page => page.items);
