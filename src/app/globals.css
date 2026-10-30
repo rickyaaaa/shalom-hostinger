@@ -369,6 +369,14 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .how-steps li::before { content: counter(how-step); display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 24px; border-radius: 50%; background: var(--navy); color: white; font-weight: 600; }
 .how-steps h3 { font-size: 21px; line-height: 1.4; margin-bottom: 12px; color: var(--navy); }
 .how-steps p { color: var(--muted); }
+.driver-section { padding: 0 24px 104px; }
+.driver-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.driver-copy { max-width: 62ch; color: var(--muted); }
+.driver-copy + .driver-copy { margin-top: 16px; }
+.driver-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.driver-facts { display: grid; gap: 16px; margin: 0; padding: 32px; list-style: none; background: white; border-radius: 16px; box-shadow: 0 6px 8px #082b5514; }
+.driver-facts li { display: flex; align-items: flex-start; gap: 12px; color: var(--ink); font-weight: 600; }
+.driver-facts svg { flex: none; width: 18px; height: 18px; margin-top: 4px; color: var(--gold); stroke-width: 3; }
 .faq-section { padding-top: 32px; }
 .faq-section h2 { max-width: 700px; }
 .faq-list { margin-top: 48px; }
@@ -407,6 +415,10 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
   .why-intro { margin-inline: auto; }
   .how-section { padding: 64px 16px; }
   .how-steps { grid-template-columns: minmax(0,1fr); gap: 16px; }
+  .driver-section { padding: 0 16px 64px; }
+  .driver-grid { grid-template-columns: minmax(0,1fr); gap: 32px; }
+  .driver-facts { padding: 24px; }
+  .driver-actions .button { flex: 1 1 100%; }
   .why-grid, .about-grid { grid-template-columns: minmax(0,1fr); gap: 36px; }
   .why-grid { text-align: center; }
   .why-follow { justify-content: center; gap: 24px; }
