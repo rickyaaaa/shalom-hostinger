@@ -22,7 +22,17 @@ export const tourSchema = z.object({
   rating,
   // 1.23: effective INCLUDE / NOT INCLUDING terms (the Tour's own lists, else the site-wide terms). Absent on older plugins.
   booking_terms: bookingTermsSchema.optional(),
+  // 1.33: an island package priced per person in IDR, with an optional per-car round-trip hotel shuttle. Null or absent for car tours.
+  package: z.object({
+    pricing: z.literal("per_person"),
+    currency: z.literal("IDR"),
+    person_price: z.number().int().positive().nullable(),
+    shuttle: z.object({ price: z.number().int().positive(), capacity: z.number().int().min(1).max(100), round_trip: z.boolean() }).nullable(),
+    max_persons: z.number().int().min(1).max(100),
+    bookable: z.boolean(),
+  }).nullable().optional(),
 });
+export type TourPackage = NonNullable<z.infer<typeof tourSchema>["package"]>;
 
 export const reviewSchema = z.object({
   tour_id: z.number().int().positive(),
