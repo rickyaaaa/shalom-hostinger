@@ -7,7 +7,7 @@ import { earliestTravelDate, isOrderableTravelDate, latestTravelDate, TRAVEL_DAT
 export const areas = [
   { label: "South Kuta", slug: "south-kuta" },
   { label: "Ubud", slug: "ubud" },
-  { label: "West Bali", slug: "west-bali" },
+  { label: "West Bali & North Bali", slug: "west-bali" },
 ];
 export type Package = { id: number; title: string };
 

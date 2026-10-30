@@ -14,7 +14,7 @@ import { tiktokProfile } from "@/lib/marketing";
 
 export const dynamic = "force-dynamic";
 // The layout's "%s | Shalom Bali Tour" template does not apply to the root page, so the brand is part of the title here.
-export const metadata = publicMetadata("Bali Private Tour & Private Driver | Shalom Bali Tour", "Book a Bali private driver for a 10-hour private tour. Choose an Ubud, Uluwatu & South Kuta or West Bali itinerary, or customize your own.", "/");
+export const metadata = publicMetadata("Bali Private Tour & Private Driver | Shalom Bali Tour", "Book a Bali private driver for a 10-hour private tour. Choose from Ubud, Uluwatu & South Kuta and West Bali & North Bali itineraries, or customize your own.", "/");
 
 // Only the reviews wait for WordPress, so the hero and area images ship in the first HTML chunk.
 async function LatestReviews() {
@@ -28,11 +28,11 @@ export default function HomePage() {
   const links = siteLinks();
   const site = (serverEnv("PUBLIC_SITE_URL") || serverEnv("APP_URL") || "http://127.0.0.1:3000").replace(/\/$/, "");
   // The business behind the site, for search engines and AI answers; only facts the page itself states.
-  const agencyLd = { "@context": "https://schema.org", "@type": "TravelAgency", name: "Shalom Bali Tour", url: `${site}/`, logo: `${site}/images/shalom-logo.webp`, image: `${site}/images/west-bali.jpeg`, description: "Bali private tours with your own private driver for 10 hours, with Ubud, Uluwatu & South Kuta and West Bali itineraries or a customized route.", foundingDate: "2016", areaServed: { "@type": "Place", name: "Bali, Indonesia" }, sameAs: [tiktokProfile] };
+  const agencyLd = { "@context": "https://schema.org", "@type": "TravelAgency", name: "Shalom Bali Tour", url: `${site}/`, logo: `${site}/images/shalom-logo.webp`, image: `${site}/images/west-bali.jpeg`, description: "Bali private tours with your own private driver for 10 hours, with Ubud, Uluwatu & South Kuta and West Bali & North Bali itineraries or a customized route.", foundingDate: "2016", areaServed: { "@type": "Place", name: "Bali, Indonesia" }, sameAs: [tiktokProfile] };
   const areas = [
     { title: "South Kuta & Uluwatu", image: "/images/south-kuta.webp", href: links.southKuta, cta: "Explore Uluwatu Tours", text: "Explore the southern coast of Bali with routes featuring Uluwatu, beautiful beaches, cultural attractions, and sunset experiences around Jimbaran." },
     { title: "Ubud", image: "/images/ubud.webp", href: "/ubud", cta: "Explore Ubud Tours", text: "Discover Bali's cultural and natural side through Ubud's temples, waterfalls, rice terraces, traditional villages, and surrounding countryside." },
-    { title: "West Bali", image: "/images/west-bali.jpeg", href: links.westBali, cta: "Explore West Bali Tours", text: "Travel beyond Bali's busiest areas and explore temples, rice terraces, mountain scenery, and cultural destinations across West Bali." },
+    { title: "West Bali & North Bali", image: "/images/west-bali.jpeg", href: links.westBali, cta: "Explore West Bali & North Bali Tours", text: "Travel beyond Bali's busiest areas and explore temples, rice terraces, mountain scenery, and cultural destinations across West Bali & North Bali." },
   ];
   // The hero photograph is the LCP element, so it alone is preloaded; the area panels below load at low priority.
   return <>
