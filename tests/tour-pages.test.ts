@@ -78,8 +78,8 @@ test("Every card links to an indexable detail page in the sitemap; WordPress-onl
   assert.deepEqual(indexableTourPaths(), pages.map(([slug]) => `/tours/${slug}`));
   assert.equal(indexableTourPaths().length, 17);
   const urls = sitemap().map(row => new URL(row.url).pathname);
-  assert.deepEqual(urls, ["/", "/ubud", "/south-kuta", "/west-bali", "/nusa-penida-lembongan", ...indexableTourPaths()]);
-  assert.match(src("app/sitemap.ts"), /\[\.\.\.\["\/","\/ubud","\/south-kuta","\/west-bali","\/nusa-penida-lembongan"\],\.\.\.indexableTourPaths\(\)\]/);
+  assert.deepEqual(urls, ["/", "/ubud", "/south-kuta", "/west-bali", ...indexableTourPaths()]);
+  assert.match(src("app/sitemap.ts"), /\[\.\.\.\["\/","\/ubud","\/south-kuta","\/west-bali"\],\.\.\.\(islandPackagesLive\?\["\/nusa-penida-lembongan"\]:\[\]\),\.\.\.indexableTourPaths\(\)\]/);
   const card = src("components/TourCard.tsx");
   assert.match(card, /<BookingButton [^>]*\/><Link className="button button-outline" href=\{tourDetailPath\(tour\.id\)\}>Details<span className="visually-hidden">: \{title\}<\/span><\/Link><\/div>/, "cards: Order Now + Details");
   assert.doesNotMatch(card, /Review(Modal|s<)/, "cards no longer open reviews");

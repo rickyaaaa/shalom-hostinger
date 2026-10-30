@@ -18,7 +18,7 @@ test("preview remains noindex; approved indexing exposes only public pages",()=>
   assert.deepEqual(privateRobots,{index:false,follow:false});
   // Private pages stay crawlable so search engines can read their noindex; only the API is blocked.
   assert.deepEqual(robots().rules,{userAgent:"*",allow:"/",disallow:["/api/"]});
-  assert.deepEqual(sitemap().map(row=>row.url),["/","/ubud","/south-kuta","/west-bali","/nusa-penida-lembongan",...indexableTourPaths()].map(path=>`https://shalombalitour.com${path}`));
+  assert.deepEqual(sitemap().map(row=>row.url),["/","/ubud","/south-kuta","/west-bali",...indexableTourPaths()].map(path=>`https://shalombalitour.com${path}`));
   assert.ok(sitemap().every(row=>!/\/(book|login|account|api)\b/.test(row.url)),"booking, account and API pages never reach the sitemap");
  }finally{
   if(saved.indexing===undefined)delete process.env.ALLOW_INDEXING;else process.env.ALLOW_INDEXING=saved.indexing;

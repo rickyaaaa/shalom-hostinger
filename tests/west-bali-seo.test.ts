@@ -51,7 +51,7 @@ test("West Bali & North Bali keeps its own design: CSS module, card presentation
   assert.match(css, /\.tours :global\(\.tour-grid\) \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); \}/);
   assert.match(src("app/west-bali/page.tsx"), /<AreaPage area="west-bali"/);
   assert.equal(areas["west-bali"].name, "West Bali & North Bali");
-  assert.match(src("app/sitemap.ts"), /\["\/","\/ubud","\/south-kuta","\/west-bali",/, "same URL in the sitemap");
+  assert.match(src("app/sitemap.ts"), /\["\/","\/ubud","\/south-kuta","\/west-bali"/, "same URL in the sitemap");
 });
 
 test("Copy stays within what WordPress confirms and leaves the other areas unchanged", () => {

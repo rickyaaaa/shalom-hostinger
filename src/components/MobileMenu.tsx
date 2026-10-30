@@ -2,7 +2,8 @@
 import Link from "next/link";
 import type { RefObject } from "react";
 import { Icon } from "./Icon";
-const areas=[["South Kuta","/south-kuta"],["Ubud","/ubud"],["West Bali & North Bali","/west-bali"],["Nusa Penida & Lembongan","/nusa-penida-lembongan"]];
+import { islandPackagesLive } from "@/lib/marketing";
+const areas=[["South Kuta","/south-kuta"],["Ubud","/ubud"],["West Bali & North Bali","/west-bali"],["Nusa Penida & Lembongan","/nusa-penida-lembongan"]].filter(([,url])=>islandPackagesLive||url!=="/nusa-penida-lembongan");
 const anchors=[["Customized Itinerary","customizedtour"],["Review & Comments","review"],["Answer Travel Concerns","answer"],["About","about"],["Contact","contact"]];
 // One semantic navigation tree is shared by desktop and the mobile disclosure.
 export function MobileMenu({open,itinerary,setItinerary,pathname,close,toggleRef}:{open:boolean;itinerary:boolean;setItinerary:(value:boolean)=>void;pathname:string;close:()=>void;toggleRef:RefObject<HTMLButtonElement|null>}){
