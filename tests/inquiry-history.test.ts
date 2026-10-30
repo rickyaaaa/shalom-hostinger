@@ -25,3 +25,12 @@ test("customers see only the order number (#10001); the stored code keeps its co
  assert.equal(orderNumber("XX-10005"),"#10005");
  assert.equal(orderNumber("ID-123456"),"#123456");
 });
+test("a referral order shows the number from WhatsApp, with the partner's initial (1.32)",()=>{
+ const base={page:1,has_more:false};
+ const item={id:902,title:"A. Tour",status:"inquiry",submitted_at:"2026-10-30T01:00:00Z",order_code:"AU-10001"};
+ const parsed=inquiryHistorySchema.parse({...base,items:[{...item,order_number:"#rck10001"}]});
+ assert.equal(orderNumber(parsed.items[0].order_code!,parsed.items[0].order_number),"#rck10001");
+ assert.equal(orderNumber("AU-10001",null),"#10001","older backend without order_number");
+ for(const ok of ["#10001","#rck10001","#ab123456",null,undefined])assert.equal(inquiryHistorySchema.safeParse({...base,items:[{...item,order_number:ok}]}).success,true,String(ok));
+ for(const bad of ["10001","#RCK10001","#r10001","#abcdef10001","#rck-10001","#<b>10001","#rck0001"])assert.equal(inquiryHistorySchema.safeParse({...base,items:[{...item,order_number:bad}]}).success,false,bad);
+});

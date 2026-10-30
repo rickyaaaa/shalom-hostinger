@@ -19,7 +19,10 @@ export function tourDateLabel(item: Pick<HistoryItem, "booking_date" | "travel_d
   return item.booking_date ? `${formatDate(item.booking_date)} (confirmed)` : item.travel_date ? `${formatDate(item.travel_date)} (requested)` : "Not set yet";
 }
 
-/** Customer-facing order number, e.g. "#10001", from the stored code "AU-10001". Admin keeps the full code. */
-export function orderNumber(code: string) {
-  return `#${code.slice(code.indexOf("-") + 1)}`;
+/**
+ * Customer-facing order number: the one WordPress gave on WhatsApp ("#10001", or "#rck10001" for a referral order, 1.32),
+ * else derived from the stored code "AU-10001" for older backends. Admin keeps the full code.
+ */
+export function orderNumber(code: string, shown?: string | null) {
+  return shown || `#${code.slice(code.indexOf("-") + 1)}`;
 }

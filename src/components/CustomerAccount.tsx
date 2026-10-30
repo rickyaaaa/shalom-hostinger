@@ -106,7 +106,7 @@ function OrderHistory({initial,entitlements,onReview}:{initial:AccountData["inqu
       const status = orderStatus[item.status];
       const entitlement = item.status === "completed" ? entitlements.find(row => row.inquiry_id === item.id) : undefined;
       return <li key={item.id} className="order-card">
-        {item.order_code && <p className="order-code">Order <strong>{orderNumber(item.order_code)}</strong></p>}
+        {item.order_code && <p className="order-code">Order <strong>{orderNumber(item.order_code, item.order_number)}</strong></p>}
         <div className="order-card-head"><h3>{itineraryTitle(item.title)}</h3><span className={`order-status order-status-${status.tone}`}>{status.label}</span></div>
         {status.note && <p className="order-status-note">{status.note}</p>}
         <dl className="order-details">
