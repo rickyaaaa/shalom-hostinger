@@ -432,10 +432,10 @@ export const tourPages = {
     area: "west-bali",
     indexable: true,
     title: "Ulun Danu, Taman Ayun & Tanah Lot Tour",
-    metaDescription: "Private West Bali temple tour with your own driver: Ulun Danu Beratan on the lake in Bedugul, Taman Ayun royal temple and Tanah Lot sea temple.",
-    heading: "West Bali Temple Tour: Ulun Danu Beratan, Taman Ayun & Tanah Lot",
+    metaDescription: "Private West Bali & North Bali temple tour with your own driver: Ulun Danu Beratan on the lake in Bedugul, Taman Ayun royal temple and Tanah Lot sea temple.",
+    heading: "West Bali & North Bali Temple Tour: Ulun Danu Beratan, Taman Ayun & Tanah Lot",
     intro: [
-      "Visit three of West Bali’s landmark temples in one private day. Start in the cool highlands of Bedugul at Ulun Danu Beratan, on the edge of Lake Beratan, continue to the royal temple gardens of Taman Ayun, and end at Tanah Lot, the sea temple on a rock offshore.",
+      "Visit three landmark temples of West Bali and North Bali in one private day. Start in the cool highlands of Bedugul at Ulun Danu Beratan, on the edge of Lake Beratan, continue to the royal temple gardens of Taman Ayun, and end at Tanah Lot, the sea temple on a rock offshore.",
       "Your own driver handles the long drive between the highlands and the coast, with a lunch stop for pork ribs on the way. Choose your pickup time when you order, and agree the plan with our team when you reconfirm on WhatsApp.",
     ],
     highlights: [
@@ -464,8 +464,8 @@ export const tourPages = {
     area: "west-bali",
     indexable: true,
     title: "Jatiluwih, Taman Ayun & Tanah Lot Tour",
-    metaDescription: "Private West Bali day with your own driver: walk the Jatiluwih rice terraces, visit Taman Ayun royal temple and see Tanah Lot sea temple on the coast.",
-    heading: "West Bali Trekking Tour: Jatiluwih Rice Terraces & Tanah Lot",
+    metaDescription: "Private West Bali & North Bali day with your own driver: walk the Jatiluwih rice terraces, visit Taman Ayun royal temple and see Tanah Lot sea temple.",
+    heading: "West Bali & North Bali Trekking Tour: Jatiluwih Rice Terraces & Tanah Lot",
     intro: [
       "Swap the beach for wide green views. Walk among the Jatiluwih rice terraces, part of Bali’s UNESCO World Heritage subak landscape, visit the royal temple gardens of Taman Ayun, and end at Tanah Lot, the sea temple on a rock offshore.",
       "Your own driver handles the drive between the hills and the coast, with a lunch stop for pork ribs on the way. Agree the plan with our team when you reconfirm on WhatsApp.",
