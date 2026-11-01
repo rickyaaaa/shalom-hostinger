@@ -254,6 +254,83 @@ export const blogPosts = {
       { question: "What should I wear to temples in Ubud?", answer: "Cover your shoulders and knees, and wear a sarong where one is required. Bring a change of clothes if you want to join the purification at Tirta Empul." },
     ],
   },
+  // Brief: seo-reports/brief-uluwatu-temple.md. No ticket prices or opening hours (they change); the Kecak or Jimbaran
+  // dinner rule is the approved tour 599 copy. History follows the commonly told temple tradition.
+  "uluwatu-temple": {
+    published: true,
+    date: "2026-11-02",
+    title: "Uluwatu Temple Guide: Kecak & Sunset",
+    metaDescription: "Visiting Uluwatu Temple in Bali: the clifftop views, the Kecak fire dance at sunset, the monkeys, the dress code, tickets and how to get there.",
+    heading: "Uluwatu Temple: Your Guide to the Clifftop Temple, Kecak Dance & Monkeys",
+    excerpt: "The clifftop views, the Kecak fire dance at sunset, the monkeys and the dress code, plus how to fit Uluwatu Temple into your day.",
+    image: { src: "/images/uluwatu-cliff.webp", width: 900, height: 600, alt: "A monkey on a stone post above the sea cliffs at Uluwatu" },
+    intro: [
+      "Uluwatu Temple stands on the edge of a sea cliff at the southern tip of Bali, with the Indian Ocean crashing far below. It is one of the island’s most important temples and one of its most memorable sunset spots, with a Kecak fire dance in the evening and a troop of monkeys that is famous for stealing sunglasses.",
+      "This guide covers what to see, the Kecak dance, the monkeys, what to wear and how to plan your visit. Uluwatu Temple is a stop on several of our [private South Kuta tours](/south-kuta).",
+    ],
+    sections: [
+      { id: "why-famous", heading: "Why is Uluwatu Temple famous?", blocks: [
+        "Uluwatu Temple, or Pura Luhur Uluwatu, is famous for its setting on a clifftop about 70 metres above the Indian Ocean, its sunset views and the Kecak fire dance performed beside it in the evening. It is also one of Bali’s six key temples, believed to protect the island, and is home to hundreds of long-tailed macaques.",
+      ] },
+      { id: "history", heading: "A short history of Pura Luhur Uluwatu", blocks: [
+        "According to Balinese tradition, a temple has stood here since the 11th century, when the priest Mpu Kuturan is said to have founded it. In the 16th century the temple was expanded by Dang Hyang Nirartha, a priest from Java who shaped much of Balinese Hinduism, and tradition says this is where he reached moksha, the final release of the soul.",
+        "Uluwatu is counted among the Sad Kahyangan, the six directional temples that are believed to guard Bali, and it watches over the south-west of the island. It is still a working temple, and you may see ceremonies with offerings, music and Balinese families dressed in white.",
+      ] },
+      { id: "what-to-see", heading: "What to see at Uluwatu Temple", blocks: [
+        "The inner courtyard is reserved for worshippers, so a visit is mostly about the setting: the cliffs, the paths around them and the sea.",
+      ] },
+      { id: "cliff-walk", sub: true, heading: "The clifftop paths and viewpoints", blocks: [
+        "Walled paths run along the cliff edge on both sides of the temple, with viewpoints over the ocean and back towards the temple on its headland. On a clear day the water below is a deep blue, and you can often watch surfers and big waves rolling in.",
+      ] },
+      { id: "temple-gates", sub: true, heading: "The temple gates", blocks: [
+        "Stone gates carved in the traditional Balinese style lead towards the temple at the top of the headland. Photograph them from the paths, and stay outside the parts of the temple marked for prayer.",
+      ] },
+      { id: "sunset", sub: true, heading: "Sunset over the Indian Ocean", blocks: [
+        "Uluwatu faces west, so the sun sets over the open ocean in front of the cliffs. It is the most popular time to visit, so expect crowds on the paths in the late afternoon. Sunset depends on the weather, and on cloudy days the sky may not clear.",
+      ] },
+      { id: "kecak", heading: "The Kecak fire dance at Uluwatu Temple", blocks: [
+        "The Kecak is performed in an open-air amphitheatre on the cliff next to the temple as the sun goes down. Instead of a gamelan orchestra, a large circle of men chant the rhythmic “cak-cak-cak” that gives the dance its name, while dancers act out a story from the Ramayana: the kidnapping of Sita and her rescue with the help of Hanuman, the white monkey. The show ends with fire.",
+        "The Kecak has its own ticket, separate from the temple entrance, sold at the temple. Seats on the stone steps fill up, so arrive early if you want a good view, and bring water.",
+        "On our [Uluwatu, Beach & Jimbaran Sunset Tour](/tours/uluwatu-beach-jimbaran-tour), the Kecak takes the place of the Jimbaran sunset dinner, because both happen at the same time of day. Tell our team which one you prefer when you reconfirm your order.",
+      ] },
+      { id: "monkeys", heading: "The Uluwatu Temple monkeys", blocks: [
+        "Long-tailed macaques live in the forest around the temple and are known for grabbing sunglasses, hats, phones and even flip-flops, which they often hand back only in exchange for food. They are wild animals, so keep your distance and follow a few simple rules:",
+        { list: [
+          "Put sunglasses, hats, earrings and loose items in a closed bag before you walk in.",
+          "Hold your phone firmly, with a strap if you have one.",
+          "Do not feed, touch or tease the monkeys, and do not carry food in your hands.",
+          "If a monkey takes something, ask the temple staff for help rather than chasing it.",
+          "If a monkey scratches or bites you, see a doctor the same day.",
+        ] },
+      ] },
+      { id: "dress-code", heading: "Uluwatu Temple dress code", blocks: [
+        "Like every temple in Bali, Uluwatu asks visitors to cover their shoulders and knees. Sarongs and sashes are provided at the entrance for anyone who needs them. Balinese custom also asks women who are menstruating not to enter temple grounds.",
+        "Wear comfortable shoes for the paths and steps, and bring sun protection: there is little shade along the cliffs.",
+      ] },
+      { id: "tickets", heading: "Uluwatu Temple tickets and opening times", blocks: [
+        "You buy your entrance ticket at the temple gate, and the Kecak ticket separately at the temple. Prices and times change, so check them on the day or ask our team when you reconfirm your order. On our tours, entrance tickets are not included in the tour price.",
+      ] },
+      { id: "best-time", heading: "When is the best time to visit Uluwatu Temple?", blocks: [
+        "Come in the late afternoon for the sunset and the Kecak, and expect it to be busy. If you prefer quiet paths and softer heat, visit earlier in the day. The dry season, roughly April to October, usually brings clearer skies for the sunset.",
+      ] },
+      { id: "getting-there", heading: "How to get to Uluwatu Temple", blocks: [
+        "Uluwatu Temple is in Pecatu, at the south-western tip of the Bukit Peninsula in the far south of Bali. The roads towards it get busy in the late afternoon, when everyone heads there for the sunset, so leave plenty of time.",
+        "The simplest way is with a driver who waits while you visit and takes you on to dinner or back to your hotel. Every Shalom tour includes a private car and your own driver for 10 hours, with fuel and parking included, and your driver collects you at your hotel.",
+        { tours: ["uluwatu-beach-jimbaran-tour", "atv-uluwatu-jimbaran-sunset-tour", "family-watersport-uluwatu-tour"] },
+      ] },
+      { id: "combine", heading: "What to combine with Uluwatu Temple", blocks: [
+        "Most visitors make Uluwatu the last stop of a day in the south. Spend the morning at a beach such as Pandawa, Tanah Barak or Melasti, try an ATV ride or watersports at Tanjung Benoa, and end the day with the sunset at the temple or a seafood dinner on Jimbaran Beach.",
+        "Planning the rest of your trip? Our [7-day Bali itinerary](/blog/bali-itinerary) shows how a day in Uluwatu fits with Ubud and West Bali, and our guide to [things to do in Ubud](/blog/things-to-do-in-ubud) covers the island’s green centre.",
+      ] },
+    ],
+    faq: [
+      { question: "Is Uluwatu Temple worth visiting?", answer: "Yes. The clifftop setting, the sunset over the Indian Ocean and the Kecak dance make it one of the highlights of a trip to Bali, even though the inner temple is closed to visitors." },
+      { question: "How long do you need at Uluwatu Temple?", answer: "Allow an hour or two to walk the cliff paths. If you stay for the Kecak dance, plan for most of the late afternoon and evening." },
+      { question: "Can you go inside Uluwatu Temple?", answer: "The inner courtyard is reserved for people who come to pray. Visitors walk the grounds, the paths along the cliffs and the viewpoints around the temple." },
+      { question: "Are the monkeys at Uluwatu Temple dangerous?", answer: "They are wild and quick to grab loose items, but you can visit safely if you keep belongings in a closed bag and do not feed or touch them. If a monkey scratches or bites you, see a doctor the same day." },
+      { question: "Can I watch the Kecak dance and have dinner in Jimbaran on the same evening?", answer: "No. The Kecak performance at Uluwatu and the Jimbaran sunset dinner take place at the same time of day, so choose one when you reconfirm your order." },
+    ],
+  },
 } as const satisfies Record<string, BlogPost>;
 
 export type BlogSlug = keyof typeof blogPosts;

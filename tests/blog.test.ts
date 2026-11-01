@@ -142,3 +142,17 @@ test("Recent guides sit at the foot of Home, the area pages, every tour page and
   assert.match(src("app/blog/[slug]/page.tsx"), /<RecentGuides exclude=\{slug\} heading="More Travel Guides" \/>/, "a guide never lists itself");
   for (const page of ["book/[id]/page.tsx", "login/page.tsx", "account/page.tsx", "register/page.tsx", "blog/page.tsx"]) assert.doesNotMatch(src(`app/${page}`), /RecentGuides/, page);
 });
+
+test("Uluwatu Temple guide: answers why it is famous first, links the Uluwatu tours, gives no prices or times", () => {
+  const post: BlogPost = blogPosts["uluwatu-temple"];
+  assert.equal(post.published, true);
+  assert.equal(post.sections[0].heading, "Why is Uluwatu Temple famous?");
+  assert.ok((post.sections[0].blocks[0] as string).split(/\s+/).length <= 60, "a short, quotable answer under the first H2");
+  const text = copy(post);
+  for (const path of ["/south-kuta", "/tours/uluwatu-beach-jimbaran-tour", "/blog/bali-itinerary", "/blog/things-to-do-in-ubud"]) assert.ok(text.includes(`(${path})`), path);
+  for (const tour of ["uluwatu-beach-jimbaran-tour", "atv-uluwatu-jimbaran-sunset-tour", "family-watersport-uluwatu-tour"]) assert.ok(text.includes(`"${tour}"`), tour);
+  for (const topic of ["Kecak", "monkeys", "shoulders and knees", "tickets are not included", "depends on the weather"]) assert.ok(text.includes(topic), topic);
+  assert.doesNotMatch(text, /\b\d{1,2}[:.]\d{2}\b|\b\d{1,2}\s?(am|pm)\b/i, "no performance or opening times");
+  assert.match(text, /Kecak takes the place of the Jimbaran sunset dinner/, "the approved Kecak or dinner rule");
+  assert.equal(new Set(Object.values(blogPosts).map(p => p.image.src)).size, Object.keys(blogPosts).length, "every guide has its own photo");
+});
