@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { areas } from "../src/lib/marketing";
 import { indexableTourPaths, tourDetailPath, tourPageBySlug, tourPages, type TourPageContent } from "../src/lib/tour-pages";
+import { indexableBlogPaths } from "../src/lib/blog";
 import sitemap from "../src/app/sitemap";
 
 const src = (file: string) => readFileSync(new URL(`../src/${file}`, import.meta.url), "utf8");
@@ -78,7 +79,7 @@ test("Every card links to an indexable detail page in the sitemap; WordPress-onl
   assert.deepEqual(indexableTourPaths(), pages.map(([slug]) => `/tours/${slug}`));
   assert.equal(indexableTourPaths().length, 17);
   const urls = sitemap().map(row => new URL(row.url).pathname);
-  assert.deepEqual(urls, ["/", "/ubud", "/south-kuta", "/west-bali", ...indexableTourPaths()]);
+  assert.deepEqual(urls, ["/", "/ubud", "/south-kuta", "/west-bali", ...indexableTourPaths(), ...indexableBlogPaths()]);
   assert.match(src("app/sitemap.ts"), /\[\.\.\.\["\/","\/ubud","\/south-kuta","\/west-bali"\],\.\.\.\(islandPackagesLive\?\["\/nusa-penida-lembongan"\]:\[\]\),\.\.\.indexableTourPaths\(\),\.\.\.indexableBlogPaths\(\)\]/);
   const card = src("components/TourCard.tsx");
   assert.match(card, /<BookingButton [^>]*\/><Link className="button button-outline" href=\{tourDetailPath\(tour\.id\)\}>Details<span className="visually-hidden">: \{title\}<\/span><\/Link><\/div>/, "cards: Order Now + Details");

@@ -64,8 +64,8 @@ test("Inline links: text and internal paths only", () => {
   assert.equal(plainText("Book the [Uluwatu tour](/tours/uluwatu-beach-jimbaran-tour) today"), "Book the Uluwatu tour today");
 });
 
-test("Bali itinerary draft follows the brief: answers how many days first, links each area's tours, keeps the approved facts", () => {
-  assert.equal(draft.published, false, "draft until the owner approves it");
+test("Bali itinerary follows the brief: answers how many days first, links each area's tours, keeps the approved facts", () => {
+  assert.equal(draft.published, true, "published after the owner approved it, 1 November 2026");
   assert.equal(draft.sections[0].heading, "How many days do you need in Bali?");
   const firstAnswer = draft.sections[0].blocks[0] as string;
   assert.ok(firstAnswer.split(/\s+/).length <= 70, "a short, quotable answer under the first H2");

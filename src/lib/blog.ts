@@ -23,11 +23,12 @@ export type BlogPost = {
   faq: readonly { question: string; answer: string }[];
 };
 
-// Draft for owner review (brief: seo-reports/brief-bali-itinerary.md). Tour facts come from the approved tour pages
+// Owner-approved 2026-11-01: Ubud hotel pickup, the 10-day tours are sold, Kecak or Jimbaran dinner (brief:
+// seo-reports/brief-bali-itinerary.md). Tour facts come from the approved tour pages
 // and the home FAQ; the 17:30 Jimbaran arrival is the only time given. Add no prices.
 export const blogPosts = {
   "bali-itinerary": {
-    published: false,
+    published: true,
     date: "2026-11-01",
     title: "7-Day Bali Itinerary (5 & 10 Day Options)",
     metaDescription: "A 7-day Bali itinerary for first-timers: Uluwatu and Jimbaran, Ubud’s rice terraces and West Bali’s temples, with 5 and 10 day versions and travel tips.",
