@@ -180,3 +180,19 @@ test("Guide photos: every file is registered and used, and every Commons photo i
   for (const [slug, post] of posts) assert.ok(post.sections.some(section => section.blocks.some(block => typeof block === "object" && "image" in block)), `${slug} has photos`);
 });
 
+
+test("Uluwatu beaches guide: numbered list matches the heading, approved tour beaches, safety rules, no fees or times", () => {
+  const post: BlogPost = blogPosts["uluwatu-beaches"];
+  assert.equal(post.published, true);
+  assert.equal(post.sections[0].heading, "Which Uluwatu beach should you choose?");
+  assert.ok((post.sections[0].blocks[0] as string).split(/\s+/).length <= 60, "a short, quotable answer under the first H2");
+  const numbered = post.sections.filter(section => section.sub).map(section => Number(section.heading.match(/^(\d+)\. /)?.[1]));
+  assert.deepEqual(numbered, Array.from({ length: numbered.length }, (_, i) => i + 1));
+  assert.ok(post.heading.startsWith(`${numbered.length} `) && post.title.includes(`${numbered.length} `), "title and H1 count the beaches");
+  const text = copy(post);
+  assert.match(text, /Pandawa, Tanah Barak or Melasti/, "the approved tour 599 beach choice");
+  for (const path of ["/tours/uluwatu-beach-jimbaran-tour", "/bali-driver-hire", "/blog/uluwatu-temple", "/blog/bali-itinerary"]) assert.ok(text.includes(`(${path})`), path);
+  for (const rule of ["red flag", "low tide", "lifeguards"]) assert.ok(text.includes(rule), rule);
+  assert.doesNotMatch(text, /\b\d{1,2}[:.]\d{2}\b|\b\d{1,3}(,\d{3})+\b/, "no times or fee amounts");
+  assert.equal(post.image.src, "/images/south-kuta.webp", "the hero is the client's own photo, so it needs no credit");
+});

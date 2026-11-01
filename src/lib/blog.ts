@@ -52,6 +52,12 @@ export const blogImages = {
   "uluwatu-cliff-sunset": { src: "/images/blog/uluwatu-cliff-sunset.webp", width: 1200, height: 800, alt: "Limestone sea cliffs at Uluwatu in the late afternoon light", credit: {"author": "Emma THERY", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Cliff_at_Uluwatu_temple,_Bali.jpg"} },
   "uluwatu-sunset-silhouette": { src: "/images/blog/uluwatu-sunset-silhouette.webp", width: 1200, height: 800, alt: "The silhouette of Uluwatu Temple against the sunset over the ocean", credit: {"author": "CEphoto, Uwe Aranas", "license": "CC BY-SA 3.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Kuta_Bali_Indonesia_Pura-Luhur-Uluwatu-04.jpg"} },
   "uluwatu-temple-headland": { src: "/images/blog/uluwatu-temple-headland.webp", width: 1200, height: 800, alt: "Uluwatu Temple on top of a sheer cliff above the Indian Ocean", credit: {"author": "CEphoto, Uwe Aranas", "license": "CC BY-SA 3.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Kuta_Bali_Indonesia_Pura-Luhur-Uluwatu-03.jpg"} },
+  "pandawa-beach-road": { src: "/images/blog/pandawa-beach-road.webp", width: 1200, height: 900, alt: "The road down to Pandawa Beach between limestone cliffs, with turquoise sea below", credit: {"author": "Michellewinardi", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Pandawa_Beach,_Bali,_Indonesia.jpg"} },
+  "pandawa-arjuna-statue": { src: "/images/blog/pandawa-arjuna-statue.webp", width: 1200, height: 1054, alt: "A white statue of Arjuna set into the limestone cliff at Pandawa Beach", credit: {"author": "Satdeep Gill", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Arjuna_statue_at_Pandawa_Beach,_Bali.jpg"} },
+  "padang-padang-beach": { src: "/images/blog/padang-padang-beach.webp", width: 1200, height: 900, alt: "Padang Padang Beach with sand, parasols and a green headland", credit: {"author": "TMFalkner", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Padang_Padang_Beach_Bali.jpg"} },
+  "balangan-beach": { src: "/images/blog/balangan-beach.webp", width: 1200, height: 540, alt: "The long curve of Balangan Beach below a green clifftop, with surf rolling in", credit: {"author": "MickiMouse2", "license": "CC0", "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/", "source": "https://commons.wikimedia.org/wiki/File:Balangan_Beach.jpg"} },
+  "suluban-cliffs": { src: "/images/blog/suluban-cliffs.webp", width: 1024, height: 768, alt: "Sea cliffs and breaking waves near Suluban Beach in Uluwatu", credit: {"author": "우한길(HK Woo)", "license": "CC BY 3.0", "licenseUrl": "https://creativecommons.org/licenses/by/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Jl._Pantai_Suluban,_Pecatu,_Kuta_Sel.,_Kabupaten_Badung,_Bali_80361,_Indonesia_-_panoramio.jpg"} },
+  "beach-red-flag": { src: "/images/blog/beach-red-flag.webp", width: 1200, height: 800, alt: "A red no-swimming flag on a Bali beach, with surfers in the waves behind", credit: {"author": "tboothHK from Bali", "license": "CC BY 2.0", "licenseUrl": "https://creativecommons.org/licenses/by/2.0/", "source": "https://commons.wikimedia.org/wiki/File:Bali_Swimming_Flag.jpg"} },
 } as const satisfies Record<string, BlogImage>;
 
 // Owner-approved 2026-11-01: Ubud hotel pickup, the 10-day tours are sold, Kecak or Jimbaran dinner (brief:
@@ -378,6 +384,103 @@ export const blogPosts = {
       { question: "Can you go inside Uluwatu Temple?", answer: "The inner courtyard is reserved for people who come to pray. Visitors walk the grounds, the paths along the cliffs and the viewpoints around the temple." },
       { question: "Are the monkeys at Uluwatu Temple dangerous?", answer: "They are wild and quick to grab loose items, but you can visit safely if you keep belongings in a closed bag and do not feed or touch them. If a monkey scratches or bites you, see a doctor the same day." },
       { question: "Can I watch the Kecak dance and have dinner in Jimbaran on the same evening?", answer: "No. The Kecak performance at Uluwatu and the Jimbaran sunset dinner take place at the same time of day, so choose one when you reconfirm your order." },
+    ],
+  },
+  // Brief: seo-reports/ubersuggest-trial-harvest-2026-11-02.md (uluwatu beaches 4,400/mo SD 18, melasti 3,600/14,
+  // pandawa 1,900/12). Beach facts checked against indonesia.travel, the Bali tourism office and local guides; no fees,
+  // times or tide hours. Tour 599 offers Pandawa, Tanah Barak or Melasti (approved tour copy).
+  "uluwatu-beaches": {
+    published: true,
+    date: "2026-11-02",
+    title: "Uluwatu Beaches: 8 Best Beaches to Visit",
+    metaDescription: "The best Uluwatu beaches in Bali: Melasti, Pandawa, Padang Padang, Suluban, Bingin, Balangan and more, with access, swimming and tide tips for each.",
+    heading: "8 Best Beaches in Uluwatu: Melasti, Pandawa, Padang Padang & More",
+    excerpt: "Calm, sandy bays on the south coast and surf coves below the cliffs in the west: which Uluwatu beach suits you, and how to get there.",
+    image: { src: "/images/south-kuta.webp", width: 550, height: 376, alt: "Uluwatu Temple on a green clifftop above the deep blue Indian Ocean" },
+    intro: [
+      "The Bukit Peninsula at the southern tip of Bali is ringed by limestone cliffs, and below them sit some of the island’s most beautiful beaches: white sand, turquoise water and big Indian Ocean waves. Some are a short walk from the car park, others are hidden at the bottom of long staircases or through gaps in the rocks.",
+      "This guide covers eight Uluwatu beaches, what each one is like and how to reach it, plus the safety and tide tips that matter on this coast. Three of them, Melasti, Pandawa and Tanah Barak, are a stop on our [Uluwatu, Beach & Jimbaran Sunset Tour](/tours/uluwatu-beach-jimbaran-tour).",
+    ],
+    sections: [
+      { id: "which-beach", heading: "Which Uluwatu beach should you choose?", blocks: [
+        "For calm water and easy access, choose Melasti or Pandawa on the south coast, where the road comes down close to the sand. For surf and sunsets, head to the west-coast beaches such as Padang Padang, Bingin, Balangan and Suluban, which sit below the cliffs and are reached by steps. Families usually prefer Pandawa or Melasti.",
+        { list: [
+          "Easiest access and calmer water: Melasti, Pandawa",
+          "Quiet and less known: Tanah Barak",
+          "Surf, cliffs and sunsets: Padang Padang, Suluban, Bingin, Balangan",
+          "Big open beach with strong waves: Dreamland",
+        ] },
+      ] },
+      { id: "south-coast", heading: "The south coast: wide beaches with road access", blocks: [
+        "On the south side of the peninsula, roads have been cut down through the limestone cliffs, so you can park close to the sand. The water here is often calmer than on the west coast.",
+      ] },
+      { id: "melasti", sub: true, heading: "1. Melasti Beach", blocks: [
+        "In Ungasan, a road winds down between tall, pale cliffs to a stretch of white sand and turquoise water. It is one of the easiest Uluwatu beaches to reach, with cafés and beach clubs nearby, and on calmer days it is good for swimming. Follow the flags and the lifeguards’ advice.",
+      ] },
+      { id: "pandawa", sub: true, heading: "2. Pandawa Beach", blocks: [
+        "In Kutuh, the road to Pandawa runs through a cutting in the limestone, where statues of the five Pandawa brothers from the Mahabharata and their mother Kunti stand in niches in the cliff. The beach below is wide and sandy, the water is sheltered by a reef and usually calm, and kayaks and sun loungers are available to rent.",
+        { image: "pandawa-beach-road", caption: "The road down to Pandawa Beach." },
+        { image: "pandawa-arjuna-statue", caption: "Arjuna, one of the Pandawa statues in the cliff." },
+      ] },
+      { id: "tanah-barak", sub: true, heading: "3. Tanah Barak Beach", blocks: [
+        "Close to Pandawa in Kutuh, Tanah Barak is reached by a road cut through the limestone cliffs, and the high walls of the cutting are a favourite photo spot on the way down. The beach is smaller and quieter than its famous neighbour.",
+      ] },
+      { id: "west-coast", heading: "The west coast: surf beaches below the cliffs", blocks: [
+        "The west side of the peninsula faces the open ocean and the sunset. These are some of the best-known surf breaks in Bali, and most of the beaches are reached by steps down the cliff, so wear good shoes and travel light.",
+      ] },
+      { id: "padang-padang", sub: true, heading: "4. Padang Padang Beach", blocks: [
+        "A small, sheltered cove reached by a staircase that squeezes through a narrow gap in the rocks. It is famous for its surf break and was a filming location for Eat Pray Love, so it can be busy. Come early for space on the sand.",
+        { image: "padang-padang-beach" },
+      ] },
+      { id: "suluban", sub: true, heading: "5. Suluban Beach (Blue Point)", blocks: [
+        "Below the cliffs at Uluwatu, steps lead down to a passage through the rocks and out to a small beach with caves, where surfers paddle out to the famous Uluwatu waves. Only go through the passage at low tide: when the tide is in, waves surge through it.",
+        { image: "suluban-cliffs", caption: "The cliffs and waves around Suluban." },
+      ] },
+      { id: "bingin", sub: true, heading: "6. Bingin Beach", blocks: [
+        "Steep steps lead down past cliffside guesthouses and warungs to a narrow beach with a well-known surf break. At low tide, rock pools appear along the reef, and the sunsets over the water are beautiful.",
+      ] },
+      { id: "balangan", sub: true, heading: "7. Balangan Beach", blocks: [
+        "A long curve of sand below a green clifftop, with surfers in the water and simple warungs along the beach. It is a relaxed place to spend the afternoon and stay for the sunset.",
+        { image: "balangan-beach" },
+      ] },
+      { id: "dreamland", sub: true, heading: "8. Dreamland Beach", blocks: [
+        "A wide, open beach with soft sand and strong waves that suit bodyboarders and surfers. It is easy to reach, but the waves and currents can be powerful, so swim only where it is allowed.",
+      ] },
+      { id: "safety", heading: "Swimming safety and tides", blocks: [
+        "The Uluwatu coast faces the open Indian Ocean, and conditions change quickly. Keep these rules in mind:",
+        { list: [
+          "Swim only where it is allowed, and never when a red flag is flying.",
+          "Ask the lifeguards or locals about currents before you go in, especially on the west coast.",
+          "Check the tide: some passages and beaches, such as Suluban, are only safe at low tide.",
+          "Wear reef shoes on rocky and reef beaches, and watch for sharp coral.",
+          "Bring sun protection and water: there is little shade on many beaches.",
+        ] },
+        { image: "beach-red-flag", caption: "A red flag means no swimming." },
+      ] },
+      { id: "getting-there", heading: "How to get to Uluwatu’s beaches", blocks: [
+        "Melasti and Pandawa have parking close to the sand. At Padang Padang, Suluban and Bingin you park at the top of the cliff and walk down steps, some of them long and steep. Some beaches charge a small entrance or parking fee at the gate, so carry cash.",
+        "The roads between the beaches are winding and get busy in the afternoon, so a car with a driver is the easiest way to visit two or three in a day. Your driver waits while you swim and takes you on to the next stop. Choose Pandawa, Tanah Barak or Melasti on our [Uluwatu, Beach & Jimbaran Sunset Tour](/tours/uluwatu-beach-jimbaran-tour), or [hire a driver](/bali-driver-hire) and plan your own beach day.",
+        { tours: ["uluwatu-beach-jimbaran-tour", "atv-uluwatu-jimbaran-sunset-tour"] },
+      ] },
+      { id: "what-to-bring", heading: "What to bring for a beach day in Uluwatu", blocks: [
+        { list: [
+          "Swimwear, a towel and a cover-up or sarong for temple visits on the way",
+          "Sunscreen, a hat and plenty of water",
+          "Reef shoes or sandals with grip for steps and rocks",
+          "Cash for entrance fees, parking, loungers and warungs",
+          "A dry bag for your phone if you walk through passages or swim",
+        ] },
+      ] },
+      { id: "plan-your-day", heading: "Plan the rest of your day", blocks: [
+        "Most visitors combine a beach with Uluwatu Temple, which stands on the cliffs nearby. Our [Uluwatu Temple guide](/blog/uluwatu-temple) covers the clifftop paths, the Kecak dance and the monkeys. End the day with a seafood dinner on Jimbaran Beach, or see how a day in Uluwatu fits into a week with our [7-day Bali itinerary](/blog/bali-itinerary).",
+      ] },
+    ],
+    faq: [
+      { question: "What is the best beach in Uluwatu for swimming?", answer: "Melasti and Pandawa are usually the calmest, with sheltered water and easy access. Conditions still change with the swell and tide, so always check the flags and ask the lifeguards." },
+      { question: "Which Uluwatu beach is best for families?", answer: "Pandawa and Melasti. You can park close to the sand, the beaches are wide, and the water is usually calmer than on the west coast." },
+      { question: "Can you swim at Padang Padang and Suluban?", answer: "At times, but these are surf beaches with reef and strong waves. Swim only when conditions are calm and it is allowed, and visit Suluban at low tide." },
+      { question: "Do Uluwatu beaches charge an entrance fee?", answer: "Some beaches charge a small entrance or parking fee at the gate, while others are free. Bring cash, as card payment is not always possible." },
+      { question: "Which beaches can I visit on a Shalom tour?", answer: "On our Uluwatu, Beach & Jimbaran Sunset Tour you choose Pandawa, Tanah Barak or Melasti Beach. To visit other beaches, hire a driver and plan your own route." },
     ],
   },
 } as const satisfies Record<string, BlogPost>;
