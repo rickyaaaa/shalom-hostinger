@@ -9,6 +9,7 @@ import { ServiceUnavailable } from "./ServiceUnavailable";
 import { Icon } from "./Icon";
 import { westBaliCardPresentation } from "./westBaliPresentation";
 import westBaliStyles from "./WestBali.module.css";
+import { RecentGuides } from "./RecentGuides";
 
 // Only the package list waits for WordPress, so the hero image ships in the first HTML chunk.
 async function AreaTours({area, requestedTravelDate, cardHeading}:{area:AreaSlug; requestedTravelDate?: string; cardHeading?: "h2"|"h3"}) {
@@ -66,6 +67,7 @@ export function AreaPage({area, requestedTravelDate}:{area:AreaSlug; requestedTr
       <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading itineraries…</p>}><AreaTours area={area} requestedTravelDate={requestedTravelDate} cardHeading={guide ? "h3" : "h2"}/></Suspense>
     </section>
     {guide && <AreaGuideSections guide={guide}/>}
+    <RecentGuides/>
   </>;
   return isWestBali ? <div className={westBaliStyles.page}>{body}</div> : body;
 }

@@ -11,6 +11,7 @@ import { WhyChooseUs, HowItWorks, DriverSection, FAQ, AboutSection } from "@/com
 import { publicMetadata } from "@/lib/seo";
 import { serverEnv } from "@/lib/server-env";
 import { tiktokProfile } from "@/lib/marketing";
+import { RecentGuides } from "@/components/RecentGuides";
 
 export const dynamic = "force-dynamic";
 // The layout's "%s | Shalom Bali Tour" template does not apply to the root page, so the brand is part of the title here.
@@ -73,6 +74,7 @@ export default function HomePage() {
       <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading guest reviews…</p>}><LatestReviews /></Suspense>
     </section>
     <FAQ/>
+    <RecentGuides/>
     <AboutSection/>
   </>;
 }

@@ -130,3 +130,15 @@ test("The main menu links to /blog once a guide is published, without shipping t
   assert.doesNotMatch(menu + src("components/Header.tsx"), /@\/lib\/blog/, "client components never import the article copy");
   assert.match(src("app/layout.tsx"), /<Header links=\{siteLinks\(\)\} blog=\{blogLive\(\)\} \/>/);
 });
+
+test("Recent guides sit at the foot of Home, the area pages, every tour page and every guide; private pages have none", () => {
+  const recent = src("components/RecentGuides.tsx");
+  assert.match(recent, /publishedPosts\(\)\.filter\(\(\[slug\]\) => slug !== exclude\)\.slice\(0, 3\)/, "the three newest published guides");
+  assert.match(recent, /if \(!posts\.length\) return null;/, "nothing renders while none is published");
+  assert.match(recent, /<Link href="\/blog" className="button button-outline">View All Guides<\/Link>/);
+  assert.match(src("app/page.tsx"), /<FAQ\/>\s*<RecentGuides\/>\s*<AboutSection\/>/, "Home: after the FAQ, before About");
+  assert.match(src("components/AreaPage.tsx"), /<AreaGuideSections guide=\{guide\}\/>\}\s*<RecentGuides\/>/);
+  assert.match(src("app/tours/[slug]/page.tsx"), /<TourReviews [^>]*\/>\s*<\/div><\/section>\s*<RecentGuides\/>/, "tour pages: after the reviews");
+  assert.match(src("app/blog/[slug]/page.tsx"), /<RecentGuides exclude=\{slug\} heading="More Travel Guides" \/>/, "a guide never lists itself");
+  for (const page of ["book/[id]/page.tsx", "login/page.tsx", "account/page.tsx", "register/page.tsx", "blog/page.tsx"]) assert.doesNotMatch(src(`app/${page}`), /RecentGuides/, page);
+});
