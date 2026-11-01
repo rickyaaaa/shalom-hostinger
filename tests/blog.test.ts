@@ -106,3 +106,19 @@ test("Article and guides routes: noindex drafts, 404 unknown slugs, escaped JSON
   assert.match(src("components/Footer.tsx"), /\{blogLive\(\) && <nav className="footer-links"/);
   assert.doesNotMatch(src("lib/blog.ts"), /from "\.\/wordpress"/, "articles never wait on WordPress");
 });
+
+test("Things to do in Ubud: numbered list matches the title, links Ubud tours and the itinerary, no tour claims Tegallalang", () => {
+  const post: BlogPost = blogPosts["things-to-do-in-ubud"];
+  assert.equal(post.published, true);
+  assert.equal(post.sections[0].heading, "What is Ubud known for?");
+  assert.ok((post.sections[0].blocks[0] as string).split(/\s+/).length <= 60, "a short, quotable answer under the first H2");
+  const numbered = post.sections.filter(section => section.sub).map(section => Number(section.heading.match(/^(\d+)\. /)?.[1]));
+  assert.deepEqual(numbered, Array.from({ length: numbered.length }, (_, i) => i + 1), "the list is numbered 1, 2, 3 ...");
+  assert.ok(post.title.startsWith(`${numbered.length} `), `the title counts ${numbered.length} things`);
+  const text = copy(post);
+  for (const path of ["/ubud", "/blog/bali-itinerary", "/tours/ubud-rice-terrace-waterfall-tour", "/tours/ubud-monkey-forest-tirta-empul-tour", "/tours/ubud-art-batik-silver-class-tour", "/tours/ubud-atv-rafting-tour", "/#customizedtour"]) assert.ok(text.includes(`(${path})`), path);
+  assert.doesNotMatch(text, /\b(tour|our)\b[^.]*\b(visits?|stops? at|includes?) Tegallalang/i, "Shalom tours list \"Ubud rice terraces\", not Tegallalang");
+  assert.doesNotMatch(text, /\b\d{1,2}[:.]\d{2}\b/, "no times");
+  assert.notEqual(post.image.src, blogPosts["bali-itinerary"].image.src, "each guide card on /blog has its own photo");
+});
+

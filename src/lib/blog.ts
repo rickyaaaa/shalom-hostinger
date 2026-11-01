@@ -34,7 +34,7 @@ export const blogPosts = {
     metaDescription: "A 7-day Bali itinerary for first-timers: Uluwatu and Jimbaran, Ubud’s rice terraces and West Bali’s temples, with 5 and 10 day versions and travel tips.",
     heading: "7-Day Bali Itinerary for First-Timers: Uluwatu, Ubud & West Bali",
     excerpt: "Three day trips with a private driver, one in each part of the island, plus easy days in between. With 5 and 10 day versions.",
-    image: { src: "/images/ubud.webp", width: 720, height: 480, alt: "Green rice terraces in Ubud" },
+    image: { src: "/images/west-bali.jpeg", width: 720, height: 405, alt: "A Balinese temple beside the water" },
     intro: [
       "Seven days is enough to see Bali’s three very different sides without rushing: the clifftop temple and beaches of the south, the rice terraces and temples around Ubud, and the lake and sea temples of West and North Bali. This itinerary puts the long drives into three full day trips with a private driver and leaves the other days for the beach, the pool and the places you find on your own.",
       "Each day trip below is one of our private 10-hour tours, so you can book it as it is, swap it for another route in the same area, or [plan your own day](/#customizedtour).",
@@ -128,6 +128,130 @@ export const blogPosts = {
       { question: "How long is a day tour with a private driver?", answer: "Our private tours are 10 hours, counted from your agreed pickup time. If the day goes over 10 hours, an extra charge applies." },
       { question: "Can I plan my own day instead of a set tour?", answer: "Yes. Choose a customized itinerary and tell us the places you would like to visit. On our set tours, the order of the stops is agreed with our team when you reconfirm on WhatsApp." },
       { question: "Can I see the Kecak dance and have dinner in Jimbaran on the same evening?", answer: "No. The Kecak performance at Uluwatu and the Jimbaran sunset dinner take place at the same time of day, so choose one when you reconfirm your order." },
+    ],
+  },
+  // Brief: seo-reports/brief-things-to-do-in-ubud.md. Shalom facts come from the Ubud tour pages (their stops say
+  // "Ubud rice terraces", so no tour is said to visit Tegallalang); places are described from public facts only.
+  "things-to-do-in-ubud": {
+    published: true,
+    date: "2026-11-01",
+    title: "20 Best Things to Do in Ubud, Bali",
+    metaDescription: "20 things to do in Ubud, Bali: the Monkey Forest, Tirta Empul, Tegallalang rice terraces, the Campuhan Ridge Walk, art, rafting and Ubud in one day.",
+    heading: "20 Things to Do in Ubud: Temples, Rice Terraces, Art & Adventure",
+    excerpt: "Temples, rice terraces, waterfalls, art and adventure in and around Ubud, with a plan for seeing the highlights in one day.",
+    image: { src: "/images/ubud.webp", width: 720, height: 480, alt: "Green rice terraces in Ubud" },
+    intro: [
+      "Ubud is the green, cultural heart of Bali. Rice terraces run down the valleys around town, temples sit beside spring-fed pools, and the evenings belong to dance performances, galleries and long dinners. These are the things most worth your time in and around Ubud, grouped by what you enjoy, with a plan for seeing the highlights in one day.",
+      "Many of these places are outside the town centre, so they are easiest to reach with a car and driver. Where one of our [private Ubud tours](/ubud) covers a stop, we link to it.",
+    ],
+    sections: [
+      { id: "what-is-ubud-known-for", heading: "What is Ubud known for?", blocks: [
+        "Ubud is known for its rice terraces, temples, traditional arts and the Sacred Monkey Forest. It sits in the hills of central Bali, away from the beaches, and is the island’s centre for painting, dance, crafts, yoga and wellness. Most visitors come for green landscapes and Balinese culture rather than nightlife.",
+      ] },
+      { id: "temples", heading: "Temples and sacred sites", blocks: [
+        "Ubud’s temples are working places of worship. Cover your shoulders and knees, and wear or borrow a sarong where one is required.",
+      ] },
+      { id: "monkey-forest", sub: true, heading: "1. Walk through the Sacred Monkey Forest", blocks: [
+        "On the south side of Ubud town, paths wind through a forest of tall trees, mossy statues and old temples, home to hundreds of long-tailed macaques. Keep food out of sight and sunglasses, hats and loose items in your bag, and do not touch or feed the monkeys. Our [Ubud Monkey Forest & Tirta Empul Tour](/tours/ubud-monkey-forest-tirta-empul-tour) starts the day here.",
+      ] },
+      { id: "tirta-empul", sub: true, heading: "2. Join the water purification at Tirta Empul", blocks: [
+        "North-east of Ubud, Tirta Empul is a temple built around a holy spring. Balinese come to bathe under its row of water spouts to purify themselves, and visitors can join in with respect, wearing a sarong and following the ritual. Bring a change of clothes if you plan to go in the water.",
+      ] },
+      { id: "gunung-kawi", sub: true, heading: "3. See the cliff shrines of Gunung Kawi", blocks: [
+        "Not far from Tirta Empul, a long flight of steps leads down to a river valley where ancient shrines are carved into the rock face. It is quieter than the better-known temples and pairs well with a visit to Tirta Empul.",
+      ] },
+      { id: "goa-gajah", sub: true, heading: "4. Explore Goa Gajah, the Elephant Cave", blocks: [
+        "South-east of the town centre, this centuries-old sanctuary has a cave entrance carved with a demon’s face, old bathing pools and a path down into a green ravine.",
+      ] },
+      { id: "saraswati-temple", sub: true, heading: "5. Visit the lotus pond at Saraswati Temple", blocks: [
+        "In the middle of town, a path between lotus ponds leads to a temple dedicated to Saraswati, the goddess of learning and the arts. It is an easy stop on a walk through central Ubud.",
+      ] },
+      { id: "ubud-palace", sub: true, heading: "6. Step into Ubud Palace", blocks: [
+        "Puri Saren Agung, the home of Ubud’s royal family, sits at the main crossroads of town. Its carved gates and courtyards are open to visitors, and in the evenings it is one of the places where traditional dance is performed.",
+      ] },
+      { id: "nature", heading: "Rice terraces, walks and waterfalls", blocks: [
+        "The landscapes around Ubud are at their best early in the morning, before the heat and the crowds.",
+      ] },
+      { id: "tegallalang", sub: true, heading: "7. Walk the Tegallalang Rice Terraces", blocks: [
+        "North of Ubud, Tegallalang is one of the most photographed rice terraces in Bali, with green steps falling into a palm-filled valley, cafés along the top and swings over the edge. Go early for softer light and fewer people. Rice terraces around Ubud are a stop on several of our tours, including the [Ubud Rice Terraces & Waterfall Tour](/tours/ubud-rice-terrace-waterfall-tour).",
+      ] },
+      { id: "campuhan-ridge", sub: true, heading: "8. Take the Campuhan Ridge Walk", blocks: [
+        "This paved path follows a grassy ridge between two river valleys, starting near Gunung Lebah Temple on the edge of town. It is free and easy to walk, but there is little shade, so go at sunrise or in the late afternoon.",
+      ] },
+      { id: "waterfalls", sub: true, heading: "9. Cool off at a waterfall", blocks: [
+        "Several waterfalls are a short drive from Ubud, among them Tegenungan, Tibumana and Kanto Lampo, where the water tumbles over stepped rocks. Paths can be steep and slippery, so wear shoes with grip. Kanto Lampo is part of our [Ubud Rice Terraces & Waterfall Tour](/tours/ubud-rice-terrace-waterfall-tour).",
+      ] },
+      { id: "arts", heading: "Art, crafts and culture", blocks: [
+        "Ubud has been home to painters, carvers and dancers for generations, and you can watch, learn or take a piece home.",
+      ] },
+      { id: "art-market", sub: true, heading: "10. Browse the Ubud Art Market", blocks: [
+        "Across the road from Ubud Palace, stalls sell sarongs, woven baskets, wood carvings and paintings. Bargaining is expected, so smile, agree on a price you are happy with and enjoy it.",
+      ] },
+      { id: "batik-silver-painting", sub: true, heading: "11. Try batik, silver and Balinese painting", blocks: [
+        "Watch how batik patterns are drawn in wax and dyed into the cloth, try silversmithing in a hands-on class, and see the painting styles Ubud is known for in a gallery. Our [Ubud Art Tour: Batik, Silver & Painting](/tours/ubud-art-batik-silver-class-tour) visits all three; the silver class is paid separately.",
+      ] },
+      { id: "dance", sub: true, heading: "12. Watch a traditional dance performance", blocks: [
+        "Legong, Barong and Kecak dances are performed in the evenings at Ubud Palace and at temples around town, with gamelan music and elaborate costumes. Tickets are usually sold at the door or by sellers on the street during the day.",
+      ] },
+      { id: "cooking-class", sub: true, heading: "13. Learn to cook Balinese food", blocks: [
+        "A cooking class is one of the most popular things to do in Ubud. Many begin with a visit to a local market for spices and vegetables, then teach dishes such as satay, curries and sambal.",
+      ] },
+      { id: "museums", sub: true, heading: "14. Visit an art museum", blocks: [
+        "Ubud’s art museums, including Museum Puri Lukisan in the centre of town, show how Balinese painting has changed over the past century, from traditional stories to modern styles. A good choice for a rainy afternoon.",
+      ] },
+      { id: "adventure", heading: "Adventure around Ubud", blocks: [
+        "The rivers and countryside around Ubud make it the base for Bali’s best-known outdoor activities.",
+      ] },
+      { id: "atv", sub: true, heading: "15. Ride an ATV through the countryside", blocks: [
+        "Quad bike rides follow muddy trails through villages, rice fields and jungle. The [Ubud ATV, Rice Terrace & Waterfall Tour](/tours/ubud-atv-rice-terrace-waterfall-tour) combines a ride with rice terraces and a waterfall; the ATV ride is paid separately.",
+      ] },
+      { id: "rafting", sub: true, heading: "16. Go white water rafting", blocks: [
+        "Rafting near Ubud, most often on the Ayung River, takes you down a green river valley past rice terraces and waterfalls. On the [Ubud ATV & Rafting Day Tour](/tours/ubud-atv-rafting-tour) you can do both in one day; rafting is paid separately to the operator.",
+      ] },
+      { id: "kids", heading: "Things to do in Ubud with kids", blocks: [
+        "Ubud is easy with children if you plan around short walks and animal encounters.",
+      ] },
+      { id: "safari-park", sub: true, heading: "17. Spend a day at Bali Safari & Marine Park", blocks: [
+        "South-east of Ubud, this large park has animals from Indonesia, India and Africa. Our [Bali Safari & Marine Park Private Tour](/tours/bali-safari-marine-park-tour) takes your family there with your own driver, so you can explore at your children’s pace.",
+      ] },
+      { id: "bird-park", sub: true, heading: "18. Meet tropical birds and reptiles", blocks: [
+        "Bali Bird Park and Bali Reptile Park are a good outing for younger children, and the [Bali Bird Park & Reptile Park Kids Tour](/tours/bali-bird-park-reptile-park-kids-tour) adds Bali Mini Zoo to the same day.",
+      ] },
+      { id: "slow-down", heading: "Slow down in Ubud", blocks: [
+        "Leave room in your plans for the quieter side of Ubud.",
+      ] },
+      { id: "coffee", sub: true, heading: "19. Taste coffee at a coffee plantation", blocks: [
+        "At the coffee plantations around Ubud you can see how Bali coffee is grown and roasted, including the island’s well-known Luwak coffee, and taste coffees and teas with a view of the jungle. A plantation stop is part of our [Ubud Rice Terraces & Waterfall Tour](/tours/ubud-rice-terrace-waterfall-tour) and [Ubud Monkey Forest & Tirta Empul Tour](/tours/ubud-monkey-forest-tirta-empul-tour).",
+      ] },
+      { id: "yoga-spa", sub: true, heading: "20. Book a yoga class or a Balinese massage", blocks: [
+        "Ubud is known for yoga and wellness, and drop-in classes, spas and Balinese massage are easy to find across town. An evening massage is a good way to end a long day of walking.",
+      ] },
+      { id: "one-day", heading: "How to see Ubud in one day", blocks: [
+        "Short on time? With a private driver you can see Ubud’s highlights in one day. Start early with the rice terraces, stop at a coffee plantation, bathe or watch the ritual at Tirta Empul, and finish at a waterfall. That is the plan of our [Ubud Rice Terraces & Waterfall Tour](/tours/ubud-rice-terrace-waterfall-tour). Prefer the monkeys? The [Ubud Monkey Forest & Tirta Empul Tour](/tours/ubud-monkey-forest-tirta-empul-tour) swaps the waterfall for the Sacred Monkey Forest.",
+        "With two days, give one to the landscapes and temples and the other to art, adventure or the kids’ parks. Planning a whole week? Our [7-day Bali itinerary](/blog/bali-itinerary) shows how Ubud fits with Uluwatu and West Bali.",
+        { tours: ["ubud-rice-terrace-waterfall-tour", "ubud-monkey-forest-tirta-empul-tour"] },
+      ] },
+      { id: "getting-around", heading: "How to get to Ubud and get around", blocks: [
+        "Ubud is inland, north of the beach areas in the south. The town centre is walkable, though the pavements are narrow and the main roads are busy, while the rice terraces, temples and waterfalls are spread through the surrounding countryside and need a car.",
+        "You do not need to stay in Ubud to see it. Every Shalom tour includes a private car and your own driver for 10 hours, with fuel and parking included, and your driver collects you at your hotel wherever you stay. Entrance tickets, activities and lunch are not included. To choose your own stops, [customize your itinerary](/#customizedtour).",
+      ] },
+      { id: "tips", heading: "Tips for visiting Ubud", blocks: [
+        { list: [
+          "Start early: the rice terraces, Tirta Empul and the Monkey Forest are calmer in the morning.",
+          "Cover your shoulders and knees at temples and carry a sarong.",
+          "Keep food, sunglasses and loose items in your bag around monkeys. If a monkey scratches or bites you, see a doctor the same day.",
+          "Wear shoes with grip for waterfalls and temple steps.",
+          "Carry cash in Indonesian rupiah for entrance tickets, markets and small warungs.",
+          "Bring a light rain jacket in the wet season, roughly November to March.",
+        ] },
+      ] },
+    ],
+    faq: [
+      { question: "Is Ubud worth visiting?", answer: "Yes. Ubud puts rice terraces, temples and traditional arts close together, and it feels very different from the beach areas in the south." },
+      { question: "How many days do you need in Ubud?", answer: "One full day covers the main highlights with a driver. Two or three days let you add art, adventure or a slower day of walks, yoga and good food." },
+      { question: "Can I visit Ubud as a day trip from the south of Bali?", answer: "Yes. Your driver collects you at your hotel in areas such as Seminyak, Kuta, Jimbaran or Nusa Dua, and our private tours last 10 hours from the agreed pickup time." },
+      { question: "Is the Sacred Monkey Forest safe?", answer: "Yes, if you follow the rules: keep food and loose items out of sight, do not touch or feed the monkeys, and stay calm if one comes close. If a monkey scratches or bites you, see a doctor the same day." },
+      { question: "What should I wear to temples in Ubud?", answer: "Cover your shoulders and knees, and wear a sarong where one is required. Bring a change of clothes if you want to join the purification at Tirta Empul." },
     ],
   },
 } as const satisfies Record<string, BlogPost>;
