@@ -66,11 +66,14 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .button-gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 .button-gold:hover { background: transparent; border-color: var(--gold); color: var(--gold); }
 .site-header { background: var(--blue-light); position: relative; z-index: 30; }
-.header-inner { max-width: 1280px; margin: auto; min-height: 168px; padding: 46px 24px 24px; display: flex; align-items: center; gap: 32px; }
-.brand { flex: 0 0 226px; }
-.brand img { width: 226px; height: auto; }
+/* Desktop header: logo, the whole menu and the buttons on one line (client). Below 1440px the menu takes its own
+   single line under the logo and buttons (see the media query further down). The menu may still wrap rather than
+   push the buttons off screen, e.g. with the currency selector or a long account label. */
+.header-inner { max-width: 1440px; margin: auto; min-height: 168px; padding: 46px 24px 24px; display: flex; align-items: center; gap: 20px; }
+.brand { flex: 0 0 200px; }
+.brand img { width: 200px; height: auto; }
 .primary-nav { display: flex; flex: 1; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: 0; row-gap: 0; }
-.primary-nav > a, .itinerary-nav > button { padding: 10px 20px; min-height: 45px; display: inline-flex; align-items: center; gap: 12px; font-size: 16px; white-space: nowrap; text-decoration: none; border: 0; border-bottom: 2px solid transparent; background: transparent; font-weight: 400; }
+.primary-nav > a, .itinerary-nav > button { padding: 10px 12px; min-height: 45px; display: inline-flex; align-items: center; gap: 12px; font-size: 15px; white-space: nowrap; text-decoration: none; border: 0; border-bottom: 2px solid transparent; background: transparent; font-weight: 400; }
 .primary-nav > a[aria-current="page"], .itinerary-nav > .nav-current { border-bottom-color: var(--ink); }
 .primary-nav a:hover, .itinerary-nav > button:hover { color: var(--navy); }
 .itinerary-nav { position: relative; }
@@ -78,7 +81,7 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .itinerary-dropdown { list-style: none; margin: 0; padding: 10px 0; position: absolute; top: 100%; left: 0; width: 210px; background: white; box-shadow: 0 10px 24px #0d315b14; }
 .itinerary-dropdown a { display: block; padding: 10px 20px; text-decoration: none; }
 .itinerary-dropdown a:hover, .itinerary-dropdown a[aria-current="page"] { background: #f1f5f7; }
-.header-actions { display: flex; gap: 24px; align-items: center; flex-shrink: 0; }
+.header-actions { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
 .header-actions .button { font-weight: 500; }
 .mobile-account, .menu-toggle { display: none; }
 /* Home hero: content sits bottom-left over the darkest part of a navy gradient; the temple stays clear to its right,
@@ -262,10 +265,12 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .message-page h1 { font-size: 40px; line-height: 50px; margin-bottom: 16px; }
 .message-page p { margin-bottom: 24px; }
 
-@media (min-width: 1025px) and (max-width: 1300px) {
-  .header-inner { gap: 32px; }
-  .primary-nav > a, .itinerary-nav > button { padding-inline: 16px; }
-  .header-actions { gap: 20px; }
+@media (min-width: 1025px) and (max-width: 1439px) {
+  .header-inner { flex-wrap: wrap; justify-content: space-between; row-gap: 14px; padding-bottom: 14px; }
+  .brand { flex-basis: 226px; }
+  .brand img { width: 226px; }
+  .primary-nav { order: 3; flex: 1 0 100%; }
+  .primary-nav > a, .itinerary-nav > button { padding-inline: 14px; font-size: 16px; }
 }
 @media (max-width: 1024px) {
   .site-header { position: sticky; top: 0; background: white; }
