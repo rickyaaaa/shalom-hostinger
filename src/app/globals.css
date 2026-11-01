@@ -741,3 +741,12 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 .blog-figure figcaption { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .blog-figure figcaption > span:first-child:not(.blog-credit) { color: var(--ink); }
 .blog-credit a { color: inherit; text-underline-offset: 2px; }
+/* Hire a Driver in Bali (/bali-driver-hire): the area hero and guide sections, with the Home driver facts. */
+.driver-hire-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }
+.driver-hire-intro { padding-top: 104px; }
+.driver-hire-ways { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.driver-hire-areas .area-more-list a { background: white; }
+.area-guide-note a { color: var(--navy); font-weight: 600; text-underline-offset: 3px; }
+@media (max-width: 1024px) { .driver-hire-ways { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 767px) { .driver-hire-intro { padding-top: 64px; } }
+
