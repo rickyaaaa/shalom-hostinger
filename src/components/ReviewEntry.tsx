@@ -1,9 +1,15 @@
 import type { Review } from "@/lib/types";
-import { displayDate } from "@/lib/format";
 import { Icon } from "./Icon";
 
+/** "10 September 2026" for a YYYY-MM-DD calendar date; null when there is no usable date. */
+export function bookingDateLabel(value: string | null) {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(date.valueOf()) || date.toISOString().slice(0, 10) !== value ? null : new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(date);
+}
+
 export function ReviewEntry({ review, showTour = false }: { review: Review; showTour?: boolean }) {
-  const bookingDate = displayDate(review.booking_date);
+  const bookingDate = bookingDateLabel(review.booking_date);
   return <article className="review-entry">
     <div className="individual-rating" aria-label={`Overall rating ${review.score.toFixed(1)} out of 10`}>
       <span className="review-stars" aria-hidden="true"><span className="review-stars-base">{[0, 1, 2, 3, 4].map(i => <Icon key={i} name="star" />)}</span><span className="review-stars-fill" style={{ width: `${Math.max(0, Math.min(100, review.score * 10))}%` }}><span>{[0, 1, 2, 3, 4].map(i => <Icon key={i} name="star" />)}</span></span></span>
@@ -11,8 +17,7 @@ export function ReviewEntry({ review, showTour = false }: { review: Review; show
     </div>
     <blockquote className="review-experience">{review.experience}</blockquote>
     <div className="review-guest"><h3>{review.name}</h3>{review.country && <p>{review.country}</p>}</div>
-    <p className="review-booking-date">{bookingDate ? `Booking date: ${bookingDate}` : "Booking date unavailable"}</p>
-    {displayDate(review.published_at) && <p className="review-booking-date">Reviewed <time dateTime={review.published_at}>{displayDate(review.published_at)}</time></p>}
+    {bookingDate && <p className="review-booking-date">Booking date: <time dateTime={review.booking_date!}>{bookingDate}</time></p>}
     {showTour && review.area && <p className="review-area">{review.area}</p>}
     <dl className="review-dimensions">
       <div><dt>Driving Skill</dt><dd>{review.ratings.driving_skill}/10</dd></div>
