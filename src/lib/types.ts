@@ -73,7 +73,11 @@ export const reviewSchema = z.object({
   ratings: z.object({ driving_skill: z.number(), service: z.number(), car: z.number() }),
   price: z.enum(["worth_it", "not_worth_it"]).nullable(),
   recommend: z.enum(["yes", "no"]).nullable(),
+  // 1.34: the date public cards show (admin-verified, else the customer's previous-tour date, else the completed order's
+  // travel date) and its source. Older plugins send only a verified date, or null, and no source.
   booking_date: z.string().nullable(),
+  booking_date_source: z.enum(["verified", "previous_tour", "order"]).nullable().optional(),
+  // Kept for ordering only; public cards never show when a review was written.
   published_at: z.string(),
 });
 
