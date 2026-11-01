@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Header } from "@/components/Header";
+import { blogLive } from "@/lib/blog";
 import { Footer } from "@/components/Footer";
 import { siteLinks } from "@/lib/site";
 import { wordpressConfig } from "@/lib/config";
@@ -35,7 +36,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const currencies = await getCurrencies().catch(() => null);
   return <html lang="en" className={raleway.variable}><body>
     <a className="skip-link" href="#main-content">Skip to content</a>
-    <CustomerSession><CurrencyProvider initial={currencies}><Header links={siteLinks()} />
+    <CustomerSession><CurrencyProvider initial={currencies}><Header links={siteLinks()} blog={blogLive()} />
     {localBackend && <p className="local-data-notice" role="status">Local WordPress test data — not staging.</p>}
     <main id="main-content">{children}</main>
     <Footer /></CurrencyProvider>

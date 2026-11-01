@@ -122,3 +122,11 @@ test("Things to do in Ubud: numbered list matches the title, links Ubud tours an
   assert.notEqual(post.image.src, blogPosts["bali-itinerary"].image.src, "each guide card on /blog has its own photo");
 });
 
+
+test("The main menu links to /blog once a guide is published, without shipping the articles to the browser", () => {
+  const menu = src("components/MobileMenu.tsx");
+  assert.match(menu, /\{blog&&<Link href="\/blog" aria-current=\{pathname==="\/blog"\|\|pathname\.startsWith\("\/blog\/"\)\?"page":undefined\} onClick=\{close\}>Blog<\/Link>\}/);
+  assert.ok(menu.indexOf(">Blog<") > menu.indexOf("anchors.map") && menu.indexOf(">Blog<") < menu.indexOf("homeAnchors.map"), "Blog sits before About and Contact");
+  assert.doesNotMatch(menu + src("components/Header.tsx"), /@\/lib\/blog/, "client components never import the article copy");
+  assert.match(src("app/layout.tsx"), /<Header links=\{siteLinks\(\)\} blog=\{blogLive\(\)\} \/>/);
+});

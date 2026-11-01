@@ -11,7 +11,7 @@ import { MobileMenu } from "./MobileMenu";
 import { CurrencySelector } from "./CurrencySelector";
 import { stickyHeaderHeight } from "@/lib/anchor";
 
-export function Header({ links: _links }: { links: SiteLinks }) {
+export function Header({ links: _links, blog }: { links: SiteLinks; blog: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [itinerary, setItinerary] = useState(false);
@@ -54,7 +54,7 @@ export function Header({ links: _links }: { links: SiteLinks }) {
       <Link href="/" className="brand" aria-label="Shalom Bali Tour home" onClick={close}>
         <Image src="/images/shalom-logo.webp" alt="Shalom Bali Tour" width={768} height={256} loading="eager" fetchPriority="low" sizes="(max-width: 390px) 210px, (max-width: 1024px) 260px, (max-width: 1439px) 226px, 200px" />
       </Link>
-      <MobileMenu open={open} itinerary={itinerary} setItinerary={setItinerary} pathname={pathname} close={close} toggleRef={itineraryToggle}/>
+      <MobileMenu open={open} itinerary={itinerary} setItinerary={setItinerary} pathname={pathname} close={close} toggleRef={itineraryToggle} blog={blog}/>
       <div className="header-actions">
         <CurrencySelector id="currency-header" variant="header" />
         <AccountHeaderAction/>
