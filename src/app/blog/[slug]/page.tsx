@@ -9,6 +9,7 @@ import { publicMetadata } from "@/lib/seo";
 import { serverEnv } from "@/lib/server-env";
 import { tourPages } from "@/lib/tour-pages";
 import { Icon } from "@/components/Icon";
+import { RecentGuides } from "@/components/RecentGuides";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
@@ -139,5 +140,6 @@ export default async function BlogPostPage({ params }: Props) {
       <p className="section-label">PRIVATE DAY TOURS</p><h2 id="blog-areas-title">Plan Your Days by Area</h2>
       <ul className="area-more-list">{areaLinks.map(item => <li key={item.href}><Link href={item.href}><h3>{item.title}</h3><p>{item.text}</p><span className="area-panel-cta" aria-hidden="true">Explore<Icon name="arrow" /></span></Link></li>)}</ul>
     </div></section>
+    <RecentGuides exclude={slug} heading="More Travel Guides" />
   </>;
 }

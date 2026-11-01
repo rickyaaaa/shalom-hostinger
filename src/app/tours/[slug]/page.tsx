@@ -14,6 +14,7 @@ import { ReviewScore } from "@/components/ReviewScore";
 import { ServiceUnavailable } from "@/components/ServiceUnavailable";
 import { TourReviews } from "@/components/TourReviews";
 import { westBaliCardPresentation } from "@/components/westBaliPresentation";
+import { RecentGuides } from "@/components/RecentGuides";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
@@ -184,5 +185,6 @@ export default async function TourDetailPage({ params }: Props) {
       <p className="section-label">REVIEWS</p><h2 id="tour-reviews-title">Guest Reviews</h2>
       <TourReviews tourId={tour.id} initial={reviews} />
     </div></section>
+    <RecentGuides/>
   </>;
 }

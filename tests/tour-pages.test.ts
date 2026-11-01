@@ -116,7 +116,7 @@ test("Detail route reads WordPress live and reuses the existing booking and revi
   assert.match(route, /"@type": "BreadcrumbList"/);
   assert.match(route, /JSON\.stringify\(breadcrumbLd\)\.replace\(\/<\/g, "\\\\u003c"\)/);
   for (const heading of ["Destination Highlights", "Included Facilities", "Why This Tour?", "How Your Day Flows", "Frequently Asked Questions"]) assert.ok(route.includes(`>${heading}</h2>`), heading);
-  assert.match(route, /<section id="tour-reviews"[^>]*>[\s\S]*<TourReviews tourId=\{tour\.id\} initial=\{reviews\} \/>\s*<\/div><\/section>\s*<\/>;/, "reviews are the last section");
+  assert.match(route, /<section id="tour-reviews"[^>]*>[\s\S]*<TourReviews tourId=\{tour\.id\} initial=\{reviews\} \/>\s*<\/div><\/section>\s*<RecentGuides\/>\s*<\/>;/, "reviews are the last tour section, followed only by the site-wide travel guides");
   assert.match(route, /money\(current, currency\)/);
   assert.match(route, /JSON\.stringify\(jsonLd\)\.replace\(\/<\/g, "\\\\u003c"\)/);
   assert.match(route, /const jsonLd = page && \{/, "structured data only on written pages");
