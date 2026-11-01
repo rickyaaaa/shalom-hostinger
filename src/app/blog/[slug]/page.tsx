@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { blogLive, blogPostBySlug, inlineParts, plainText, type BlogBlock, type BlogSection } from "@/lib/blog";
+import { blogImages, blogLive, blogPostBySlug, inlineParts, plainText, type BlogBlock, type BlogImage, type BlogImageKey, type BlogSection } from "@/lib/blog";
 import { displayDate } from "@/lib/format";
 import { areas } from "@/lib/marketing";
 import { publicMetadata } from "@/lib/seo";
@@ -33,9 +33,24 @@ function Paragraph({ text }: { text: string }) {
   return <p className="tour-detail-text">{inlineParts(text).map((part, i) => "href" in part ? <Link key={i} href={part.href}>{part.text}</Link> : part.text)}</p>;
 }
 
+/** A guide photo; Commons photos carry the author, licence and source their licence asks for. */
+function Figure({ image, caption }: { image: BlogImageKey; caption?: string }) {
+  const photo: BlogImage = blogImages[image];
+  return <figure className="blog-figure">
+    <Image src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} quality={75} sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1024px) calc(100vw - 48px), 760px" />
+    <figcaption>
+      {caption && <span>{caption} </span>}
+      <span className="blog-credit">{photo.credit
+        ? <>Photo: <a href={photo.credit.source} target="_blank" rel="noopener nofollow">{photo.credit.author}</a>, <a href={photo.credit.licenseUrl} target="_blank" rel="license noopener nofollow">{photo.credit.license}</a>, via Wikimedia Commons</>
+        : "Photo: Shalom Bali Tour"}</span>
+    </figcaption>
+  </figure>;
+}
+
 function Block({ block }: { block: BlogBlock }) {
   if (typeof block === "string") return <Paragraph text={block} />;
   if ("list" in block) return <ul className="tour-detail-highlights blog-list">{block.list.map(item => <li key={item}>{item}</li>)}</ul>;
+  if ("image" in block) return <Figure image={block.image} caption={block.caption} />;
   return <ul className="blog-tours">{block.tours.map(slug => {
     const tour = tourPages[slug];
     return <li key={slug}><Link href={`/tours/${slug}`}><span className="blog-tour-area">{areas[tour.area].name}</span><span className="blog-tour-title">{tour.title}</span><span className="blog-tour-cta" aria-hidden="true">View tour<Icon name="arrow" /></span></Link></li>;
@@ -76,7 +91,7 @@ export default async function BlogPostPage({ params }: Props) {
     description: post.metaDescription,
     url,
     mainEntityOfPage: url,
-    image: `${site}${post.image.src}`,
+    image: [post.image.src, ...post.sections.flatMap(s => s.blocks.flatMap(b => typeof b === "object" && "image" in b ? [blogImages[b.image].src] : []))].map(src => `${site}${src}`),
     datePublished: post.date,
     dateModified: updated,
     inLanguage: "en",

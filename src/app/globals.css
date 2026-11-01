@@ -735,3 +735,9 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 .recent-guides-heading { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 40px; }
 .recent-guides-heading h2 { margin-bottom: 0; }
 @media (max-width: 767px) { .recent-guides-heading { margin-bottom: 28px; } }
+/* Photos inside the guides, with the credit their licence asks for. */
+.blog-figure { max-width: 75ch; margin: 24px 0 28px; }
+.blog-figure img { display: block; width: 100%; height: auto; border-radius: 12px; background: var(--blue-light); }
+.blog-figure figcaption { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.blog-figure figcaption > span:first-child:not(.blog-credit) { color: var(--ink); }
+.blog-credit a { color: inherit; text-underline-offset: 2px; }

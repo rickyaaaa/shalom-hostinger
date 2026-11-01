@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { blogLive, blogPostBySlug, blogPosts, indexableBlogPaths, inlineParts, plainText, publishedPosts, type BlogPost } from "../src/lib/blog";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { blogImages, blogLive, blogPostBySlug, blogPosts, indexableBlogPaths, inlineParts, plainText, publishedPosts, type BlogPost } from "../src/lib/blog";
 import { tourPageBySlug } from "../src/lib/tour-pages";
 import sitemap from "../src/app/sitemap";
 
@@ -156,3 +156,27 @@ test("Uluwatu Temple guide: answers why it is famous first, links the Uluwatu to
   assert.match(text, /Kecak takes the place of the Jimbaran sunset dinner/, "the approved Kecak or dinner rule");
   assert.equal(new Set(Object.values(blogPosts).map(p => p.image.src)).size, Object.keys(blogPosts).length, "every guide has its own photo");
 });
+
+test("Guide photos: every file is registered and used, and every Commons photo is free-licensed with its credit", () => {
+  const images = Object.entries(blogImages) as [string, (typeof blogImages)[keyof typeof blogImages]][];
+  const files = readdirSync(new URL("../public/images/blog/", import.meta.url)).filter(file => file.endsWith(".webp"));
+  assert.deepEqual(files.map(file => file.replace(/\.webp$/, "")).sort(), images.map(([key]) => key).sort(), "public/images/blog holds exactly the registered photos");
+  const used = posts.flatMap(([, post]) => post.sections.flatMap(section => section.blocks.flatMap(block => typeof block === "object" && "image" in block ? [block.image] : [])));
+  for (const [key, image] of images) {
+    assert.ok(used.includes(key as never), `${key} is used in a guide`);
+    assert.equal(image.src, `/images/blog/${key}.webp`);
+    assert.ok(image.alt.length >= 20 && !/^(image|photo|picture) of/i.test(image.alt), `${key}: descriptive alt text`);
+    const note = JSON.parse(readFileSync(new URL(`../public/images/blog/${key}.webp.json`, import.meta.url), "utf8"));
+    assert.equal(note.width, image.width, key); assert.equal(note.height, image.height, key);
+    if (image.credit === null) { assert.equal(note.owner, "Shalom Bali Tour", `${key}: only the client's own photos go uncredited`); assert.match(note.source, /^https:\/\/cms\.shalombalitour\.com\/wp-content\/uploads\//); continue; }
+    assert.match(image.credit.license, /^(CC0|CC BY(-SA)? [234]\.0)$/, `${key}: a free licence that allows commercial use`);
+    assert.match(image.credit.licenseUrl, /^https:\/\/creativecommons\.org\/(licenses\/by(-sa)?\/[234]\.0|publicdomain\/zero\/1\.0)\/$/, key);
+    assert.match(image.credit.source, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/, key);
+    assert.ok(image.credit.author.length > 1, key);
+    assert.equal(note.license, image.credit.license, `${key}: the provenance note matches`); assert.equal(note.source, image.credit.source, key);
+  }
+  const route = src("app/blog/[slug]/page.tsx");
+  assert.match(route, /Photo: <a href=\{photo\.credit\.source\} target="_blank" rel="noopener nofollow">\{photo\.credit\.author\}<\/a>, <a href=\{photo\.credit\.licenseUrl\} target="_blank" rel="license noopener nofollow">\{photo\.credit\.license\}<\/a>, via Wikimedia Commons/, "credit: author, licence and source");
+  for (const [slug, post] of posts) assert.ok(post.sections.some(section => section.blocks.some(block => typeof block === "object" && "image" in block)), `${slug} has photos`);
+});
+

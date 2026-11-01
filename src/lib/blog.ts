@@ -6,11 +6,12 @@ import { tourPages } from "./tour-pages";
  * published: true lists the article on /blog, puts it in the sitemap and lets search engines index it; false keeps it
  * reachable by its URL for review, noindex and unlisted. /blog itself only exists once one article is published.
  *
- * A paragraph is a string; [text](/path) inside it is an internal link. { list } is a bullet list and { tours } a row
- * of tour links built from tour-pages.ts.
+ * A paragraph is a string; [text](/path) inside it is an internal link. { list } is a bullet list, { tours } a row
+ * of tour links built from tour-pages.ts and { image } a photo from blogImages, with an optional caption.
  */
 export type TourSlug = keyof typeof tourPages;
-export type BlogBlock = string | { list: readonly string[] } | { tours: readonly TourSlug[] };
+export type BlogImageKey = keyof typeof blogImages;
+export type BlogBlock = string | { list: readonly string[] } | { tours: readonly TourSlug[] } | { image: BlogImageKey; caption?: string };
 export type BlogSection = { id: string; heading: string; sub?: boolean; blocks: readonly BlogBlock[] };
 export type BlogPost = {
   published: boolean;
@@ -22,6 +23,36 @@ export type BlogPost = {
   sections: readonly BlogSection[];
   faq: readonly { question: string; answer: string }[];
 };
+
+/**
+ * Photos inside the guides (public/images/blog, 1200px WebP; each file has a .json note of where it came from).
+ * Wikimedia Commons photos are free-licensed and need their credit shown: author, licence and source, rendered under
+ * the photo. credit: null marks the client's own photos.
+ */
+export type BlogImage = {
+  src: string; width: number; height: number; alt: string;
+  credit: { author: string; license: string; licenseUrl: string; source: string } | null;
+};
+export const blogImages = {
+  "bali-rice-terrace": { src: "/images/blog/bali-rice-terrace.webp", width: 1134, height: 759, alt: "Rice terraces stepping down a palm-covered hillside in Bali", credit: {"author": "William Cho", "license": "CC BY-SA 2.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/", "source": "https://commons.wikimedia.org/wiki/File:Bali_%E2%80%93_Rice_terrace_(2687339411).jpg"} },
+  "campuhan-ridge-walk": { src: "/images/blog/campuhan-ridge-walk.webp", width: 1200, height: 899, alt: "Aerial view of the Campuhan Ridge Walk path along a green ridge in Ubud", credit: {"author": "Artem Beliaikin from Moscow, Russia", "license": "CC0", "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/", "source": "https://commons.wikimedia.org/wiki/File:Aerial_picture_of_Campuhan_Ridge_Walk_,_Scenic_Green_Valley_in_Ubud_Bali._Drone_photo._(46112155712).jpg"} },
+  "goa-gajah": { src: "/images/blog/goa-gajah.webp", width: 1200, height: 800, alt: "The carved demon-face entrance of the Goa Gajah cave", credit: {"author": "DerGenaue Allrounder", "license": "CC BY-SA 3.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Goa_Gajah_Front.JPG"} },
+  "jimbaran-sunset-dinner": { src: "/images/blog/jimbaran-sunset-dinner.webp", width: 1200, height: 800, alt: "A dinner table set on the sand of Jimbaran Beach at sunset", credit: {"author": "Guanzhan Chen", "license": "CC BY 3.0", "licenseUrl": "https://creativecommons.org/licenses/by/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Jimbaran_Beach,_Bali-%E5%85%A8%E7%90%83%E5%8D%81%E5%A4%A7%E7%9C%8B%E6%97%A5%E8%90%BD%E6%9C%80%E4%BD%B3%E5%9C%B0_-_panoramio.jpg"} },
+  "kecak-fire": { src: "/images/blog/kecak-fire.webp", width: 1200, height: 800, alt: "The fire scene of a Kecak dance performance at dusk", credit: {"author": "Johannnindito Adisuryo (Yohanes Nindito Adisuryo)", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Burning_fire_in_Ramayana_Kecak_Dance.jpg"} },
+  "legong-ramayana-ubud": { src: "/images/blog/legong-ramayana-ubud.webp", width: 1200, height: 688, alt: "Balinese dancers in gold costumes performing on a stage in Ubud", credit: {"author": "Jakub Hałun", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Balinese_dance_Legong_in_Ubud,_Ramayana_performance,_20220823_1846_0442.jpg"} },
+  "saraswati-temple": { src: "/images/blog/saraswati-temple.webp", width: 1200, height: 802, alt: "The lotus pond in front of Saraswati Temple in Ubud", credit: {"author": "Jakub Hałun", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Pura_Taman_Saraswati,_Ubud,_Bali,_20220823_0848_0265.jpg"} },
+  "tanah-lot": { src: "/images/blog/tanah-lot.webp", width: 1200, height: 801, alt: "Tanah Lot temple on its rock in the sea, with waves around it", credit: {"author": "Jakub Hałun", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Bali_-_Pura_Tanah_Lot,_20220827_1003_1127.jpg"} },
+  "tegallalang-rice-terraces": { src: "/images/blog/tegallalang-rice-terraces.webp", width: 1200, height: 900, alt: "Green rice terraces and palm trees in the Tegallalang valley", credit: {"author": "Pinterpandai", "license": "CC BY-SA 3.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Beautiful_rice_terraces_in_Tagallalang.jpg"} },
+  "tegenungan-waterfall": { src: "/images/blog/tegenungan-waterfall.webp", width: 1200, height: 900, alt: "Tegenungan Waterfall falling into a pool surrounded by jungle", credit: {"author": "John Ellis", "license": "CC BY 3.0", "licenseUrl": "https://creativecommons.org/licenses/by/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Tegenungan_Waterfall_(222403843).jpeg"} },
+  "tirta-empul-spring": { src: "/images/blog/tirta-empul-spring.webp", width: 1200, height: 900, alt: "The clear spring-fed pool at Tirta Empul temple", credit: {"author": "Chainwit.", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Bali_-_Pura_Tirta_Empul_(2025)_-_img_22.jpg"} },
+  "ubud-monkey-forest": { src: "/images/blog/ubud-monkey-forest.webp", width: 1200, height: 801, alt: "A long-tailed macaque sitting on a wooden railing in the Ubud Monkey Forest", credit: {"author": "Jakub Hałun", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Macaca_fascicularis,_Ubud_Monkey_Forest,_Bali,_20220822_1053_0056.jpg"} },
+  "ubud-rafting": { src: "/images/blog/ubud-rafting.webp", width: 800, height: 672, alt: "A raft crew paddling through white water on a jungle river near Ubud", credit: null },
+  "ubud-silver-class": { src: "/images/blog/ubud-silver-class.webp", width: 800, height: 529, alt: "A visitor shaping a silver piece with a local silversmith in Ubud", credit: null },
+  "uluwatu-cliff-path": { src: "/images/blog/uluwatu-cliff-path.webp", width: 1200, height: 797, alt: "A walled clifftop path and viewpoint at Uluwatu Temple above the sea", credit: {"author": "Michelle Maria", "license": "CC BY 3.0", "licenseUrl": "https://creativecommons.org/licenses/by/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Bali,_Indonesia_Uluwatu_Temple_-_panoramio.jpg"} },
+  "uluwatu-cliff-sunset": { src: "/images/blog/uluwatu-cliff-sunset.webp", width: 1200, height: 800, alt: "Limestone sea cliffs at Uluwatu in the late afternoon light", credit: {"author": "Emma THERY", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/", "source": "https://commons.wikimedia.org/wiki/File:Cliff_at_Uluwatu_temple,_Bali.jpg"} },
+  "uluwatu-sunset-silhouette": { src: "/images/blog/uluwatu-sunset-silhouette.webp", width: 1200, height: 800, alt: "The silhouette of Uluwatu Temple against the sunset over the ocean", credit: {"author": "CEphoto, Uwe Aranas", "license": "CC BY-SA 3.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Kuta_Bali_Indonesia_Pura-Luhur-Uluwatu-04.jpg"} },
+  "uluwatu-temple-headland": { src: "/images/blog/uluwatu-temple-headland.webp", width: 1200, height: 800, alt: "Uluwatu Temple on top of a sheer cliff above the Indian Ocean", credit: {"author": "CEphoto, Uwe Aranas", "license": "CC BY-SA 3.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/", "source": "https://commons.wikimedia.org/wiki/File:Kuta_Bali_Indonesia_Pura-Luhur-Uluwatu-03.jpg"} },
+} as const satisfies Record<string, BlogImage>;
 
 // Owner-approved 2026-11-01: Ubud hotel pickup, the 10-day tours are sold, Kecak or Jimbaran dinner (brief:
 // seo-reports/brief-bali-itinerary.md). Tour facts come from the approved tour pages
@@ -64,6 +95,7 @@ export const blogPosts = {
       ] },
       { id: "day-2", sub: true, heading: "Day 2: Uluwatu Temple, the beach and a Jimbaran sunset", blocks: [
         "Spend your first full day on the southern coast. Uluwatu Temple stands on a clifftop above the Indian Ocean, and below the limestone cliffs nearby are beaches such as Pandawa, Tanah Barak and Melasti.",
+        { image: "uluwatu-cliff-sunset", caption: "The sea cliffs at Uluwatu, at the southern tip of Bali." },
         "End the day on Jimbaran Beach, where seafood restaurants set their tables on the sand as the sun goes down. On our [Uluwatu, Beach & Jimbaran Sunset Tour](/tours/uluwatu-beach-jimbaran-tour) you choose the beach and the lunch stop, and the day is planned around arriving in Jimbaran by 17:30.",
         "Would you rather see the Kecak dance at Uluwatu? It is performed at the temple in the evening, so it takes the place of the Jimbaran dinner rather than adding to it. Tell our team which you prefer when you reconfirm your order.",
         { tours: ["uluwatu-beach-jimbaran-tour", "atv-uluwatu-jimbaran-sunset-tour"] },
@@ -73,6 +105,7 @@ export const blogPosts = {
       ] },
       { id: "day-4", sub: true, heading: "Day 4: Ubud rice terraces, Tirta Empul and a waterfall", blocks: [
         "Head inland for the Bali most visitors picture: green rice terraces, a coffee plantation, the spring-fed purification pools of Tirta Empul and Kanto Lampo Waterfall. Our [Ubud Rice Terraces & Waterfall Tour](/tours/ubud-rice-terrace-waterfall-tour) covers all of them in one day with your own driver.",
+        { image: "bali-rice-terrace", caption: "Rice terraces in the hills around Ubud." },
         "Tirta Empul is a working temple, so cover your shoulders and knees. Wear shoes with grip for the waterfall, where the path can be slippery.",
         { tours: ["ubud-rice-terrace-waterfall-tour"] },
       ] },
@@ -82,6 +115,7 @@ export const blogPosts = {
       ] },
       { id: "day-6", sub: true, heading: "Day 6: Ulun Danu Beratan, Taman Ayun and Tanah Lot", blocks: [
         "Spend the last full day in West and North Bali. Ulun Danu Beratan is the temple on the lake in the cool Bedugul highlands, Taman Ayun is the royal temple of the old Mengwi kingdom with its moat and gardens, and Tanah Lot stands on a rock in the sea. Our [Ulun Danu, Taman Ayun & Tanah Lot Tour](/tours/ulun-danu-taman-ayun-tanah-lot-tour) visits all three.",
+        { image: "tanah-lot", caption: "Tanah Lot, the temple on a rock in the sea." },
         "Prefer rice fields to the lake? Swap Ulun Danu for the Jatiluwih rice terraces on the [Jatiluwih, Taman Ayun & Tanah Lot Tour](/tours/jatiluwih-taman-ayun-tanah-lot-tour).",
         { tours: ["ulun-danu-taman-ayun-tanah-lot-tour", "jatiluwih-taman-ayun-tanah-lot-tour"] },
       ] },
@@ -153,18 +187,22 @@ export const blogPosts = {
       ] },
       { id: "monkey-forest", sub: true, heading: "1. Walk through the Sacred Monkey Forest", blocks: [
         "On the south side of Ubud town, paths wind through a forest of tall trees, mossy statues and old temples, home to hundreds of long-tailed macaques. Keep food out of sight and sunglasses, hats and loose items in your bag, and do not touch or feed the monkeys. Our [Ubud Monkey Forest & Tirta Empul Tour](/tours/ubud-monkey-forest-tirta-empul-tour) starts the day here.",
+        { image: "ubud-monkey-forest" },
       ] },
       { id: "tirta-empul", sub: true, heading: "2. Join the water purification at Tirta Empul", blocks: [
         "North-east of Ubud, Tirta Empul is a temple built around a holy spring. Balinese come to bathe under its row of water spouts to purify themselves, and visitors can join in with respect, wearing a sarong and following the ritual. Bring a change of clothes if you plan to go in the water.",
+        { image: "tirta-empul-spring", caption: "The spring that feeds the purification pools at Tirta Empul." },
       ] },
       { id: "gunung-kawi", sub: true, heading: "3. See the cliff shrines of Gunung Kawi", blocks: [
         "Not far from Tirta Empul, a long flight of steps leads down to a river valley where ancient shrines are carved into the rock face. It is quieter than the better-known temples and pairs well with a visit to Tirta Empul.",
       ] },
       { id: "goa-gajah", sub: true, heading: "4. Explore Goa Gajah, the Elephant Cave", blocks: [
         "South-east of the town centre, this centuries-old sanctuary has a cave entrance carved with a demon’s face, old bathing pools and a path down into a green ravine.",
+        { image: "goa-gajah" },
       ] },
       { id: "saraswati-temple", sub: true, heading: "5. Visit the lotus pond at Saraswati Temple", blocks: [
         "In the middle of town, a path between lotus ponds leads to a temple dedicated to Saraswati, the goddess of learning and the arts. It is an easy stop on a walk through central Ubud.",
+        { image: "saraswati-temple" },
       ] },
       { id: "ubud-palace", sub: true, heading: "6. Step into Ubud Palace", blocks: [
         "Puri Saren Agung, the home of Ubud’s royal family, sits at the main crossroads of town. Its carved gates and courtyards are open to visitors, and in the evenings it is one of the places where traditional dance is performed.",
@@ -174,12 +212,15 @@ export const blogPosts = {
       ] },
       { id: "tegallalang", sub: true, heading: "7. Walk the Tegallalang Rice Terraces", blocks: [
         "North of Ubud, Tegallalang is one of the most photographed rice terraces in Bali, with green steps falling into a palm-filled valley, cafés along the top and swings over the edge. Go early for softer light and fewer people. Rice terraces around Ubud are a stop on several of our tours, including the [Ubud Rice Terraces & Waterfall Tour](/tours/ubud-rice-terrace-waterfall-tour).",
+        { image: "tegallalang-rice-terraces" },
       ] },
       { id: "campuhan-ridge", sub: true, heading: "8. Take the Campuhan Ridge Walk", blocks: [
         "This paved path follows a grassy ridge between two river valleys, starting near Gunung Lebah Temple on the edge of town. It is free and easy to walk, but there is little shade, so go at sunrise or in the late afternoon.",
+        { image: "campuhan-ridge-walk", caption: "The Campuhan Ridge Walk from above." },
       ] },
       { id: "waterfalls", sub: true, heading: "9. Cool off at a waterfall", blocks: [
         "Several waterfalls are a short drive from Ubud, among them Tegenungan, Tibumana and Kanto Lampo, where the water tumbles over stepped rocks. Paths can be steep and slippery, so wear shoes with grip. Kanto Lampo is part of our [Ubud Rice Terraces & Waterfall Tour](/tours/ubud-rice-terrace-waterfall-tour).",
+        { image: "tegenungan-waterfall", caption: "Tegenungan Waterfall, south of Ubud." },
       ] },
       { id: "arts", heading: "Art, crafts and culture", blocks: [
         "Ubud has been home to painters, carvers and dancers for generations, and you can watch, learn or take a piece home.",
@@ -189,9 +230,11 @@ export const blogPosts = {
       ] },
       { id: "batik-silver-painting", sub: true, heading: "11. Try batik, silver and Balinese painting", blocks: [
         "Watch how batik patterns are drawn in wax and dyed into the cloth, try silversmithing in a hands-on class, and see the painting styles Ubud is known for in a gallery. Our [Ubud Art Tour: Batik, Silver & Painting](/tours/ubud-art-batik-silver-class-tour) visits all three; the silver class is paid separately.",
+        { image: "ubud-silver-class", caption: "A silver class in Ubud." },
       ] },
       { id: "dance", sub: true, heading: "12. Watch a traditional dance performance", blocks: [
         "Legong, Barong and Kecak dances are performed in the evenings at Ubud Palace and at temples around town, with gamelan music and elaborate costumes. Tickets are usually sold at the door or by sellers on the street during the day.",
+        { image: "legong-ramayana-ubud", caption: "A Balinese dance performance in Ubud." },
       ] },
       { id: "cooking-class", sub: true, heading: "13. Learn to cook Balinese food", blocks: [
         "A cooking class is one of the most popular things to do in Ubud. Many begin with a visit to a local market for spices and vegetables, then teach dishes such as satay, curries and sambal.",
@@ -207,6 +250,7 @@ export const blogPosts = {
       ] },
       { id: "rafting", sub: true, heading: "16. Go white water rafting", blocks: [
         "Rafting near Ubud, most often on the Ayung River, takes you down a green river valley past rice terraces and waterfalls. On the [Ubud ATV & Rafting Day Tour](/tours/ubud-atv-rafting-tour) you can do both in one day; rafting is paid separately to the operator.",
+        { image: "ubud-rafting" },
       ] },
       { id: "kids", heading: "Things to do in Ubud with kids", blocks: [
         "Ubud is easy with children if you plan around short walks and animal encounters.",
@@ -271,6 +315,7 @@ export const blogPosts = {
     sections: [
       { id: "why-famous", heading: "Why is Uluwatu Temple famous?", blocks: [
         "Uluwatu Temple, or Pura Luhur Uluwatu, is famous for its setting on a clifftop about 70 metres above the Indian Ocean, its sunset views and the Kecak fire dance performed beside it in the evening. It is also one of Bali’s six key temples, believed to protect the island, and is home to hundreds of long-tailed macaques.",
+        { image: "uluwatu-temple-headland", caption: "Uluwatu Temple on its headland above the Indian Ocean." },
       ] },
       { id: "history", heading: "A short history of Pura Luhur Uluwatu", blocks: [
         "According to Balinese tradition, a temple has stood here since the 11th century, when the priest Mpu Kuturan is said to have founded it. In the 16th century the temple was expanded by Dang Hyang Nirartha, a priest from Java who shaped much of Balinese Hinduism, and tradition says this is where he reached moksha, the final release of the soul.",
@@ -281,15 +326,18 @@ export const blogPosts = {
       ] },
       { id: "cliff-walk", sub: true, heading: "The clifftop paths and viewpoints", blocks: [
         "Walled paths run along the cliff edge on both sides of the temple, with viewpoints over the ocean and back towards the temple on its headland. On a clear day the water below is a deep blue, and you can often watch surfers and big waves rolling in.",
+        { image: "uluwatu-cliff-path" },
       ] },
       { id: "temple-gates", sub: true, heading: "The temple gates", blocks: [
         "Stone gates carved in the traditional Balinese style lead towards the temple at the top of the headland. Photograph them from the paths, and stay outside the parts of the temple marked for prayer.",
       ] },
       { id: "sunset", sub: true, heading: "Sunset over the Indian Ocean", blocks: [
         "Uluwatu faces west, so the sun sets over the open ocean in front of the cliffs. It is the most popular time to visit, so expect crowds on the paths in the late afternoon. Sunset depends on the weather, and on cloudy days the sky may not clear.",
+        { image: "uluwatu-sunset-silhouette" },
       ] },
       { id: "kecak", heading: "The Kecak fire dance at Uluwatu Temple", blocks: [
         "The Kecak is performed in an open-air amphitheatre on the cliff next to the temple as the sun goes down. Instead of a gamelan orchestra, a large circle of men chant the rhythmic “cak-cak-cak” that gives the dance its name, while dancers act out a story from the Ramayana: the kidnapping of Sita and her rescue with the help of Hanuman, the white monkey. The show ends with fire.",
+        { image: "kecak-fire", caption: "The fire scene that ends the Kecak dance." },
         "The Kecak has its own ticket, separate from the temple entrance, sold at the temple. Seats on the stone steps fill up, so arrive early if you want a good view, and bring water.",
         "On our [Uluwatu, Beach & Jimbaran Sunset Tour](/tours/uluwatu-beach-jimbaran-tour), the Kecak takes the place of the Jimbaran sunset dinner, because both happen at the same time of day. Tell our team which one you prefer when you reconfirm your order.",
       ] },
@@ -320,6 +368,7 @@ export const blogPosts = {
       ] },
       { id: "combine", heading: "What to combine with Uluwatu Temple", blocks: [
         "Most visitors make Uluwatu the last stop of a day in the south. Spend the morning at a beach such as Pandawa, Tanah Barak or Melasti, try an ATV ride or watersports at Tanjung Benoa, and end the day with the sunset at the temple or a seafood dinner on Jimbaran Beach.",
+        { image: "jimbaran-sunset-dinner", caption: "Dinner on the sand at Jimbaran Beach." },
         "Planning the rest of your trip? Our [7-day Bali itinerary](/blog/bali-itinerary) shows how a day in Uluwatu fits with Ubud and West Bali, and our guide to [things to do in Ubud](/blog/things-to-do-in-ubud) covers the island’s green centre.",
       ] },
     ],
