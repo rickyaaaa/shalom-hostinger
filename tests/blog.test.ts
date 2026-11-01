@@ -44,7 +44,7 @@ test("Blog copy has no prices or unverified claims; prices and terms stay on the
 });
 
 test("Every link in an article points to a page that exists", () => {
-  const known = new Set(["/", "/#itineraries", "/#customizedtour", "/ubud", "/south-kuta", "/west-bali"]);
+  const known = new Set(["/", "/#itineraries", "/#customizedtour", "/ubud", "/south-kuta", "/west-bali", "/bali-driver-hire"]);
   for (const [slug, post] of posts) {
     for (const text of paragraphs(post)) {
       assert.doesNotMatch(plainText(text), /\[|\]\(/, `${slug}: every [text](/path) link is well formed`);

@@ -138,7 +138,7 @@ export const blogPosts = {
       ] },
       { id: "getting-around", heading: "Getting around Bali with a private driver", blocks: [
         "Bali has little public transport that suits visitors, so most people get around by taxi, ride-hailing app, scooter or a car with a driver. For full day trips a private driver is the simplest choice: one car for the whole day, no waiting between stops and no need to find a ride back from a temple in the countryside.",
-        "Every Shalom day tour includes a private car and your own driver for 10 hours, with fuel and parking included. You choose your pickup time when you order and reconfirm the plan with our team on WhatsApp. Entrance tickets, activities and lunch are not included; each tour page lists what is and is not included.",
+        "Every Shalom day tour includes a private car and your own driver for 10 hours, with fuel and parking included, and you can also [hire a driver for a route you plan yourself](/bali-driver-hire). You choose your pickup time when you order and reconfirm the plan with our team on WhatsApp. Entrance tickets, activities and lunch are not included; each tour page lists what is and is not included.",
         "None of our routes fit your plans? [Customize your itinerary](/#customizedtour) and tell us the places you would like to visit.",
       ] },
       { id: "when-to-go", heading: "When is the best time to visit Bali?", blocks: [
