@@ -67,3 +67,14 @@ test("public pages share a real photo in link previews",()=>{
  }
 });
 
+
+test("browser tabs and home screens show the Shalom emblem from the logo",()=>{
+ const ico=readFileSync(new URL("../src/app/favicon.ico",import.meta.url));
+ assert.equal(ico.readUInt32LE(0),0x10000,"a real .ico file");
+ assert.deepEqual([...Array(ico.readUInt16LE(4)).keys()].map(i=>ico[6+i*16]),[16,32,48]);
+ for(const [file,size] of [["icon.png",192],["apple-icon.png",180]] as const){
+  const png=readFileSync(new URL(`../src/app/${file}`,import.meta.url));
+  assert.equal(png.toString("latin1",1,4),"PNG",file);
+  assert.deepEqual([png.readUInt32BE(16),png.readUInt32BE(20)],[size,size],file);
+ }
+});
