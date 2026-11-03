@@ -10,7 +10,7 @@ import { CustomGallery } from "@/components/CustomGallery";
 import { WhyChooseUs, HowItWorks, DriverSection, FAQ, AboutSection } from "@/components/HomeInformation";
 import { publicMetadata } from "@/lib/seo";
 import { serverEnv } from "@/lib/server-env";
-import { tiktokProfile } from "@/lib/marketing";
+import { facebookProfile, instagramProfile, tiktokProfile } from "@/lib/marketing";
 import { RecentGuides } from "@/components/RecentGuides";
 
 export const dynamic = "force-dynamic";
@@ -29,7 +29,7 @@ export default function HomePage() {
   const links = siteLinks();
   const site = (serverEnv("PUBLIC_SITE_URL") || serverEnv("APP_URL") || "http://127.0.0.1:3000").replace(/\/$/, "");
   // The business behind the site, for search engines and AI answers; only facts the page itself states.
-  const agencyLd = { "@context": "https://schema.org", "@type": "TravelAgency", name: "Shalom Bali Tour", url: `${site}/`, logo: `${site}/images/shalom-logo.webp`, image: `${site}/images/west-bali.jpeg`, description: "Bali private tours with your own private driver for 10 hours, with Ubud, Uluwatu & South Kuta and West Bali & North Bali itineraries or a customized route.", foundingDate: "2016", areaServed: { "@type": "Place", name: "Bali, Indonesia" }, sameAs: [tiktokProfile] };
+  const agencyLd = { "@context": "https://schema.org", "@type": "TravelAgency", name: "Shalom Bali Tour", url: `${site}/`, logo: `${site}/images/shalom-logo.webp`, image: `${site}/images/west-bali.jpeg`, description: "Bali private tours with your own private driver for 10 hours, with Ubud, Uluwatu & South Kuta and West Bali & North Bali itineraries or a customized route.", foundingDate: "2016", areaServed: { "@type": "Place", name: "Bali, Indonesia" }, sameAs: [facebookProfile, instagramProfile, tiktokProfile] };
   const areas = [
     { title: "South Kuta & Uluwatu", image: "/images/south-kuta.webp", href: links.southKuta, cta: "Explore Uluwatu Tours", text: "Explore the southern coast of Bali with routes featuring Uluwatu, beautiful beaches, cultural attractions, and sunset experiences around Jimbaran." },
     { title: "Ubud", image: "/images/ubud.webp", href: "/ubud", cta: "Explore Ubud Tours", text: "Discover Bali's cultural and natural side through Ubud's temples, waterfalls, rice terraces, traditional villages, and surrounding countryside." },

@@ -252,6 +252,9 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .footer-label { font-size: 13px; letter-spacing: 1.5px; margin-bottom: 8px; }
 .footer-contact a { text-decoration: none; font-size: 15px; }
 .footer-contact a:hover { text-decoration: underline; }
+.footer-follow { margin: 16px 0 0; }
+.footer-social { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.footer-social a { display: inline-flex; align-items: center; min-height: 44px; }
 .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 72px; }
 .copyright { font-size: 13px; color: #344c61; }
 .back-to-top { flex-shrink: 0; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid #344c61; border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer; }
@@ -373,6 +376,8 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .why-image > img, .why-slider { width: 100%; height: 400px; object-fit: cover; }
 .why-follow { position: absolute; z-index: 1; bottom: 0; inset-inline: 0; padding: 20px 24px; background: #092542b3; color: white; display: flex; justify-content: space-between; align-items: center; }
 .why-follow span { text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+.why-follow-links { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.why-follow-links a { color: inherit; }
 .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px 48px; padding-top: 36px; }
 .benefits-grid img { object-fit: contain; margin-bottom: 40px; }
 .benefits-grid h3 { font-size: 21px; line-height: 1.4; margin-bottom: 12px; }
@@ -437,7 +442,8 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
   .driver-actions .button { flex: 1 1 100%; }
   .why-grid, .about-grid { grid-template-columns: minmax(0,1fr); gap: 36px; }
   .why-grid { text-align: center; }
-  .why-follow { justify-content: center; gap: 24px; }
+  .why-follow { flex-direction: column; justify-content: center; gap: 8px; }
+  .why-follow-links { justify-content: center; }
   .benefits-grid { grid-template-columns: minmax(0,1fr); gap: 36px; padding-top: 0; }
   .benefits-grid article { padding: 24px; }
   .benefits-grid img { width: 64px; height: 64px; margin: 0 auto 32px; }
@@ -676,7 +682,7 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 .tour-detail-info .tour-pricing { border-top: 0; padding-top: 0; }
 .tour-detail-facts { margin: 16px 0 0; }
 .tour-detail-facts div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--border); font-size: 14px; }
-.tour-detail-facts dt { color: var(--muted); }
+.tour-detail-facts dt { color: var(--muted); white-space: nowrap; }
 .tour-detail-facts dd { margin: 0; color: var(--navy); font-weight: 600; text-align: right; }
 .tour-detail-info-actions { display: grid; gap: 12px; margin-top: 20px; }
 .tour-detail-info-actions .button { width: 100%; }

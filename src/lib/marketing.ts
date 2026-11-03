@@ -126,6 +126,11 @@ export const areaGuides: Partial<Record<AreaSlug, AreaGuide>> = {
 };
 /** The official TikTok profile (client-confirmed). An external link, never a site route. */
 export const tiktokProfile = "https://www.tiktok.com/@shalombalitour";
+/** Official Facebook page and Instagram account (client-sent 2026-11-03; the Facebook share link resolves to this page ID). */
+export const facebookProfile = "https://www.facebook.com/profile.php?id=61596414411215";
+export const instagramProfile = "https://www.instagram.com/shalombalitour/";
+/** How many people one private car takes (owner, 2026-11-03: 2–7 smaller build, 2–5 larger build, without luggage). */
+export const carCapacity = "2–5 adults, or up to 7 passengers of smaller build, without luggage";
 export const benefits = [
   {title:"Private Driver",text:"Travel comfortably with a dedicated driver throughout your Bali itinerary.",image:"7-24-1-AQVLJK4TH3.png"},
   {title:"Flexible Itinerary",text:"Follow one of our recommended routes or adjust your journey based on your travel plans.",image:"7-19-1-AQVLJK4TH3.png"},
