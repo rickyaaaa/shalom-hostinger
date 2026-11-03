@@ -4,6 +4,7 @@ import Link from "next/link";
 import { TRAVEL_DATE_NOTE } from "@/lib/booking-date";
 import { publicMetadata } from "@/lib/seo";
 import { serverEnv } from "@/lib/server-env";
+import { carCapacity } from "@/lib/marketing";
 import { siteLinks } from "@/lib/site";
 import { getBookingTerms } from "@/lib/wordpress";
 import { Icon } from "@/components/Icon";
@@ -14,7 +15,7 @@ export const dynamic = "force-dynamic";
 // sold as driver hire. Facts only from the approved tour terms and Home FAQ; prices stay on the itineraries.
 export const metadata = publicMetadata("Hire a Driver in Bali for the Day", "Hire a private driver in Bali for a 10-hour day: your own car and driver, hotel pickup, fuel and parking included. Pick an itinerary or plan your own route.", "/bali-driver-hire");
 
-const facts = ["A private car and driver for your group only", "10 hours from your agreed pickup time", "Fuel and parking included", "Pickup at your hotel or pickup place", "A ready itinerary or a route you plan yourself"];
+const facts = ["A private car and driver for your group only", "10 hours from your agreed pickup time", "Fuel and parking included", `One car for ${carCapacity}`, "Pickup at your hotel or pickup place", "A ready itinerary or a route you plan yourself"];
 const areaLinks = [
   { title: "Ubud", text: "Rice terraces, Tirta Empul, the Monkey Forest, waterfalls, art and family parks.", href: "/ubud" },
   { title: "Uluwatu & South Kuta", text: "Uluwatu Temple, south coast beaches, watersports, ATV rides and Jimbaran sunset dinners.", href: "/south-kuta" },
@@ -30,6 +31,7 @@ const faq = [
   { question: "How long can I hire a driver for?", answer: "Our driver hire is a full day of 10 hours, counted from your agreed pickup time. If the day goes over 10 hours, an extra charge applies, as listed in the terms on this page." },
   { question: "Is the car shared with other travellers?", answer: "No. The car and driver are for you and your group only, so you set the pace and nobody else joins." },
   { question: "Can I choose where we go?", answer: "Yes. Choose one of our itineraries, or plan your own route with a customized itinerary. The order of the stops is agreed with our team when you reconfirm on WhatsApp." },
+  { question: "How many people fit in the car?", answer: `One car takes ${carCapacity}. If your group is bigger, contact our team on WhatsApp before you order.` },
   { question: "Where will the driver pick me up?", answer: "At your hotel or the pickup place you give when you order, for example in Seminyak, Kuta, Jimbaran, Nusa Dua or Ubud." },
   { question: "How much does it cost to hire a driver?", answer: "Each itinerary shows its price on its card and tour page before you order. For a route you plan yourself, our team confirms the details with you on WhatsApp." },
   { question: "What is not included?", answer: "Entrance tickets, activities and lunch are paid separately. The included and not included list on this page shows the full terms." },

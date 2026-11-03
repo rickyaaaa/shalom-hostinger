@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { tiktokProfile } from "../src/lib/marketing";
+import { carCapacity, facebookProfile, faqs, instagramProfile, tiktokProfile } from "../src/lib/marketing";
 import { pickItineraryPhotos } from "../src/lib/itinerary-photos";
 
 const src = (file: string) => fs.readFileSync(path.join(import.meta.dirname, "../src", file), "utf8");
@@ -15,6 +15,27 @@ test("TikTok links to the official external profile, safely, everywhere", () => 
   assert.equal(all.includes("shalombalitrans"), false, "the old handle is gone");
   assert.equal((all.match(/tiktok\.com/g) ?? []).length, 1, "one canonical definition");
   assert.equal(all.includes("tiktok.com/embed.js"), false, "no third-party TikTok embed script");
+});
+
+test("Facebook and Instagram: official profiles, one definition each, linked from Home, the footer and the business JSON-LD", () => {
+  assert.equal(facebookProfile, "https://www.facebook.com/profile.php?id=61596414411215", "the page ID, not the expiring share link");
+  assert.equal(instagramProfile, "https://www.instagram.com/shalombalitour/", "no tracking parameter");
+  const all = fs.readdirSync(path.join(import.meta.dirname, "../src"), { recursive: true }).filter(f => /\.(tsx?|css)$/.test(String(f))).map(f => src(String(f))).join("\n");
+  assert.equal((all.match(/facebook\.com/g) ?? []).length, 1);
+  assert.equal((all.match(/instagram\.com/g) ?? []).length, 1);
+  assert.doesNotMatch(all, /facebook\.com\/share|cplk=/);
+  const links = /<a href=\{facebookProfile\} target="_blank" rel="noopener noreferrer">Facebook<\/a><a href=\{instagramProfile\} target="_blank" rel="noopener noreferrer">Instagram<\/a><a href=\{tiktokProfile\} target="_blank" rel="noopener noreferrer">TikTok<\/a>/;
+  assert.match(src("components/HomeInformation.tsx"), links);
+  assert.match(src("components/Footer.tsx"), links);
+  assert.match(src("app/page.tsx"), /sameAs: \[facebookProfile, instagramProfile, tiktokProfile\]/);
+});
+
+test("Car capacity comes from one owner-confirmed sentence on Home, the driver page and every tour page", () => {
+  assert.equal(carCapacity, "2–5 adults, or up to 7 passengers of smaller build, without luggage");
+  assert.match(src("components/HomeInformation.tsx"), /"One car for "\+carCapacity,/);
+  assert.match(src("app/bali-driver-hire/page.tsx"), /`One car for \$\{carCapacity\}`[\s\S]*question: "How many people fit in the car\?", answer: `One car takes \$\{carCapacity\}\./);
+  assert.match(src("app/tours/[slug]/page.tsx"), /<div><dt>Group Size<\/dt><dd>\{carCapacity\}<\/dd><\/div>/);
+  assert.doesNotMatch(JSON.stringify(faqs), /smaller build/, "the client-approved Home FAQ is unchanged");
 });
 
 test("Customized Itinerary shows one photo, no slider; Why Choose stays a lightweight slideshow", () => {

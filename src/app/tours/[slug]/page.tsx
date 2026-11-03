@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { getBookingTerms, getTour, getTourReviews, WordPressApiError } from "@/lib/wordpress";
 import { itineraryTitle, money } from "@/lib/format";
-import { areas, type AreaSlug } from "@/lib/marketing";
+import { areas, carCapacity, type AreaSlug } from "@/lib/marketing";
 import { publicMetadata } from "@/lib/seo";
 import { serverEnv } from "@/lib/server-env";
 import { tourDetailPath, tourPageBySlug, tourPageSlug, type TourPageContent } from "@/lib/tour-pages";
@@ -149,6 +149,7 @@ export default async function TourDetailPage({ params }: Props) {
           {tour.duration && <div><dt>Duration</dt><dd>{tour.duration}</dd></div>}
           <div><dt>Pickup Time</dt><dd>{startTime ? `Starts at ${startTime}` : "Your choice"}</dd></div>
           <div><dt>Type</dt><dd>Private, with driver</dd></div>
+          <div><dt>Group Size</dt><dd>{carCapacity}</dd></div>
         </dl>
         {notes.map(note => <p key={note} className="price-note">{note}</p>)}
         <div className="tour-detail-info-actions"><BookingButton tourId={tour.id} title={title} /></div>
