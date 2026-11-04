@@ -64,7 +64,7 @@ export default function HomePage() {
         <p className="customized-lead">Choose your preferred places and tell us your travel plans. We will help arrange a suitable route and calculate the price based on the locations and destinations selected.</p>
         <ul>{["Choose Your Destinations", "Flexible Itinerary", "Private Driver"].map(item => <li key={item}><Icon name="check" />{item}</li>)}</ul>
         <p className="custom-note">Note: Special itinerary requests require a separate price calculation depending on the selected locations and destinations.</p>
-        <a href={links.customBooking} className="button button-gold">Customize Your Itinerary</a>
+        <a href={links.customBooking} className="button button-gold">Start Your Custom Itinerary</a>
       </div><CustomGallery /></div>
     </section>
     <HowItWorks/>

@@ -28,8 +28,11 @@ const config: NextConfig = {
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
       { key: "X-Frame-Options", value: "DENY" },
-      // HTTPS only for a year on this host; subdomains (cms, mail) are left to their own settings.
-      { key: "Strict-Transport-Security", value: "max-age=31536000" },
+      // HTTPS only for two years, subdomains included (www and cms serve valid HTTPS; ftp is not a website).
+      // "preload" makes the domain eligible for the browsers' preload list; it is only listed once submitted at hstspreload.org.
+      { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+      // Pages opened from here (WhatsApp, social profiles) get no handle back to this window.
+      { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
     ] }];
   },
 };
