@@ -129,6 +129,8 @@ export const tiktokProfile = "https://www.tiktok.com/@shalombalitour";
 /** Official Facebook page and Instagram account (client-sent 2026-11-03; the Facebook share link resolves to this page ID). */
 export const facebookProfile = "https://www.facebook.com/profile.php?id=61596414411215";
 export const instagramProfile = "https://www.instagram.com/shalombalitour/";
+/** Customer service on WhatsApp: the CS number in the footer, with a starter message the visitor can edit before sending. */
+export const csWhatsApp = `https://wa.me/6282188757700?text=${encodeURIComponent("Hi Shalom Bali Tour, I would like to ask about a private tour in Bali.")}`;
 /** How many people one private car takes (owner, 2026-11-03: 2–7 smaller build, 2–5 larger build, without luggage). */
 export const carCapacity = "2–5 adults, or up to 7 passengers of smaller build, without luggage";
 export const benefits = [
