@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Header } from "@/components/Header";
 import { blogLive } from "@/lib/blog";
 import { Footer } from "@/components/Footer";
+import { WhatsAppBubble } from "@/components/WhatsAppBubble";
 import { siteLinks } from "@/lib/site";
 import { wordpressConfig } from "@/lib/config";
 import { CustomerSession } from "@/components/CustomerSession";
@@ -39,7 +40,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <CustomerSession><CurrencyProvider initial={currencies}><Header links={siteLinks()} blog={blogLive()} />
     {localBackend && <p className="local-data-notice" role="status">Local WordPress test data — not staging.</p>}
     <main id="main-content">{children}</main>
-    <Footer /></CurrencyProvider>
+    <Footer /><WhatsAppBubble /></CurrencyProvider>
     </CustomerSession>
   </body></html>;
 }

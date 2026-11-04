@@ -255,6 +255,14 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .footer-follow { margin: 16px 0 0; }
 .footer-social { display: flex; flex-wrap: wrap; gap: 4px 24px; }
 .footer-social a { display: inline-flex; align-items: center; min-height: 44px; }
+.wa-bubble { position: fixed; z-index: 60; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: #25d366; color: white; box-shadow: 0 6px 20px rgba(9, 37, 66, .28); transition: transform .2s ease, box-shadow .2s ease; }
+.wa-bubble:hover { transform: scale(1.06); box-shadow: 0 8px 24px rgba(9, 37, 66, .34); }
+.wa-bubble:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
+/* Keep Back to Top and the copyright clear of the bubble at the very end of the page. */
+body:has(.wa-bubble) .site-footer { padding-bottom: 104px; }
+@media (max-width: 767px) { .wa-bubble { width: 52px; height: 52px; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); } }
+@media (prefers-reduced-motion: reduce) { .wa-bubble { transition: none; } .wa-bubble:hover { transform: none; } }
+@media print { .wa-bubble { display: none; } }
 .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 72px; }
 .copyright { font-size: 13px; color: #344c61; }
 .back-to-top { flex-shrink: 0; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid #344c61; border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer; }
