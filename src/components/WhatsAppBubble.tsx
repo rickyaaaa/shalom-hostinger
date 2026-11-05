@@ -5,7 +5,7 @@ import { csWhatsApp } from "@/lib/marketing";
 /** Order, account and sign-in pages have their own WhatsApp step; a floating button there would cover form buttons. */
 const hiddenOn = /^\/(book|account|login|register|forgot-password|reset-password|request-help|ref)(\/|$)/;
 
-/** Click-to-WhatsApp bubble, bottom right on every public page: opens a chat with Shalom customer service. */
+/** Click-to-WhatsApp bubble, bottom right on every public page: opens a chat with Shalom on the footer's WhatsApp number. */
 export function WhatsAppBubble() {
   if (hiddenOn.test(usePathname() ?? "")) return null;
   return <a className="wa-bubble" href={csWhatsApp} target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp" title="Chat with us on WhatsApp">

@@ -1,14 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { csWhatsApp } from "../src/lib/marketing";
+import { csWhatsApp, whatsAppDisplay } from "../src/lib/marketing";
 
 const src = (file: string) => readFileSync(new URL(`../src/${file}`, import.meta.url), "utf8");
 
-test("WhatsApp bubble opens a chat with the footer's CS number and an editable starter message", () => {
+test("WhatsApp bubble and footer open a chat with the one contact number and an editable starter message", () => {
   const url = new URL(csWhatsApp);
-  assert.equal(url.origin + url.pathname, "https://wa.me/6282188757700");
-  assert.match(src("components/Footer.tsx"), /href="tel:\+6282188757700">CS: \+62 821 8875 7700</, "the same number as CS in the footer");
+  assert.equal(whatsAppDisplay, "+62 882 6818 1767");
+  assert.equal(url.origin + url.pathname, "https://wa.me/6288268181767");
+  const footer = src("components/Footer.tsx");
+  assert.match(footer, /<p className="footer-label">CALL US<\/p><a href=\{csWhatsApp\} target="_blank" rel="noopener noreferrer">WhatsApp: \{whatsAppDisplay\}<\/a>/);
+  assert.doesNotMatch(footer, /8875|tel:|Marketing:/, "the old CS line and the separate Marketing line are gone");
   assert.equal(url.searchParams.get("text"), "Hi Shalom Bali Tour, I would like to ask about a private tour in Bali.");
   const bubble = src("components/WhatsAppBubble.tsx");
   assert.match(bubble, /<a className="wa-bubble" href=\{csWhatsApp\} target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp"/);
