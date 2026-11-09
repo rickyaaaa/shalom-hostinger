@@ -9,6 +9,8 @@ import { siteLinks } from "@/lib/site";
 import { getBookingTerms } from "@/lib/wordpress";
 import { Icon } from "@/components/Icon";
 import { RecentGuides } from "@/components/RecentGuides";
+import { GuestGallery } from "@/components/GuestGallery";
+import { driverHireGuestPhotos } from "@/lib/guest-photos";
 
 export const dynamic = "force-dynamic";
 // The "hire a driver in Bali" searches (about 1,900 a month in Australia): the same 10-hour private day as every tour,
@@ -85,6 +87,12 @@ export default function DriverHirePage() {
         <p className="driver-copy">Every Shalom day is private: only you and your group travel in the car, and the day runs for 10 hours from the pickup time you choose when you order.</p>
       </div>
       <ul className="driver-facts">{facts.map(item => <li key={item}><Icon name="check" />{item}</li>)}</ul>
+    </div></section>
+
+    <section className="area-guide area-more" aria-labelledby="driver-hire-guests-title"><div className="information-inner">
+      <p className="section-label">OUR GUESTS</p><h2 id="driver-hire-guests-title">On the Road with Our Guests</h2>
+      <p className="area-guide-intro">A few moments from guests’ days out around Bali with their Shalom driver.</p>
+      <GuestGallery photos={driverHireGuestPhotos} label="Photos of guests with their Shalom driver" sizes="(max-width: 767px) 46vw, 300px" />
     </div></section>
 
     <section className="area-guide" aria-labelledby="driver-hire-terms-title"><div className="information-inner">
