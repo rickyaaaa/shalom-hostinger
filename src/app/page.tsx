@@ -12,6 +12,8 @@ import { publicMetadata } from "@/lib/seo";
 import { serverEnv } from "@/lib/server-env";
 import { facebookProfile, instagramProfile, tiktokProfile } from "@/lib/marketing";
 import { RecentGuides } from "@/components/RecentGuides";
+import { GuestGallery } from "@/components/GuestGallery";
+import { homeGuestPhotos } from "@/lib/guest-photos";
 
 export const dynamic = "force-dynamic";
 // The layout's "%s | Shalom Bali Tour" template does not apply to the root page, so the brand is part of the title here.
@@ -71,6 +73,7 @@ export default function HomePage() {
     <DriverSection/>
     <section className="home-reviews" id="review" aria-labelledby="home-reviews-title">
       <div className="home-reviews-heading"><p className="section-label">GUEST EXPERIENCES</p><h2 id="home-reviews-title">What Our Guests Say</h2><p>Read experiences from travelers who have explored Bali with Shalom Bali Tour.</p></div>
+      <GuestGallery photos={homeGuestPhotos} label="Photos of our guests in Bali" sizes="(max-width: 767px) 46vw, (max-width: 1024px) 30vw, 270px" />
       <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading guest reviews…</p>}><LatestReviews /></Suspense>
     </section>
     <FAQ/>
