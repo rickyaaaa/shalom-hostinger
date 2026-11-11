@@ -159,12 +159,14 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .photo-slider-toggle:hover { background: var(--navy); }
 /* Touch screens swipe; the arrows are for mouse and keyboard. */
 @media (pointer: coarse) { .photo-slider-nav { display: none; } }
-.home-reviews { margin: 0 auto 104px; max-width: 1180px; background: #faf9f6; padding: 56px 40px; }
-.home-reviews-heading { text-align: center; margin-bottom: 36px; }
+/* Home reviews (client 2026-11-11, after the Monks template): a full-width dark band with one large quote at a time. */
+.home-reviews { background: var(--navy-dark); color: white; padding: 96px 24px; }
+.home-reviews-heading { text-align: center; max-width: 1280px; margin: 0 auto 48px; }
+.home-reviews .section-label { color: var(--gold); }
+.home-reviews .status-message { color: white; text-align: center; }
 .section-label { font-size: 13px; letter-spacing: 1.5px; line-height: 23px; margin-bottom: 24px; }
-.home-reviews-heading h2 { font-size: 48px; line-height: 58px; margin-bottom: 16px; }
-.home-reviews-heading > p:last-child { color: var(--muted); }
-.latest-reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 24px; }
+.home-reviews-heading h2 { font-size: 48px; line-height: 58px; margin-bottom: 16px; color: white; }
+.home-reviews-heading > p:last-child { color: rgb(255 255 255 / 78%); }
 .ubud-hero { min-height: 600px; position: relative; isolation: isolate; display: grid; place-items: center; color: white; text-align: center; padding: 72px 24px; }
 .ubud-hero > img { object-fit: cover; z-index: -2; }
 .ubud-hero::after { content: ""; position: absolute; inset: 0; background: #0008; z-index: -1; }
@@ -211,7 +213,6 @@ input { accent-color: var(--navy); caret-color: var(--navy); }
 .review-score-large .score-count { font-size: 13px; }
 .review-entry { padding: 22px; background: white; border: 1px solid #e4ddd2; border-radius: 18px; }
 .review-entry + .review-entry { margin-top: 16px; }
-.latest-reviews-grid .review-entry { margin-top: 0; }
 .individual-rating { display: flex; align-items: center; gap: 9px; color: var(--navy); font-variant-numeric: lining-nums tabular-nums; }
 .individual-rating strong { font-size: 16px; }
 .review-stars { position: relative; display: inline-flex; width: 95px; height: 18px; color: #d8952f; }
@@ -312,7 +313,6 @@ body:has(.wa-bubble) .site-footer { padding-bottom: 104px; }
   .area-grid { grid-template-columns: 1.5fr 1fr 1fr; gap: 20px; }
   .customized-inner { gap: 32px; padding: 48px 32px; }
   .customized-copy h2 { font-size: 28px; line-height: 38px; }
-  .home-reviews { margin-inline: 24px; }
   .tour-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .ubud-hero { min-height: 520px; }
   .ubud-hero h1 { font-size: 40px; line-height: 50px; }
@@ -343,9 +343,10 @@ body:has(.wa-bubble) .site-footer { padding-bottom: 104px; }
   .customized-copy h2 { font-size: 27px; line-height: 37px; }
   .custom-gallery { max-width: 100%; width: 280px; border-radius: 20px; }
   .custom-note { margin: 24px 0; }
-  .home-reviews { padding: 36px 20px; margin: 0 16px 64px; }
+  .home-reviews { padding: 64px 16px; }
   .home-reviews-heading h2 { font-size: 32px; line-height: 42px; }
   .home-reviews-heading > p:last-child { font-size: 14px; line-height: 24px; }
+  .home-reviews-heading { margin-bottom: 32px; }
   .section-label { font-size: 12px; margin-bottom: 20px; }
   .ubud-hero { min-height: 430px; padding: 60px 24px; }
   .ubud-hero h1 { font-size: 27px; line-height: 38px; margin-bottom: 28px; }
@@ -771,3 +772,86 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
 .area-more .guest-gallery { margin-bottom: 0; }
 @media (max-width: 1024px) { .guest-gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); } .area-more .guest-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 767px) { .guest-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 32px; } }
+
+/* Review slider (Home): quote, guest, arrows either side; arrows move under the quote on phones. */
+.review-slider { position: relative; max-width: 1280px; margin: auto; padding: 0 96px; text-align: center; }
+.review-slide { animation: review-in .35s ease-out; }
+@keyframes review-in { from { opacity: 0; transform: translateY(8px); } }
+.review-slider-score { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 28px; font-variant-numeric: lining-nums tabular-nums; }
+.review-slider-score strong { color: white; font-size: 16px; }
+.review-slider-quote { max-width: 1080px; margin: 0 auto; color: white; font-size: clamp(22px, 2.2vw, 30px); line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; }
+.review-slider-quote.is-long { max-width: 980px; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.55; }
+.review-slider-quote.is-very-long { max-width: 900px; font-size: clamp(17px, 1.35vw, 20px); line-height: 1.65; }
+.review-slider-guest { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: 44px; }
+.review-slider-avatar { display: grid; place-items: center; width: 72px; height: 72px; margin-bottom: 16px; border-radius: 50%; background: var(--gold); color: var(--navy-dark); font-size: 28px; font-weight: 600; }
+.review-slider-name { margin: 0; color: white; font-size: 20px; font-weight: 600; }
+.review-slider-meta { margin: 0; color: rgb(255 255 255 / 82%); font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; }
+.review-slider-date { margin: 4px 0 0; color: rgb(255 255 255 / 68%); font-size: 14px; }
+.review-slider-arrow { position: absolute; top: 50%; display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 0; border-radius: 50%; background: white; color: var(--ink); cursor: pointer; transform: translateY(-50%); transition: background-color .18s ease-out; }
+.review-slider-arrow svg { width: 22px; height: 22px; }
+.review-slider-prev { left: 0; }
+.review-slider-prev svg { transform: rotate(180deg); }
+.review-slider-next { right: 0; }
+.review-slider-arrow:hover:not(:disabled) { background: var(--gold); }
+.review-slider-arrow:disabled { background: rgb(255 255 255 / 22%); color: rgb(255 255 255 / 60%); cursor: default; }
+.review-slider-arrow:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.review-slider-count { margin: 32px 0 0; color: rgb(255 255 255 / 62%); font-size: 13px; letter-spacing: 2px; }
+@media (max-width: 767px) {
+  .review-slider { padding: 0 0 76px; }
+  .review-slider-quote { font-size: 20px; }
+  .review-slider-quote.is-long { font-size: 17px; }
+  .review-slider-quote.is-very-long { font-size: 16px; }
+  .review-slider-arrow { top: auto; bottom: 0; width: 48px; height: 48px; transform: none; }
+  .review-slider-prev { left: calc(50% - 88px); }
+  .review-slider-next { right: calc(50% - 88px); }
+  .review-slider-count { position: absolute; bottom: 14px; left: 50%; margin: 0; transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) { .review-slide { animation: none; } }
+
+/* About Us (/about), after the Monks template: photo banner, story with facts, Why Choose, guest photos, call to action. */
+.about-more { margin-top: 32px; }
+.about-hero { position: relative; isolation: isolate; overflow: hidden; display: flex; align-items: flex-end; min-height: 440px; background: var(--navy-dark); color: white; }
+.about-hero img { z-index: -2; object-fit: cover; object-position: center 22%; }
+.about-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgb(9 37 66 / 78%) 0%, rgb(9 37 66 / 35%) 60%, rgb(9 37 66 / 25%) 100%); }
+.about-hero-inner { width: 100%; max-width: 1328px; margin: auto; padding: 120px 24px 72px; }
+.about-hero h1 { margin: 0 0 20px; color: white; font-size: clamp(44px, 5vw, 72px); line-height: 1.1; }
+.about-breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0; padding: 0; list-style: none; font-size: 17px; }
+.about-breadcrumb a { color: white; text-decoration: none; }
+.about-breadcrumb a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.about-breadcrumb svg { display: block; width: 18px; height: 18px; }
+.about-breadcrumb [aria-current] { color: rgb(255 255 255 / 82%); }
+.about-story { padding: 112px 24px; background: white; }
+.about-story-inner { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1fr); gap: 64px; align-items: start; max-width: 1280px; margin: auto; }
+.about-story-photo img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: center 30%; }
+.about-story-copy .section-label { color: var(--gold-text); }
+.about-story-copy h2 { margin-bottom: 28px; font-size: clamp(32px, 3.6vw, 52px); line-height: 1.2; }
+.about-story .about-copy { max-width: 62ch; margin-inline: 0; }
+.about-story-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.about-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 56px 0 0; padding-top: 40px; border-top: 1px solid var(--border); }
+.about-stats div { display: flex; flex-direction: column-reverse; justify-content: flex-end; }
+.about-stats dd { margin: 0; color: var(--navy); font-size: clamp(32px, 3.2vw, 48px); font-weight: 500; line-height: 1.1; font-variant-numeric: lining-nums; }
+.about-stats dt { margin-top: 8px; color: var(--muted); }
+.about-guests { padding: 96px 24px; background: #faf9f6; }
+.about-guests-heading { margin-bottom: 40px; text-align: center; }
+.about-guests-heading h2 { margin-bottom: 16px; }
+.about-guests-heading > p:last-child { color: var(--muted); }
+.about-guests .guest-gallery { margin-bottom: 0; }
+.about-cta { padding: 88px 24px; background: var(--navy-dark); color: white; }
+.about-cta-inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 32px 48px; max-width: 1280px; margin: auto; }
+.about-cta .section-label { color: var(--gold); }
+.about-cta h2 { margin: 0 0 16px; color: white; font-size: clamp(30px, 3.6vw, 48px); line-height: 1.2; }
+.about-cta p:last-child { max-width: 56ch; margin: 0; color: rgb(255 255 255 / 80%); }
+.about-cta-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+@media (max-width: 1024px) { .about-story-inner { gap: 40px; } .about-stats { gap: 16px; } }
+@media (max-width: 767px) {
+  .about-hero { min-height: 300px; }
+  .about-hero-inner { padding: 96px 16px 40px; }
+  .about-breadcrumb ol { font-size: 15px; }
+  .about-story { padding: 64px 16px; }
+  .about-story-inner { grid-template-columns: minmax(0, 1fr); }
+  .about-story-photo img { aspect-ratio: 4 / 3; }
+  .about-stats { margin-top: 40px; padding-top: 28px; }
+  .about-stats dd { font-size: 26px; }
+  .about-stats dt { font-size: 13px; line-height: 1.4; }
+  .about-guests, .about-cta { padding: 64px 16px; }
+}

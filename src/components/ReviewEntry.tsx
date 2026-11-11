@@ -8,11 +8,16 @@ export function bookingDateLabel(value: string | null) {
   return Number.isNaN(date.valueOf()) || date.toISOString().slice(0, 10) !== value ? null : new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(date);
 }
 
+/** Five stars filled to the 0–10 score; decorative, so the caller labels the score. */
+export function ReviewStars({ score }: { score: number }) {
+  return <span className="review-stars" aria-hidden="true"><span className="review-stars-base">{[0, 1, 2, 3, 4].map(i => <Icon key={i} name="star" />)}</span><span className="review-stars-fill" style={{ width: `${Math.max(0, Math.min(100, score * 10))}%` }}><span>{[0, 1, 2, 3, 4].map(i => <Icon key={i} name="star" />)}</span></span></span>;
+}
+
 export function ReviewEntry({ review, showTour = false }: { review: Review; showTour?: boolean }) {
   const bookingDate = bookingDateLabel(review.booking_date);
   return <article className="review-entry">
     <div className="individual-rating" aria-label={`Overall rating ${review.score.toFixed(1)} out of 10`}>
-      <span className="review-stars" aria-hidden="true"><span className="review-stars-base">{[0, 1, 2, 3, 4].map(i => <Icon key={i} name="star" />)}</span><span className="review-stars-fill" style={{ width: `${Math.max(0, Math.min(100, review.score * 10))}%` }}><span>{[0, 1, 2, 3, 4].map(i => <Icon key={i} name="star" />)}</span></span></span>
+      <ReviewStars score={review.score} />
       <strong>{review.score.toFixed(1)}</strong>
     </div>
     <blockquote className="review-experience">{review.experience}</blockquote>

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getLatestReviews } from "@/lib/wordpress";
 import { siteLinks } from "@/lib/site";
-import { ReviewEntry } from "@/components/ReviewEntry";
+import { ReviewSlider } from "@/components/ReviewSlider";
 import { ServiceUnavailable } from "@/components/ServiceUnavailable";
 import { Icon } from "@/components/Icon";
 import { CustomGallery } from "@/components/CustomGallery";
@@ -12,8 +12,6 @@ import { publicMetadata } from "@/lib/seo";
 import { serverEnv } from "@/lib/server-env";
 import { facebookProfile, instagramProfile, tiktokProfile } from "@/lib/marketing";
 import { RecentGuides } from "@/components/RecentGuides";
-import { GuestGallery } from "@/components/GuestGallery";
-import { homeGuestPhotos } from "@/lib/guest-photos";
 
 export const dynamic = "force-dynamic";
 // The layout's "%s | Shalom Bali Tour" template does not apply to the root page, so the brand is part of the title here.
@@ -24,7 +22,7 @@ async function LatestReviews() {
   const latest = await getLatestReviews().catch(() => null);
   if (!latest) return <ServiceUnavailable subject="reviews" />;
   if (latest.reviews.length === 0) return <p className="status-message">No guest reviews yet.</p>;
-  return <div className="latest-reviews-grid">{latest.reviews.map((review, index) => <ReviewEntry key={`${review.published_at}-${index}`} review={review} showTour />)}</div>;
+  return <ReviewSlider reviews={latest.reviews} />;
 }
 
 export default function HomePage() {
@@ -73,7 +71,6 @@ export default function HomePage() {
     <DriverSection/>
     <section className="home-reviews" id="review" aria-labelledby="home-reviews-title">
       <div className="home-reviews-heading"><p className="section-label">GUEST EXPERIENCES</p><h2 id="home-reviews-title">What Our Guests Say</h2><p>Read experiences from travelers who have explored Bali with Shalom Bali Tour.</p></div>
-      <GuestGallery photos={homeGuestPhotos} label="Photos of our guests in Bali" sizes="(max-width: 767px) 46vw, (max-width: 1024px) 30vw, 270px" />
       <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading guest reviews…</p>}><LatestReviews /></Suspense>
     </section>
     <FAQ/>

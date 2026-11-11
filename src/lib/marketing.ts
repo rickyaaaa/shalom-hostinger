@@ -159,3 +159,10 @@ export const faqs: Faq[] = [
   { question: "How long is the tour and can I take a short tour?", answer: "The trip duration is 10 hours, calculated from the agreed-upon pickup time. If the duration exceeds 10 hours, an additional charge will apply. We exclusively offer 10-hour daily tour services, as we specialize in private, 10-hour day tours." },
   { question: "What happens if I need to cancel?", answer: "If you wish to cancel, please provide notification as soon as possible.\n\nOnce an agreement has been reached, cancellations are no longer permitted, and you remain obligated to pay the full, agreed-upon amount.\n\nThis policy includes full payment for any booked activities, and the timeframe for the engagement is calculated from the moment the agreement is made.\n\nThank you." },
 ];
+
+/** The owner's own About text (client, 2026-11-05; confirmed again 2026-11-11). Shown on Home and /about; do not rewrite it. */
+export const aboutStory = [
+  "Since 2016, Shalom Bali Tour has helped travelers explore Bali through private transportation and flexible itineraries.",
+  "This year, I decided to create this website, which was launched on 1 November 2026.",
+  "We focus on providing a comfortable and personal travel experience, whether you choose one of our recommended itineraries or create a customized Bali tour based on the destinations you want to visit.",
+] as const;
