@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { driverHireGuestPhotos, guestPhotos, homeGuestPhotos, type GuestPhoto } from "../src/lib/guest-photos";
+import { aboutGuestPhotos, driverHireGuestPhotos, guestPhotos, type GuestPhoto } from "../src/lib/guest-photos";
 
 const src = (file: string) => readFileSync(new URL(`../src/${file}`, import.meta.url), "utf8");
 const dir = new URL("../public/images/guests/", import.meta.url);
@@ -35,12 +35,13 @@ test("Guest photo alt text describes the scene only: no names, nationalities, ve
   assert.doesNotMatch(text, /Tirta Empul|Nusa Penida|Lembongan|arrivals/i, "only places the photo makes clear");
 });
 
-test("Every guest photo is shown: all on Home's guest section, the driver photos on Hire a Driver, all lazy-loaded", () => {
-  assert.deepEqual([...homeGuestPhotos].sort(), photos.map(([key]) => key).sort());
+test("Every guest photo is shown: all on About Us, the driver photos on Hire a Driver, all lazy-loaded", () => {
+  assert.deepEqual([...aboutGuestPhotos].sort(), photos.map(([key]) => key).sort());
   assert.equal(driverHireGuestPhotos.length, 4);
   for (const key of driverHireGuestPhotos) assert.ok(Object.hasOwn(guestPhotos, key), key);
   const home = src("app/page.tsx");
-  assert.match(home, /What Our Guests Say<\/h2>[\s\S]*<GuestGallery photos=\{homeGuestPhotos\}[\s\S]*<LatestReviews \/>/, "photos sit above the guest reviews");
+  assert.doesNotMatch(home, /GuestGallery/, "client 2026-11-11: the guest photos moved from Home to About Us");
+  assert.match(src("app/about/page.tsx"), /<h2 id="about-guests-title">Moments with Our Guests<\/h2>[\s\S]*<GuestGallery photos=\{aboutGuestPhotos\}/);
   const driver = src("app/bali-driver-hire/page.tsx");
   assert.match(driver, /<h2 id="driver-hire-guests-title">On the Road with Our Guests<\/h2>[\s\S]*<GuestGallery photos=\{driverHireGuestPhotos\}/);
   const gallery = src("components/GuestGallery.tsx");

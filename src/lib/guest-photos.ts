@@ -23,8 +23,8 @@ export const guestPhotos = {
 
 export type GuestPhotoKey = keyof typeof guestPhotos;
 
-/** Home, "What Our Guests Say": every guest photo, strongest first. */
-export const homeGuestPhotos = Object.keys(guestPhotos) as GuestPhotoKey[];
+/** About Us, "Moments with Our Guests": every guest photo, strongest first (client 2026-11-11: the photos live on About). */
+export const aboutGuestPhotos = Object.keys(guestPhotos) as GuestPhotoKey[];
 
 /** Hire a Driver: the photos of the car, the pickup and a day out with the driver. */
 export const driverHireGuestPhotos: readonly GuestPhotoKey[] = ["family-bali-airport-pickup", "guests-car-selfie-with-driver", "family-lunch-with-driver", "guests-bali-airport-driver"];

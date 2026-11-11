@@ -6,7 +6,7 @@ import { CurrencySelector } from "./CurrencySelector";
 import { islandPackagesLive } from "@/lib/marketing";
 const areas=[["South Kuta","/south-kuta"],["Ubud","/ubud"],["West Bali & North Bali","/west-bali"],["Nusa Penida & Lembongan","/nusa-penida-lembongan"]].filter(([,url])=>islandPackagesLive||url!=="/nusa-penida-lembongan");
 const anchors=[["Customized Itinerary","customizedtour"],["Review & Comments","review"],["Answer Travel Concerns","answer"]];
-const homeAnchors=[["About","about"],["Contact","contact"]];
+const homeAnchors=[["Contact","contact"]];
 // One semantic navigation tree is shared by desktop and the mobile disclosure.
 // blog: the travel guides exist (an article is published); the layout decides, so the article copy never reaches the browser bundle.
 export function MobileMenu({open,itinerary,setItinerary,pathname,close,toggleRef,blog}:{open:boolean;itinerary:boolean;setItinerary:(value:boolean)=>void;pathname:string;close:()=>void;toggleRef:RefObject<HTMLButtonElement|null>;blog:boolean}){
@@ -18,6 +18,7 @@ export function MobileMenu({open,itinerary,setItinerary,pathname,close,toggleRef
     </div>
     {anchors.map(([name,id])=><Link href={`/#${id}`} onClick={close} key={id}>{name}</Link>)}
     {blog&&<Link href="/blog" aria-current={pathname==="/blog"||pathname.startsWith("/blog/")?"page":undefined} onClick={close}>Blog</Link>}
+    <Link href="/about" aria-current={pathname==="/about"?"page":undefined} onClick={close}>About</Link>
     {homeAnchors.map(([name,id])=><Link href={`/#${id}`} onClick={close} key={id}>{name}</Link>)}
   </nav>;
 }
