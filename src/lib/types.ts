@@ -62,6 +62,11 @@ export const tourSchema = z.object({
 });
 export type TourPackage = NonNullable<z.infer<typeof tourSchema>["package"]>;
 
+/** WordPress 1.36: a guest photo on a review, a large image and a thumbnail (re-encoded, no camera data). */
+const photoUrl = z.url({ protocol: /^https?$/ });
+export const reviewPhotoSchema = z.object({ id: z.number().int().positive(), url: photoUrl, thumb: photoUrl, width: z.number().int().nonnegative(), height: z.number().int().nonnegative() });
+export type ReviewPhoto = z.infer<typeof reviewPhotoSchema>;
+
 export const reviewSchema = z.object({
   tour_id: z.number().int().positive(),
   tour_title: z.string(),
@@ -79,6 +84,8 @@ export const reviewSchema = z.object({
   booking_date_source: z.enum(["verified", "previous_tour", "order"]).nullable().optional(),
   // Kept for ordering only; public cards never show when a review was written.
   published_at: z.string(),
+  // 1.36: up to five guest photos; older plugins send none.
+  photos: z.array(reviewPhotoSchema).max(5).optional(),
 });
 
 export const reviewPageSchema = z.object({

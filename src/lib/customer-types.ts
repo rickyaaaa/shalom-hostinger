@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { currencyCodeSchema } from "./types";
+import { currencyCodeSchema, reviewPhotoSchema } from "./types";
 
 export const currencyPreferenceSchema = z.object({
   currency: currencyCodeSchema,
@@ -67,7 +67,7 @@ export const accountSchema = z.object({
   referral: z.object({ slug: z.string().min(2).max(40).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) }).nullable().optional(),
   // 1.29: present only while the WordPress multi-currency flag is enabled.
   currency_preference: currencyPreferenceSchema.optional(),
-  reviews: z.array(z.object({ id: z.number().int().positive().optional(), tour_id: z.number().int(), title: z.string(), experience: z.string(), status: z.enum(["approved", "pending", "rejected", "unavailable"]), submitted_at: z.string().optional(), ratings: z.object({driving_skill:z.number().int(),service:z.number().int(),car:z.number().int()}).optional(), price:z.string().optional(), recommend:z.boolean().optional() })),
+  reviews: z.array(z.object({ id: z.number().int().positive().optional(), tour_id: z.number().int(), title: z.string(), experience: z.string(), photos: z.array(reviewPhotoSchema).max(5).optional(), status: z.enum(["approved", "pending", "rejected", "unavailable"]), submitted_at: z.string().optional(), ratings: z.object({driving_skill:z.number().int(),service:z.number().int(),car:z.number().int()}).optional(), price:z.string().optional(), recommend:z.boolean().optional() })),
 });
 export type CustomerConfig = z.infer<typeof customerConfigSchema>;
 export type CustomerAccount = z.infer<typeof accountSchema>;

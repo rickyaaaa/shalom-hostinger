@@ -5,6 +5,11 @@ import { cookies } from "next/headers";
 import { REFERRAL_COOKIE, isReferralToken } from "@/lib/referral";
 
 export const runtime = "nodejs";
+const REVIEW_PHOTO_MAX = 5;
+const REVIEW_PHOTO_BYTES = 5 * 1024 * 1024;
+const REVIEW_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+// Five photos at the limit plus the review fields; the browser normally sends far less (photos are resized first).
+const REVIEW_UPLOAD_LIMIT = REVIEW_PHOTO_MAX * REVIEW_PHOTO_BYTES + 64 * 1024;
 const headers = { "Cache-Control": "private, no-store, max-age=0", Vary: "Cookie", "X-Content-Type-Options": "nosniff" };
 const reply = (value: unknown, status = 200) => Response.json(value, {status, headers});
 type Context = { params: Promise<{action:string}> };
@@ -40,6 +45,28 @@ async function handle(request: Request, context: Context) {
       if (file.size > 5 * 1024 * 1024) return reply({message:"Profile photos must be 5 MB or smaller."},413);
       const value = await customerMultipartRequest("profile", form, session);
       return reply(z.object({avatar_url:z.url().nullable().optional(),message:z.string().optional()}).parse(value));
+    }
+    if (request.method === "POST" && action === "reviews" && request.headers.get("content-type")?.startsWith("multipart/form-data")) {
+      // WordPress 1.36: a review with up to five photos. Fields are validated as for a JSON review; WordPress
+      // re-checks every file's real bytes and re-encodes it without camera data.
+      if (request.headers.get("origin") !== appOrigin()) return reply({message:"This request could not be verified."},403);
+      const session = await readSession();
+      if (!session) return reply({message:"Please sign in to continue."},401);
+      if (Number(request.headers.get("content-length") || 0) > REVIEW_UPLOAD_LIMIT) return reply({message:"Each photo must be 5 MB or smaller."},413);
+      const form = await request.formData();
+      const text = (key: string) => { const value = form.get(key); return typeof value === "string" ? value : undefined; };
+      const input = reviewInput.parse({ tour_id: Number(text("tour_id")), entitlement_id: text("entitlement_id") || undefined, driving_skill: text("driving_skill"), service: text("service"), car: text("car"), price: text("price"), recommend: text("recommend"), experience: text("experience") });
+      const photos = form.getAll("photos").filter((value): value is File => value instanceof File);
+      if (!photos.length || photos.length > REVIEW_PHOTO_MAX) return reply({message:`You can add up to ${REVIEW_PHOTO_MAX} photos.`},400);
+      if (photos.some(photo => !REVIEW_PHOTO_TYPES.includes(photo.type))) return reply({message:"Please choose JPEG, PNG or WebP photos."},400);
+      if (photos.some(photo => photo.size > REVIEW_PHOTO_BYTES)) return reply({message:"Each photo must be 5 MB or smaller."},413);
+      const upstream = new FormData();
+      for (const [key, value] of Object.entries(input)) if (value !== undefined) upstream.set(key, String(value));
+      // PHP only keeps every file of a repeated field when its name ends in [].
+      photos.forEach((photo, index) => upstream.append("photos[]", photo, `review-photo-${index + 1}.${photo.type.split("/")[1].replace("jpeg", "jpg")}`));
+      stage = "upstream";
+      const value = await customerMultipartRequest("reviews", upstream, session, { timeout: 60_000, fallback: "We could not save your review. Please try again." });
+      return reply(z.object({status:z.enum(["pending","approved"]),message:z.string()}).parse(value),201);
     }
     if (request.method === "DELETE" && action === "profile") {
       if (request.headers.get("origin") !== appOrigin()) return reply({message:"This request could not be verified."},403);

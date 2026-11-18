@@ -1,5 +1,6 @@
 import type { Review } from "@/lib/types";
 import { Icon } from "./Icon";
+import { ReviewPhotos } from "./ReviewPhotos";
 
 /** "10 September 2026" for a YYYY-MM-DD calendar date; null when there is no usable date. */
 export function bookingDateLabel(value: string | null) {
@@ -21,6 +22,7 @@ export function ReviewEntry({ review, showTour = false }: { review: Review; show
       <strong>{review.score.toFixed(1)}</strong>
     </div>
     <blockquote className="review-experience">{review.experience}</blockquote>
+    <ReviewPhotos photos={review.photos} label={`Photos from ${review.name}'s review`} />
     <div className="review-guest"><h3>{review.name}</h3>{review.country && <p>{review.country}</p>}</div>
     {bookingDate && <p className="review-booking-date">Booking date: <time dateTime={review.booking_date!}>{bookingDate}</time></p>}
     {showTour && review.area && <p className="review-area">{review.area}</p>}

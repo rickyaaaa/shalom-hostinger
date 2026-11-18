@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import type { Review } from "@/lib/types";
 import { Icon } from "./Icon";
 import { ReviewStars, bookingDateLabel } from "./ReviewEntry";
+import { ReviewPhotos } from "./ReviewPhotos";
 
 /** Longer reviews get a smaller quote so every slide stays readable on one screen. */
 export function quoteSize(text: string) {
@@ -28,6 +29,7 @@ export function ReviewSlider({ reviews }: { reviews: Review[] }) {
     <div className="review-slide" role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${count}`} aria-live="polite" key={index}>
       <div className="review-slider-score" aria-label={`Overall rating ${review.score.toFixed(1)} out of 10`}><ReviewStars score={review.score} /><strong>{review.score.toFixed(1)}</strong></div>
       <blockquote className={`review-slider-quote ${quoteSize(review.experience)}`.trim()}>&ldquo;{review.experience}&rdquo;</blockquote>
+      <ReviewPhotos photos={review.photos} label={`Photos from ${review.name}'s review`} className="review-photos-band" />
       <div className="review-slider-guest">
         <span className="review-slider-avatar" aria-hidden="true">{review.name.trim().charAt(0).toUpperCase() || "G"}</span>
         <p className="review-slider-name">{review.name}</p>

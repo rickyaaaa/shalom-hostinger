@@ -102,15 +102,15 @@ export async function customerRequest(action: string, method: "GET" | "POST", da
   return { value, response };
 }
 
-export async function customerMultipartRequest(action: string, form: FormData, session: CustomerSession) {
+export async function customerMultipartRequest(action: string, form: FormData, session: CustomerSession, options: { timeout?: number; fallback?: string } = {}) {
   let response: Response;
   try {
     const url = new URL(`${wordpressConfig().api}/customer/${action}`);
-    response = await fetch(url, { method: "POST", cache: "no-store", redirect: "error", signal: AbortSignal.timeout(15_000), headers: { Accept: "application/json", "Cache-Control": "no-store", Pragma: "no-cache", Cookie: session.cookie, "X-WP-Nonce": session.nonce }, body: form });
+    response = await fetch(url, { method: "POST", cache: "no-store", redirect: "error", signal: AbortSignal.timeout(options.timeout ?? 15_000), headers: { Accept: "application/json", "Cache-Control": "no-store", Pragma: "no-cache", Cookie: session.cookie, "X-WP-Nonce": session.nonce }, body: form });
   } catch { throw new CustomerError(503, "We could not reach Shalom. Please try again."); }
   let value: any;
   try { value = await response.json(); } catch { throw new CustomerError(502, "Shalom returned an unreadable response. Please try again."); }
-  if (!response.ok) throw new CustomerError(response.status, typeof value?.message === "string" ? value.message : "We could not update your profile.");
+  if (!response.ok) throw new CustomerError(response.status, typeof value?.message === "string" ? value.message : options.fallback ?? "We could not update your profile.", typeof value?.code === "string" ? value.code : undefined);
   if (typeof value?.nonce === "string" && value.nonce) await writeSession({ ...session, nonce: value.nonce });
   return value;
 }

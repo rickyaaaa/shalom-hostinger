@@ -855,3 +855,53 @@ input[type=date]::-webkit-date-and-time-value, input[type=time]::-webkit-date-an
   .about-stats dt { font-size: 13px; line-height: 1.4; }
   .about-guests, .about-cta { padding: 64px 16px; }
 }
+
+/* Review photos (client 2026-11-14, like product-review photos): square thumbnails, a full-size viewer, and the picker. */
+.review-photos { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; padding: 0; list-style: none; }
+.review-photos button { display: block; width: 72px; height: 72px; padding: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: #f1f4f5; cursor: zoom-in; }
+.review-photos img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .2s ease-out; }
+.review-photos button:hover img { transform: scale(1.05); }
+.review-photos button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.review-photos-band { justify-content: center; margin: 32px 0 0; }
+.review-photos-band button { border-color: rgb(255 255 255 / 25%); }
+.review-photo-viewer { width: min(100vw - 32px, 1100px); max-width: none; max-height: calc(100dvh - 32px); padding: 0; border: 0; background: transparent; overflow: visible; }
+.review-photo-viewer::backdrop { background: rgb(5 20 37 / 88%); }
+.review-photo-viewer figure { margin: 0; text-align: center; }
+.review-photo-viewer figure img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100dvh - 96px); margin: auto; border-radius: 8px; }
+.review-photo-viewer figcaption { margin-top: 12px; color: rgb(255 255 255 / 80%); font-size: 14px; letter-spacing: 2px; }
+.review-photo-close, .review-photo-prev, .review-photo-next { position: fixed; display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; background: white; color: var(--ink); cursor: pointer; }
+.review-photo-close svg, .review-photo-prev svg, .review-photo-next svg { width: 22px; height: 22px; }
+.review-photo-close { top: 16px; right: 16px; }
+.review-photo-prev { top: 50%; left: 16px; transform: translateY(-50%); }
+.review-photo-prev svg { transform: rotate(180deg); }
+.review-photo-next { top: 50%; right: 16px; transform: translateY(-50%); }
+.review-photo-close:focus-visible, .review-photo-prev:focus-visible, .review-photo-next:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.review-photo-picker { display: grid; gap: 10px; }
+.review-photo-picker-label { margin: 0; font-weight: 600; }
+.review-photo-previews { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.review-photo-previews li { position: relative; width: 88px; height: 88px; }
+.review-photo-previews img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+.review-photo-remove { position: absolute; top: -8px; right: -8px; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: var(--ink); color: white; cursor: pointer; }
+.review-photo-remove svg { width: 14px; height: 14px; }
+.review-photo-add { justify-self: start; cursor: pointer; }
+.review-photo-add.is-busy { opacity: .6; pointer-events: none; }
+@media (max-width: 767px) {
+  .review-photo-prev, .review-photo-next { top: auto; bottom: 16px; transform: none; }
+  .review-photo-prev { left: calc(50% - 64px); }
+  .review-photo-next { right: calc(50% - 64px); }
+  .review-photo-viewer figure img { max-height: calc(100dvh - 160px); }
+}
+
+/* Home About (client 2026-11-14): a guest photo on the left, the story on the right. */
+.about-split { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); gap: 64px; align-items: center; }
+.about-split-photo img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+.about-split-copy .about-copy { max-width: 62ch; margin-inline: 0; }
+.about-split .about-facts { grid-template-columns: auto 1fr; gap: 32px; max-width: none; margin: 40px 0 0; padding-top: 32px; border-top: 1px solid var(--border); text-align: left; }
+.about-split .about-facts strong { font-size: clamp(28px, 3vw, 44px); }
+@media (max-width: 1024px) { .about-split { gap: 40px; } }
+@media (max-width: 767px) {
+  .about-split { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .about-split-photo img { aspect-ratio: 4 / 3; }
+  .about-split .about-facts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+  .about-split .about-facts strong { font-size: 26px; }
+}
