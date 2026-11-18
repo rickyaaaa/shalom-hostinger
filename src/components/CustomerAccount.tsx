@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { accountSchema, previousTourResult, type CustomerAccount as AccountData } from "@/lib/customer-types";
-import { customerFetch } from "@/lib/customer-client";
+import { customerFetch, customerUpload } from "@/lib/customer-client";
+import { ReviewPhotoPicker, type PickedPhoto } from "./ReviewPhotoPicker";
+import { ReviewPhotos } from "./ReviewPhotos";
 import { useCustomerSession } from "./CustomerSession";
 import { intentQuery,type BookingIntent } from "@/lib/booking-intent";
 import { ShareSite } from "./ShareSite";
@@ -14,10 +16,26 @@ import { scrollToAnchor } from "@/lib/anchor";
 function ReviewForm({onSubmitted,title,tourId,entitlementId,context,publishes=false}:{onSubmitted:(published:boolean)=>void;title:string;tourId:number;entitlementId?:string|number;context?:string;publishes?:boolean}) {
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState("");
+  const [photos,setPhotos] = useState<PickedPhoto[]>([]);
+  // Previews are object URLs; release them when the form closes.
+  const previews = useRef<PickedPhoto[]>([]);
+  previews.current = photos;
+  useEffect(() => () => previews.current.forEach(photo => URL.revokeObjectURL(photo.url)), []);
   async function submit(event:FormEvent<HTMLFormElement>) {
     event.preventDefault(); if (busy) return; setBusy(true); setError("");
     // WordPress decides: a review from a completed order publishes now; a previous-itinerary review awaits approval.
-    try { const result = await customerFetch("reviews",{...Object.fromEntries(new FormData(event.currentTarget)),tour_id:tourId,...(entitlementId === undefined ? {} : {entitlement_id:entitlementId})}); onSubmitted(result?.status === "approved"); }
+    const fields: Record<string, unknown> = {...Object.fromEntries(new FormData(event.currentTarget)),tour_id:tourId,...(entitlementId === undefined ? {} : {entitlement_id:entitlementId})};
+    try {
+      let result;
+      if (photos.length) {
+        // 1.36: a review with photos goes as multipart; without photos it stays JSON.
+        const form = new FormData();
+        for (const [key, value] of Object.entries(fields)) form.set(key, String(value));
+        photos.forEach(photo => form.append("photos", photo.file));
+        result = await customerUpload("reviews", form);
+      } else result = await customerFetch("reviews", fields);
+      onSubmitted(result?.status === "approved");
+    }
     catch (reason) { setError(reason instanceof Error ? reason.message : "Please try again."); setBusy(false); }
   }
   return <form className="customer-form" onSubmit={submit} aria-busy={busy}>
@@ -27,7 +45,8 @@ function ReviewForm({onSubmitted,title,tourId,entitlementId,context,publishes=fa
     <label>Was the itinerary worth it?<select name="price" required defaultValue=""><option value="">Choose an answer</option><option value="worth_it">Worth it</option><option value="not_worth_it">Not worth it</option></select></label>
     <label>Would you recommend us?<select name="recommend" required defaultValue=""><option value="">Choose an answer</option><option value="yes">Yes</option><option value="no">No</option></select></label>
     <label>Your Experience<textarea name="experience" required maxLength={1000} rows={5} /><span className="field-help">Up to 1,000 characters.</span></label>
-    <button className="button" disabled={busy}>{busy ? "Submitting review…" : "Submit Review"}</button>
+    <ReviewPhotoPicker photos={photos} onChange={setPhotos} disabled={busy} />
+    <button className="button" disabled={busy}>{busy ? (photos.length ? "Uploading photos…" : "Submitting review…") : "Submit Review"}</button>
   </form>;
 }
 
@@ -139,7 +158,7 @@ function ReviewsSection({account,entitlements,review,setReview,onSubmitted}:{acc
     {entitlements.length ? <ul className="account-list">{entitlements.map(item => { const order = booking(item); const date = order?.booking_date ?? order?.travel_date; return <li key={String(item.id)}><div><strong>{itineraryTitle(item.title)}</strong>{item.previous_tour ? <p className="field-help">Previous itinerary · {previousTourLine(item.previous_tour)}</p> : date && <p className="field-help">Travel date {formatDate(date)}</p>}</div><button className="button button-outline" onClick={()=>setReview(review===item.id?null:item.id)} aria-expanded={review===item.id}>{review===item.id ? "Close review form" : "Leave Review"}</button></li>; })}</ul> : <p className="account-empty-review">You can leave a review after Shalom Bali Tour marks your booking as completed.</p>}
     {selected && <ReviewForm key={String(selected.id)} tourId={selected.tour_id} entitlementId={selected.id} onSubmitted={onSubmitted} publishes={selected.source === "booking"} title={selected.title} context={selected.previous_tour ? `Your previous itinerary: ${previousTourLine(selected.previous_tour)}` : undefined} />}
     <h3 className="account-subheading">My Reviews</h3>
-    {account.reviews.length ? <ul className="account-list">{account.reviews.map((item,i)=><li key={item.id??i}><div><strong>{itineraryTitle(item.title)}</strong><ReviewStatus status={item.status}/><p className="customer-experience">{item.experience}</p></div></li>)}</ul> : <p className="account-empty-review">You have not submitted any reviews yet.</p>}
+    {account.reviews.length ? <ul className="account-list">{account.reviews.map((item,i)=><li key={item.id??i}><div><strong>{itineraryTitle(item.title)}</strong><ReviewStatus status={item.status}/><p className="customer-experience">{item.experience}</p><ReviewPhotos photos={item.photos} label="Your photos" /></div></li>)}</ul> : <p className="account-empty-review">You have not submitted any reviews yet.</p>}
   </section>;
 }
 

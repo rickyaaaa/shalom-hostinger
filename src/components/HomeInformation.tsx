@@ -4,6 +4,7 @@ import Link from "next/link";
 import { aboutStory,benefits,carCapacity,facebookProfile,faqs,howItWorks,instagramProfile,tiktokProfile } from "@/lib/marketing";
 import { getBookingTerms, getItineraries } from "@/lib/wordpress";
 import { pickItineraryPhotos } from "@/lib/itinerary-photos";
+import { guestPhotos } from "@/lib/guest-photos";
 import { PhotoSlider } from "./PhotoSlider";
 import { wordpressConfig } from "@/lib/config";
 import { Icon } from "./Icon";
@@ -29,4 +30,5 @@ async function BookingTermsAnswer(){
   const groups=([["NOT INCLUDING",terms.not_included],["INCLUDE",terms.included]] as const).filter(([,items])=>items.length);
   return <>{groups.map(([label,items])=><div key={label} className="faq-terms"><p className="faq-terms-label">{label}</p><ul>{items.map(item=><li key={item}>{item}</li>)}</ul></div>)}</>;
 }
-export function AboutSection(){return <section className="about-section" id="about"><div className="information-inner about-grid"><div><p className="section-label">ABOUT SHALOM BALI TOUR</p><h2>Bali Tour Service Since 2016</h2>{aboutStory.map(paragraph=><p key={paragraph} className="about-copy">{paragraph}</p>)}<Link href="/about" className="button about-more">More About Us</Link></div><div className="about-facts"><p><strong>Since 2016</strong><span>Serving Bali Travelers</span></p><p><strong>3</strong><span className="about-fact-title">Main Tour Areas</span><span>Ubud · Uluwatu &amp; South Kuta · West Bali &amp; North Bali</span></p></div></div></section>;}
+/** Home About (client 2026-11-14): a guest photo on the left, the owner's story and facts on the right. */
+export function AboutSection(){const photo=guestPhotos["guests-hotel-evening-farewell"];return <section className="about-section" id="about" aria-labelledby="home-about-title"><div className="information-inner about-split"><div className="about-split-photo"><Image src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} quality={60} sizes="(max-width: 767px) 100vw, 44vw" style={photo.focus?{objectPosition:photo.focus}:undefined}/></div><div className="about-split-copy"><p className="section-label">ABOUT SHALOM BALI TOUR</p><h2 id="home-about-title">Bali Tour Service Since 2016</h2>{aboutStory.map(paragraph=><p key={paragraph} className="about-copy">{paragraph}</p>)}<Link href="/about" className="button about-more">More About Us</Link><div className="about-facts"><p><strong>Since 2016</strong><span>Serving Bali Travelers</span></p><p><strong>3</strong><span className="about-fact-title">Main Tour Areas</span><span>Ubud · Uluwatu &amp; South Kuta · West Bali &amp; North Bali</span></p></div></div></div></section>;}

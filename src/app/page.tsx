@@ -57,7 +57,6 @@ export default function HomePage() {
         <div className="area-panel-copy"><h3>{area.title}</h3><p>{area.text}</p><span className="area-panel-cta">{area.cta}<Icon name="arrow" /></span></div>
       </Link>)}</div>
     </section>
-    <WhyChooseUs/>
     <section className="customized-section" id="customizedtour" aria-labelledby="custom-title">
       <div className="customized-inner"><div className="customized-copy"><h2 id="custom-title">Can&apos;t Find the Bali Tour You Want?</h2>
         <p className="customized-lead">Create a <strong>custom Bali tour</strong> based on the destinations you want to visit.</p>
@@ -67,14 +66,15 @@ export default function HomePage() {
         <a href={links.customBooking} className="button button-gold">Start Your Custom Itinerary</a>
       </div><CustomGallery /></div>
     </section>
-    <HowItWorks/>
-    <DriverSection/>
+    <WhyChooseUs/>
     <section className="home-reviews" id="review" aria-labelledby="home-reviews-title">
       <div className="home-reviews-heading"><p className="section-label">GUEST EXPERIENCES</p><h2 id="home-reviews-title">What Our Guests Say</h2><p>Read experiences from travelers who have explored Bali with Shalom Bali Tour.</p></div>
       <Suspense fallback={<p className="status-message reviews-loading" role="status">Loading guest reviews…</p>}><LatestReviews /></Suspense>
     </section>
+    <AboutSection/>
+    <HowItWorks/>
+    <DriverSection/>
     <FAQ/>
     <RecentGuides/>
-    <AboutSection/>
   </>;
 }

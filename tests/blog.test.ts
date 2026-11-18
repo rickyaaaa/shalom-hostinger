@@ -136,7 +136,7 @@ test("Recent guides sit at the foot of Home, the area pages, every tour page and
   assert.match(recent, /publishedPosts\(\)\.filter\(\(\[slug\]\) => slug !== exclude\)\.slice\(0, 3\)/, "the three newest published guides");
   assert.match(recent, /if \(!posts\.length\) return null;/, "nothing renders while none is published");
   assert.match(recent, /<Link href="\/blog" className="button button-outline">View All Guides<\/Link>/);
-  assert.match(src("app/page.tsx"), /<FAQ\/>\s*<RecentGuides\/>\s*<AboutSection\/>/, "Home: after the FAQ, before About");
+  assert.match(src("app/page.tsx"), /<FAQ\/>\s*<RecentGuides\/>\s*<\/>;/, "Home: the last section, after the FAQ (client order 2026-11-14)");
   assert.match(src("components/AreaPage.tsx"), /<AreaGuideSections guide=\{guide\}\/>\}\s*<RecentGuides\/>/);
   assert.match(src("app/tours/[slug]/page.tsx"), /<TourReviews [^>]*\/>\s*<\/div><\/section>\s*<RecentGuides\/>/, "tour pages: after the reviews");
   assert.match(src("app/blog/[slug]/page.tsx"), /<RecentGuides exclude=\{slug\} heading="More Travel Guides" \/>/, "a guide never lists itself");
