@@ -23,6 +23,8 @@
 .customer-notice { color: #1c5d36; background: #edf8f1; }
 .text-button { border: 0; background: transparent; padding: 0 4px; text-decoration: underline; font-weight: 600; }
 .account-panel { max-width: none; }
+.account-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.account-actions + .customer-notice { margin-top: 20px; }
 .account-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 20px; }
 .account-heading h1 { margin: 0; }
 .account-block { margin-top: 40px; }
@@ -35,6 +37,11 @@
 .review-status-rejected { color: var(--muted); }
 .customer-experience { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 70ch; }
 @media(max-width: 640px) { .customer-section { padding: 0 16px; margin-top: 32px; } .customer-panel { padding: 24px; } .account-heading, .account-list li { align-items: flex-start; flex-direction: column; } .customer-columns { grid-template-columns: 1fr; } }
+@media(max-width: 640px) {
+  .account-actions { flex-direction: column; }
+  .account-actions .button,
+  .account-panel .account-block .button { width: 100%; }
+}
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
